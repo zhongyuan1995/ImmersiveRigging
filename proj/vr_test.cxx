@@ -1906,7 +1906,11 @@ public:
 		WideCharToMultiByte(CP_UTF8, 0, buff.c_str(), -1, &buf[0], len, 0, 0);
 		projdir = std::string(buf.begin(), buf.end());
 		std::string image0 = projdir.append("\\skybox\\cm_{xp,xn,yp,yn,zp,zn}.jpg");
+		// have to reset 
+		projdir = std::string(buf.begin(), buf.end());
 		std::string image1 = projdir.append("\\skybox\\BluePinkNebular_{xp,xn,yp,yn,zp,zn}.jpg");
+		// have to reset 
+		projdir = std::string(buf.begin(), buf.end());
 		std::string image2 = projdir.append("\\skybox\\igen_2\\{xp,xn,yp,yn,zp,zn}.jpg");
 
 		cout << "image0 dir:" << image0 << endl;
