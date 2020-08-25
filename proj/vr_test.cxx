@@ -1897,10 +1897,10 @@ public:
 		DWORD bufferSize = 65535; 
 		std::wstring buff;
 		buff.resize(bufferSize);
-		bufferSize = GetEnvironmentVariableW(L"CGV_PROJECT_DIR", &buff[0], bufferSize);
+		bufferSize = GetEnvironmentVariableW(L"CGV_EXEC_DIR", &buff[0], bufferSize);
 		if (!bufferSize)
 			//error
-			buff.resize(bufferSize);
+		buff.resize(bufferSize);
 		int len = WideCharToMultiByte(CP_UTF8, 0, buff.c_str(), -1, 0, 0, 0, 0);
 		vector<char> buf(len-1);
 		WideCharToMultiByte(CP_UTF8, 0, buff.c_str(), -1, &buf[0], len, 0, 0);
