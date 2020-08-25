@@ -254,15 +254,6 @@ protected:
 	std::vector<box3> fast_jointlist;
 	std::vector<rgb> fast_jointlist_colors;
 
-	//DataStore* tmpdata;
-	//SkeletonViewer* tmpskel_view;
-
-	//std::vector<DataStore*> addi_data;
-	//std::vector<SkeletonViewer*> addi_skel_view;
-	//std::vector<IKViewer*> addi_ik_view;
-	//std::vector<std::vector<box3>> addi_jointlist;
-	//std::vector<std::vector<rgb>> addi_jointlist_colors;
-
 	std::shared_ptr<SkinningMesh> mmesh;
 	
 	float tmpboxsize = 0.05f;
@@ -280,6 +271,10 @@ protected:
 	Bone* left_ee;
 	Bone* right_ee;
 	Bone* hmd_ee;
+
+	std::string projdir = "../../../plugins/vr_rigging_pub/";
+	std::string skyboxdir = projdir + "skybox/";
+	std::string meshdir = projdir + "gen_dataset/";
 	// add def.
 
 
@@ -682,8 +677,6 @@ public:
 		int i;
 		ArgData a;
 
-		// fill the filenames 
-		//std::string meshfile = "FFA_REGULAR/smalldataset/meshes/character/_workdemo1_spiderman/spiderman.obj";
 		a.filename = g_mesh_filename;
 		string skelfile = "tmpskel.txt";
 		a.skeleton = FileSkeleton(skelfile);
@@ -772,7 +765,7 @@ public:
 	void adjest_mesh() {
 		float new_factor = hmd_origin.y() / (ds->get_mesh()->getMax().y() - ds->get_mesh()->getMin().y());
 		cout << "new_factor: " << new_factor << endl;
-		ds->get_mesh()->set_mesh_scale(new_factor * mesh_scale);//
+		ds->get_mesh()->set_mesh_scale(new_factor * mesh_scale);
 		load_mesh();
 
 		label_content = "[INFO] mesh position changed!\n" + label_content;
@@ -978,9 +971,6 @@ public:
 			cgv::gui::vr_throttle_event& vrte = static_cast<cgv::gui::vr_throttle_event&>(e);
 			std::cout << "throttle " << vrte.get_throttle_index() << " of controller " << vrte.get_controller_index()
 				<< " adjusted from " << vrte.get_last_value() << " to " << vrte.get_value() << std::endl;
-			/*if (vrte.get_value() == 1) {
-				
-			}*/
 			return true;
 		}
 		case cgv::gui::EID_STICK:
@@ -1456,11 +1446,11 @@ public:
 							ds->get_skeleton()->writeASFFile("tmpskel_3.asf");
 						}
 						// load demo animation 
-						if (pg1->elements.at(cur_btn_idx).label._Equal("jump")) {
+						/*if (pg1->elements.at(cur_btn_idx).label._Equal("jump")) {
 							label_content = "[INFO] button clicked!\n" + label_content;
 							label_outofdate = true;
-							skel_view->load_animation_given_name("D:/zrdevpacks/zract_easyRigging/data_attached/_workdemo1_spiderman/jump.amc",false);
-						}
+							skel_view->load_animation_given_name(projdir + "_workdemo1_spiderman/jump.amc",false);
+						}*/
 						// save cur. skel. to file
 						if (pg1->elements.at(cur_btn_idx).label._Equal("write_\npinocchio\n_skel.")) {
 							label_content = "[INFO] button clicked!\n" + label_content;
@@ -1497,7 +1487,6 @@ public:
 						if (pg1->elements.at(cur_btn_idx).label._Equal("s_base")) {
 							label_content = "[INFO] button clicked!\n" + label_content;
 							label_outofdate = true;
-							//skel_view->load_animation_given_name("D:/zrdevpacks/zract_easyRigging/data_attached/_workdemo1_spiderman/jump.amc");
 							lefthandmode = "select base";
 						}
 						if (pg1->elements.at(cur_btn_idx).label._Equal("s_ee_left")) {
@@ -1550,7 +1539,6 @@ public:
 							label_outofdate = true;
 							del_skel();
 						}
-
 
 						// useless 
 						if (pg1->elements.at(cur_btn_idx).label._Equal("walk around")) {
@@ -1620,26 +1608,6 @@ public:
 						if (pg1->elements.at(cur_btn_idx).label._Equal("l_scene1")) {
 							label_content = "[INFO] button clicked!\n" + label_content;
 							label_outofdate = true;
-							//tmpdata = new DataStore();
-							//tmpskel_view = new SkeletonViewer(tmpdata, "newskel_0");
-							//register_object(base_ptr(tmpskel_view), "");
-							//addi_data.push_back(tmpdata);
-							//addi_skel_view.push_back(tmpskel_view);// for getting a global ref. later, we have to push them to an array
-
-							////addi_ik_view.push_back(tmpik_view);
-							//tmpskel_view->load_skeleton_given_name("D:/zrdevpacks/zract_easyRigging/data_attached/_workdemo1_spiderman/jump.asf");
-							//tmpskel_view->set_skel_origin_ori_translation(Vec3(0, 1, 0), 180, Vec3(-1.5, 1, 2.8));
-
-							//// a third one 
-							//tmpdata = new DataStore();
-							//tmpskel_view = new SkeletonViewer(tmpdata, "newskel_1");
-							//register_object(base_ptr(tmpskel_view), "");
-							//addi_data.push_back(tmpdata);
-							//addi_skel_view.push_back(tmpskel_view);// for getting a global ref. later, we have to push them to an array
-
-							////addi_ik_view.push_back(tmpik_view);
-							//tmpskel_view->load_skeleton_given_name("D:/zrdevpacks/zract_easyRigging/data_attached/_workdemo1_spiderman/jump.asf");
-							//tmpskel_view->set_skel_origin_ori_translation(Vec3(0, 1, 0), 90, Vec3(-1.5, 1, 0));
 						}
 
 						// add button callback
@@ -1890,12 +1858,6 @@ public:
 	{
 		if (!cgv::utils::has_option("NO_OPENVR"))
 			ctx.set_gamma(2.2f);
-	
-		//if (M.read("D:/smalldataset/meshes/character/_workdemo1_spiderman/spiderman.obj")) {
-		//	//if (M.read("D:/smalldataset/meshes/character/tposegirl.obj")) {
-		//	MI.construct_vbos(ctx, M);
-		//	MI.bind(ctx, ctx.ref_surface_shader_program(true));
-		//}
 
 		cgv::gui::connect_vr_server(true);
 
@@ -1928,9 +1890,9 @@ public:
 
 		skyprog.build_program(ctx, "skycube.glpr");
 
-		img_tex.create_from_images(ctx,"D:/Projects/vr_rigging/proj/skybox/cm_{xp,xn,yp,yn,zp,zn}.jpg");
-		tmp_tex.create_from_images(ctx, "D:/Projects/vr_rigging/proj/skybox/BluePinkNebular_{xp,xn,yp,yn,zp,zn}.jpg");
-		test_tex.create_from_images(ctx, "D:/Projects/vr_rigging/proj/skybox/igen_2/{xp,xn,yp,yn,zp,zn}.jpg");
+		img_tex.create_from_images(ctx, skyboxdir + "cm_{xp,xn,yp,yn,zp,zn}.jpg");
+		tmp_tex.create_from_images(ctx, skyboxdir + "BluePinkNebular_{xp,xn,yp,yn,zp,zn}.jpg");
+		test_tex.create_from_images(ctx, skyboxdir + "igen_2/{xp,xn,yp,yn,zp,zn}.jpg");
 		pg1->icon_shader_prog.build_program(ctx, "image.glpr");
 
 		cull_mode = CM_BACKFACE;
@@ -1946,8 +1908,6 @@ public:
 		mmesh->set_mesh_scale(mesh_scale);
 
 		fast_bone_posi_vec_as_chain.clear();
-		
-		//handle_button();
 
 		// add- : init
 		return true;
@@ -2112,7 +2072,6 @@ public:
 			ulabel_tex.generate_mipmaps(ctx);
 		}
 	}
-	
 	void draw_axes(cgv::render::context& ctx, bool transformed)
 	{
 		float c = transformed ? 0.7f : 1;
@@ -2264,70 +2223,6 @@ public:
 			}
 		}
 
-		// render static meshes 
-		//if (MI.is_constructed()) {
-			/*dmat4 R;
-			mesh_orientation.put_homogeneous_matrix(R);
-			ctx.push_modelview_matrix();
-			ctx.mul_modelview_matrix(
-				cgv::math::translate4<double>(mesh_location)*
-				cgv::math::scale4<double>(mesh_scale, mesh_scale, mesh_scale) *
-				R);
-			MI.render_mesh(ctx, ctx.ref_surface_shader_program(true));
-			ctx.pop_modelview_matrix();*/
-
-			/*float line_width = 2.0f;
-			rgb line_color = rgb(0.7f, 0.2f, 1.0f);
-			GLfloat old_line_width;
-			glGetFloatv(GL_LINE_WIDTH, &old_line_width);
-			glLineWidth(line_width);
-				ctx.ref_default_shader_program().enable(ctx);
-					ctx.set_color(line_color);
-					dmat4 R;
-					mesh_orientation.put_homogeneous_matrix(R);
-					ctx.push_modelview_matrix();
-					ctx.mul_modelview_matrix(
-						cgv::math::translate4<double>(mesh_location) *
-						cgv::math::scale4<double>(mesh_scale, mesh_scale, mesh_scale) *
-						R);
-					MI.draw_wireframe(ctx);
-					ctx.pop_modelview_matrix();
-				ctx.ref_default_shader_program().disable(ctx);
-			glLineWidth(old_line_width);*/
-
-			//draw_surface(ctx, true);
-		//}
-
-		// draw boxes for sel. 
-		// not correct 
-		/*if (vr_view_ptr) {
-			const vr::vr_kit_state* state_ptr = vr_view_ptr->get_current_vr_state();
-			if (state_ptr && (state_ptr->controller[0].status == vr::VRS_TRACKED)) {
-				vec3 ray_origin, ray_direction;
-				state_ptr->controller[0].put_ray(&ray_origin(0), &ray_direction(0));
-				float boxdist = 0.2; vec3 extend_of_box = vec3(0.05f, 0.05f, 0.05f);
-				vec3 center_of_box = ray_origin + boxdist * ray_direction;
-				vec3 lower_of_box = ray_origin + boxdist * ray_direction - 0.05f * ray_direction;
-				vec3 upper_of_box = ray_origin + boxdist * ray_direction + 0.05f * ray_direction;
-				box3 control_box = box3(lower_of_box, upper_of_box);
-
-				std::vector<box3> control_box_array;
-				std::vector<rgb> control_box_color;
-
-				control_box_array.push_back(control_box);
-				control_box_color.push_back(rgb(0, 1, 0));
-
-				cgv::render::box_renderer& renderer = cgv::render::ref_box_renderer(ctx);
-				renderer.set_render_style(style);
-				renderer.set_box_array(ctx, control_box_array);
-				renderer.set_color_array(ctx, control_box_color);
-				if (renderer.validate_and_enable(ctx)) {
-					glDrawArrays(GL_POINTS, 0, (GLsizei)control_box_array.size());
-				}
-				renderer.disable(ctx);
-			}
-		}*/
-
 		// draw line for vr controllers 
 		if (vr_view_ptr) {
 			std::vector<vec3> P;
@@ -2396,16 +2291,16 @@ public:
 			renderer.disable(ctx);
 
 		// draw intersection points
-		/*if (!intersection_points.empty()) {
-			auto& sr = cgv::render::ref_sphere_renderer(ctx);
-			sr.set_position_array(ctx, intersection_points);
-			sr.set_color_array(ctx, intersection_colors);
-			sr.set_render_style(srs);
-			if (sr.validate_and_enable(ctx)) {
-				glDrawArrays(GL_POINTS, 0, (GLsizei)intersection_points.size());
-				sr.disable(ctx);
-			}
-		}*/
+			/*if (!intersection_points.empty()) {
+				auto& sr = cgv::render::ref_sphere_renderer(ctx);
+				sr.set_position_array(ctx, intersection_points);
+				sr.set_color_array(ctx, intersection_colors);
+				sr.set_render_style(srs);
+				if (sr.validate_and_enable(ctx)) {
+					glDrawArrays(GL_POINTS, 0, (GLsizei)intersection_points.size());
+					sr.disable(ctx);
+				}
+			}*/
 
 		// draw info label
 		if (label_tex.is_created()) {
@@ -2465,9 +2360,6 @@ public:
 			cgv::render::attribute_array_binding::disable_global_array(ctx, ti);
 		}
 		double s = 0.1;
-
-		//surface_material cube_mat = surface_material(BT_OREN_NAYAR, surface_material::color_type(0.6f, 0.5f, 0.4f), 0.5f);
-		// construct sth. for test @yzy
 
 		// draw quad with ref. 
 		for (int i = 0; i < pg1->elements.size(); i++) {
@@ -2537,220 +2429,79 @@ public:
 		}
 		renderer.disable(ctx);
 
-		///old version 
-			//if (end_point_list.size() > 0)
-			//	for (int i = 0; i < start_point_list.size() - 1; i++) {
-			//		ctx.ref_surface_shader_program().enable(ctx);
-			//			ctx.push_modelview_matrix();
-			//			ctx.set_color(rgb(0,1,0));
-			//			ctx.tesselate_arrow(start_point_list.at(i), end_point_list.at(i), 0.02);
-			//			ctx.pop_modelview_matrix();
-			//		ctx.ref_surface_shader_program().disable(ctx);
-			//	}
-			//if (is_even_point) { // spec. care needed 
-			//	ctx.ref_surface_shader_program().enable(ctx);
-			//	ctx.push_modelview_matrix();
-			//	ctx.set_color(rgb(0, 1, 0));
-			//	ctx.tesselate_arrow(start_point_list.at(start_point_list.size() - 1), cur_left_hand_posi, 0.02);
-			//	ctx.pop_modelview_matrix();
-			//	ctx.ref_surface_shader_program().disable(ctx);
-			//}
-			//else if (end_point_list.size() > 0) { // the last arrow 
-			//	ctx.ref_surface_shader_program().enable(ctx);
-			//	ctx.push_modelview_matrix();
-			//	ctx.set_color(rgb(0, 1, 0));
-			//	ctx.tesselate_arrow(start_point_list.at(start_point_list.size()-1), end_point_list.at(end_point_list.size() - 1), 0.02);
-			//	ctx.pop_modelview_matrix();
-			//	ctx.ref_surface_shader_program().disable(ctx);
-			//}
-
-		///arrow rep.
-			//ctx.ref_surface_shader_program().enable(ctx);
-			//ctx.set_color(rgb(0, 1, 0));
-			//if (end_point_list.size() > 0)
-			//	for (int i = 0; i < start_point_list.size() - 1; i++) {
-			//		ctx.tesselate_arrow(start_point_list.at(i), end_point_list.at(i), 0.02);
-			//	}
-			//if (is_even_point) { // spec. care needed 
-			//	ctx.tesselate_arrow(start_point_list.at(start_point_list.size() - 1), cur_left_hand_posi, 0.02);
-			//}
-			//else if (end_point_list.size() > 0) { // the last arrow 
-			//	ctx.tesselate_arrow(start_point_list.at(start_point_list.size() - 1), end_point_list.at(end_point_list.size() - 1), 0.02);
-			//}
-			//ctx.ref_surface_shader_program().disable(ctx);
-
-		if (!skel_view->playing) { // we do not have skel. now actually. lines are not needed any more 
-			// rendering of fast_jointlist
-			//// render lines
-			//	std::vector<vec3> p;
-			//	std::vector<rgb> c;
-			//	// already added bones
-			//		for (int i = 1; i < fast_bone_posi_vec_as_chain.size(); i++) {
-			//			if ((fast_bone_posi_vec_as_chain.at(i).x() != -100) && (fast_bone_posi_vec_as_chain.at(i - 1).x() != -100)) {
-			//				// if not marked ones 
-			//				p.push_back(fast_bone_posi_vec_as_chain.at(i - 1));
-			//				p.push_back(fast_bone_posi_vec_as_chain.at(i));
-			//				c.push_back(rgb(0));
-			//				c.push_back(rgb(0));
-			//			}
-			//		}
-			//	// current line  
-			//		if (fast_is_reset) { // do not draw current line 
-			//			
-			//		}
-			//		else {
-			//			p.push_back(fast_bone_posi_vec_as_chain.at(fast_bone_posi_vec_as_chain.size() - 1));
-			//			p.push_back(cur_left_hand_posi); // global var. who is set in POSE event
-			//			c.push_back(rgb(0));
-			//			c.push_back(rgb(0));
-			//		}
-			//	//render it! 
-			//		if (p.size() > 0) {
-			//			cgv::render::shader_program& prog = ctx.ref_default_shader_program();
-			//			int pi = prog.get_position_index();
-			//			int ci = prog.get_color_index();
-			//			cgv::render::attribute_array_binding::set_global_attribute_array(ctx, pi, p);
-			//			cgv::render::attribute_array_binding::enable_global_array(ctx, pi);
-			//			cgv::render::attribute_array_binding::set_global_attribute_array(ctx, ci, c);
-			//			cgv::render::attribute_array_binding::enable_global_array(ctx, ci);
-			//			glLineWidth(3);
-			//			prog.enable(ctx);
-			//			glDrawArrays(GL_LINES, 0, (GLsizei)p.size());
-			//			prog.disable(ctx);
-			//			cgv::render::attribute_array_binding::disable_global_array(ctx, pi);
-			//			cgv::render::attribute_array_binding::disable_global_array(ctx, ci);
-			//			glLineWidth(1);
-			//		}
-			// render boxes in the first palcing step
-				if (fast_jointlist.size() > 0) {
-					renderer = cgv::render::ref_box_renderer(ctx);
-					renderer.set_render_style(style);
-					renderer.set_box_array(ctx, fast_jointlist);
-					renderer.set_color_array(ctx, fast_jointlist_colors);
-					if (renderer.validate_and_enable(ctx)) {
-						glDrawArrays(GL_POINTS, 0, (GLsizei)fast_jointlist.size());
-					}
-					renderer.disable(ctx);
+		if (!skel_view->playing) {
+			if (fast_jointlist.size() > 0) {
+				renderer = cgv::render::ref_box_renderer(ctx);
+				renderer.set_render_style(style);
+				renderer.set_box_array(ctx, fast_jointlist);
+				renderer.set_color_array(ctx, fast_jointlist_colors);
+				if (renderer.validate_and_enable(ctx)) {
+					glDrawArrays(GL_POINTS, 0, (GLsizei)fast_jointlist.size());
 				}
+				renderer.disable(ctx);
+			}
 		}
 
 		if (!skel_view->playing) {
 			// render lines
-			//#if 1
-				std::vector<vec3> vertex_array_in_point_list;
-				std::vector<rgb> colorarray;
-				if (end_point_list.size() > 0)
-					for (int i = 0; i < start_point_list.size() - 1; i++) {
-						vertex_array_in_point_list.push_back(start_point_list.at(i));
-						vertex_array_in_point_list.push_back(end_point_list.at(i));
-						colorarray.push_back(rgb(0, 0, 0));
-						colorarray.push_back(rgb(0, 0, 0));
-					}
-				// spec. care needed
-				if (start_point_list.size() > 0)
-					if (is_even_point && drawingbone) {  
-						vertex_array_in_point_list.push_back(start_point_list.at(start_point_list.size() - 1));
-						vertex_array_in_point_list.push_back(
-							cur_left_hand_posi + vec3( cur_left_hand_dir * 0.2f)); // shall be modified. todo
-							// pointing to submenu box // correct
-						colorarray.push_back(rgb(0, 0, 0));
-						colorarray.push_back(rgb(0, 0, 0));
-						// an addi. box should be rendered 
-					}
-					else if (end_point_list.size() > 0) { 
-						vertex_array_in_point_list.push_back(start_point_list.at(start_point_list.size() - 1));
-						vertex_array_in_point_list.push_back(end_point_list.at(end_point_list.size() - 1));
-						colorarray.push_back(rgb(0, 0, 0));
-						colorarray.push_back(rgb(0, 0, 0));
-					}
-				if (vertex_array_in_point_list.size() > 0) {
-					cgv::render::shader_program& prog = ctx.ref_default_shader_program();
-					int pi = prog.get_position_index();
-					int ci = prog.get_color_index();
-					cgv::render::attribute_array_binding::set_global_attribute_array(ctx, pi, vertex_array_in_point_list);
-					cgv::render::attribute_array_binding::enable_global_array(ctx, pi);
-					cgv::render::attribute_array_binding::set_global_attribute_array(ctx, ci, colorarray);
-					cgv::render::attribute_array_binding::enable_global_array(ctx, ci);
-					glLineWidth(3);
-					prog.enable(ctx);
-					glDrawArrays(GL_LINES, 0, (GLsizei)vertex_array_in_point_list.size());
-					prog.disable(ctx);
-					cgv::render::attribute_array_binding::disable_global_array(ctx, pi);
-					cgv::render::attribute_array_binding::disable_global_array(ctx, ci);
-					glLineWidth(1);
+			std::vector<vec3> vertex_array_in_point_list;
+			std::vector<rgb> colorarray;
+			if (end_point_list.size() > 0)
+				for (int i = 0; i < start_point_list.size() - 1; i++) {
+					vertex_array_in_point_list.push_back(start_point_list.at(i));
+					vertex_array_in_point_list.push_back(end_point_list.at(i));
+					colorarray.push_back(rgb(0, 0, 0));
+					colorarray.push_back(rgb(0, 0, 0));
 				}
-			//#endif
-			// render new boxes 
-			//#if 1
-				std::vector<box3> newboxlist; 
-				// we do not have to render them? those are rendered with skel. bones are already added! 
-				// tobetested
-				std::vector<rgb> newboxcolorlist;
-				//if(end_point_list.size()>0)
-				//for (int i = 0; i < end_point_list.size() ; i++) {
-				//	//end_point_list.at(i)
-				//	vec3 tmppoint = end_point_list.at(i);
-				//	newboxlist.push_back(box3(
-				//		vec3(tmppoint.x() - end_point_size_list.at(i) / 2,
-				//			tmppoint.y() - end_point_size_list.at(i) / 2,
-				//			tmppoint.z() - end_point_size_list.at(i) / 2),
-				//		vec3(tmppoint.x() + end_point_size_list.at(i) / 2, 
-				//			tmppoint.y() + end_point_size_list.at(i) / 2, 
-				//			tmppoint.z() + end_point_size_list.at(i) / 2)));
-				//	newboxcolorlist.push_back(rgb(0,1,0)); // endpoint color list todo
-				//}
-				//if (start_point_list.size() > 0)// pf // replaced by submenu box 
-				//if (is_even_point) {
-					//vec3 tmppoint = cur_left_hand_posi + cur_left_hand_dir * vec3(0, 0, -0.2f);
-					//newboxlist.push_back(box3(
-					//	vec3(tmppoint.x() - tmpboxsize / 2,
-					//		tmppoint.y() - tmpboxsize / 2,
-					//		tmppoint.z() - tmpboxsize / 2),
-					//	vec3(tmppoint.x() + tmpboxsize / 2,
-					//		tmppoint.y() + tmpboxsize / 2,
-					//		tmppoint.z() + tmpboxsize / 2)));
-					//newboxcolorlist.push_back(rgb(0, 1, 0)); // endpoint color list todo
-				//}
-				//else if (end_point_list.size() > 0) { 
-				//	vec3 tmppoint = end_point_list.at(end_point_list.size() - 1);
-				//	newboxlist.push_back(box3(
-				//		vec3(tmppoint.x() - skel_view->cubesize / 2,
-				//			tmppoint.y() - skel_view->cubesize / 2,
-				//			tmppoint.z() - skel_view->cubesize / 2),
-				//		vec3(tmppoint.x() + skel_view->cubesize / 2,
-				//			tmppoint.y() + skel_view->cubesize / 2,
-				//			tmppoint.z() + skel_view->cubesize / 2)));
-				//	newboxcolorlist.push_back(rgb(0, 1, 0)); // endpoint color list todo
-				//}
-				//
-				/*if (start_point_list.size() > 0) {
-					renderer = cgv::render::ref_box_renderer(ctx);
-					renderer.set_render_style(style);
-					renderer.set_box_array(ctx, newboxlist);
-					renderer.set_color_array(ctx, newboxcolorlist);
-					if (renderer.validate_and_enable(ctx)) {
-						glDrawArrays(GL_POINTS, 0, (GLsizei)newboxlist.size());
-					}
-					renderer.disable(ctx);
-				}*/
-			//#endif
-
+			// spec. care needed
+			if (start_point_list.size() > 0)
+				if (is_even_point && drawingbone) {  
+					vertex_array_in_point_list.push_back(start_point_list.at(start_point_list.size() - 1));
+					vertex_array_in_point_list.push_back(
+						cur_left_hand_posi + vec3( cur_left_hand_dir * 0.2f)); // shall be modified. todo
+						// pointing to submenu box // correct
+					colorarray.push_back(rgb(0, 0, 0));
+					colorarray.push_back(rgb(0, 0, 0));
+					// an addi. box should be rendered 
+				}
+				else if (end_point_list.size() > 0) { 
+					vertex_array_in_point_list.push_back(start_point_list.at(start_point_list.size() - 1));
+					vertex_array_in_point_list.push_back(end_point_list.at(end_point_list.size() - 1));
+					colorarray.push_back(rgb(0, 0, 0));
+					colorarray.push_back(rgb(0, 0, 0));
+				}
+			if (vertex_array_in_point_list.size() > 0) {
+				cgv::render::shader_program& prog = ctx.ref_default_shader_program();
+				int pi = prog.get_position_index();
+				int ci = prog.get_color_index();
+				cgv::render::attribute_array_binding::set_global_attribute_array(ctx, pi, vertex_array_in_point_list);
+				cgv::render::attribute_array_binding::enable_global_array(ctx, pi);
+				cgv::render::attribute_array_binding::set_global_attribute_array(ctx, ci, colorarray);
+				cgv::render::attribute_array_binding::enable_global_array(ctx, ci);
+				glLineWidth(3);
+				prog.enable(ctx);
+				glDrawArrays(GL_LINES, 0, (GLsizei)vertex_array_in_point_list.size());
+				prog.disable(ctx);
+				cgv::render::attribute_array_binding::disable_global_array(ctx, pi);
+				cgv::render::attribute_array_binding::disable_global_array(ctx, ci);
+				glLineWidth(1);
+			}
 		}
 		//render demo box 
-		vec3 boxcenter = cur_left_hand_posi + vec3(cur_left_hand_dir * 0.2f);
-		box3 demobox = box3(vec3(boxcenter - tmpboxsize / 2.0f),
-			vec3(boxcenter + tmpboxsize / 2.0f));
-		vector<box3> boxarray; vector<rgb> boxcolorarray;
-		boxarray.push_back(demobox);
-		boxcolorarray.push_back(rgb(1,1,0));
+			vec3 boxcenter = cur_left_hand_posi + vec3(cur_left_hand_dir * 0.2f);
+			box3 demobox = box3(vec3(boxcenter - tmpboxsize / 2.0f),
+				vec3(boxcenter + tmpboxsize / 2.0f));
+			vector<box3> boxarray; vector<rgb> boxcolorarray;
+			boxarray.push_back(demobox);
+			boxcolorarray.push_back(rgb(1,1,0));
 
-		renderer.set_render_style(movable_style);
-		renderer.set_box_array(ctx, boxarray);
-		renderer.set_color_array(ctx, boxcolorarray);
-		if (renderer.validate_and_enable(ctx)) {
-			glDrawArrays(GL_POINTS, 0, (GLsizei)boxarray.size());
-		}
-		renderer.disable(ctx);
+			renderer.set_render_style(movable_style);
+			renderer.set_box_array(ctx, boxarray);
+			renderer.set_color_array(ctx, boxcolorarray);
+			if (renderer.validate_and_enable(ctx)) {
+				glDrawArrays(GL_POINTS, 0, (GLsizei)boxarray.size());
+			}
+			renderer.disable(ctx);
 	}
 };
 
@@ -2918,15 +2669,15 @@ void vr_test::construct_boxgui() {
 	pg1->elements.push_back(first_btn);
 		
 		first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.5, -1.75f), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"xxx", 0, "D:/Projects/vr_rigging/proj/skybox/igen_2/xn.jpg", false);
+			"xxx", 0, skyboxdir + "/igen_2/xn.jpg", false);
 		pg1->elements.push_back(first_btn);
 		
 		first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.5, -1.5f), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"xxx", 0, "D:/Projects/vr_rigging/proj/skybox/cm_xn.jpg", false);
+			"xxx", 0, skyboxdir + "cm_xn.jpg", false);
 		pg1->elements.push_back(first_btn);
 		
 		first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.5, -1.25f), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"xxx", 0, "D:/Projects/vr_rigging/proj/skybox/BluePinkNebular_yn.jpg", false);
+			"xxx", 0, skyboxdir + "BluePinkNebular_yn.jpg", false);
 		pg1->elements.push_back(first_btn);
 	
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.25 - 0.5f, -2.5f), 0.1, 0.2, 0.8, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ), "Save/Load Skel.", font_size, "D:/icon_res/default.png", true);
