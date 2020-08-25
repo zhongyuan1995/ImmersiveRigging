@@ -63,7 +63,7 @@
         merge ponoccio
         make the size of the box or sphere adjestable, 
             for a better locating of the joints 
-            https://github.com/yzyTUD/pub_repo/blob/master/doc/out_20200728-190621.flv.mp4
+            https://github.com/yzyTUD/pub_repo/blob/master/docs/out_20200728-190621.flv.mp4
         build skeleton from user input 
         * gen. skeleton from user input: one for pinocchio and an other for re-edit
         bind func. to gui button, gen. some demos 
@@ -87,7 +87,7 @@
         reset function 
             del jointlists 
         * multiple objects ik(two hands)
-            video: https://github.com/yzyTUD/pub_repo/blob/master/doc/both_hands_anim.mp4
+            video: https://github.com/yzyTUD/pub_repo/blob/master/docs/both_hands_anim.mp4
         later-skeleton edit functions
             del cooresp. line
         operation documentation  
@@ -132,22 +132,22 @@
         13/08/2020
         14/08/2020
     current sreenshots:
-![](doc/with_info_board.png)
-![](doc/multipleviews.png)
-![](doc/vrrigging_demo1.png)
-![](doc/colorized_mesh.png)
-![](doc/mirrorview.png)
-![](doc/withskinning.png)
-![](doc/skinningmeshadded.png)
-![](doc/workstation.png)
-![](doc/bettergui.png)
-![](doc/bettergui_addiskel.png)
-![](doc/loadskelwithboxgui.png)
-![](doc/added.png)
-![](doc/intersection_detected.png)
-![](doc/adj_local_coordi.png)
-![](doc/with_mesh.png)
-![](doc/wireframe_style.png)
-![](doc/framerate_opti.png)
-![](doc/scaled.png)
-![](doc/cgvproj_withskel_not_scaled.png)
+![](docs/with_info_board.png)
+![](docs/multipleviews.png)
+![](docs/vrrigging_demo1.png)
+![](docs/colorized_mesh.png)
+![](docs/mirrorview.png)
+![](docs/withskinning.png)
+![](docs/skinningmeshadded.png)
+![](docs/workstation.png)
+![](docs/bettergui.png)
+![](docs/bettergui_addiskel.png)
+![](docs/loadskelwithboxgui.png)
+![](docs/added.png)
+![](docs/intersection_detected.png)
+![](docs/adj_local_coordi.png)
+![](docs/with_mesh.png)
+![](docs/wireframe_style.png)
+![](docs/framerate_opti.png)
+![](docs/scaled.png)
+![](docs/cgvproj_withskel_not_scaled.png)
