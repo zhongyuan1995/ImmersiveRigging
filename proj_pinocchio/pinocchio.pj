@@ -1,0 +1,6 @@
+@=
+projectType="library";
+projectName="pinocchio";
+projectGUID="F58E7A01-81E8-4961-9507-D2CC7336C242";
+addIncDirs=[INPUT_DIR];
+addSharedDefines=["PINOCCHIO_EXPORTS"];

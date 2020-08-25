@@ -25,9 +25,9 @@
 #include "SkinnedMeshViewer.h"
 
 
-#include "../Pinocchio/skeleton.h"
-#include "../Pinocchio/attachment.h"
-#include "../Pinocchio/pinocchioApi.h"
+#include "../proj_pinocchio/skeleton.h"
+#include "../proj_pinocchio/attachment.h"
+#include "../proj_pinocchio/pinocchioApi.h"
 struct ArgData
 {
 	ArgData() :
@@ -599,8 +599,7 @@ public:
 		b_toggle_imitating = !b_toggle_imitating;
 	}
 	void del_skel() {
-		//ds->del_skeleton(); // set to nullptr, why not work? maybe some problem with rendering
-		// del many bones 
+		// del. bones 
 		for (auto& b : ds->get_skeleton()->get_bone_list()) {
 			if (!b->get_name()._Equal("root")) { // del all bones except root bone, length 0, degenerated 
 				b->get_parent()->remove_a_child(b);
@@ -611,92 +610,12 @@ public:
 		label_outofdate = true;
 	}
 	void load_skel() { // those three skel. should be added at the same time 
-		// load skel.
-			//skel_view->load_skeleton_given_name("D:/zrdevpacks/zract_easyRigging/data_attached/_workdemo1_spiderman/jump.asf");
-		// load a second skel.
-			/*tmpskel_view_1->load_skeleton_given_name("D:/zrdevpacks/zract_easyRigging/data_attached/_workdemo1_spiderman/jump.asf");
-			tmpskel_view_1->set_skel_origin_ori_translation(Vec3(0,1,0), 180, Vec3(-1.5, 1, 2.8));
-
-			tmpskel_view_2->load_skeleton_given_name("D:/zrdevpacks/zract_easyRigging/data_attached/_workdemo1_spiderman/jump.asf");
-			tmpskel_view_2->set_skel_origin_ori_translation(Vec3(0, 1, 0), 90, Vec3(-1.5, 1, 0));*/
-
 		// editable one 
-			skel_view->load_skeleton_given_name("tmpskel.asf");
-			skel_view->set_skel_origin_ori_translation(Vec3(0, 1, 0), 0, Vec3(1.2, 1, -2.8));
+		skel_view->load_skeleton_given_name("tmpskel.asf");
+		skel_view->set_skel_origin_ori_translation(Vec3(0, 1, 0), 0, Vec3(1.2, 1, -2.8));
+		load_addi_two_guys("tmpskel.asf");
+		post_redraw();
 
-			load_addi_two_guys("tmpskel.asf");
-		// load mesh
-			//mmesh->read_obj("D:/smalldataset/meshes/character/_workdemo1_spiderman/spiderman.obj");
-			//mmesh->read_obj("D:/smalldataset/meshes/character/spiderman.obj");
-			//ds->set_mesh(mmesh);
-			post_redraw();
-			
-		//update para. to the skel.
-			/*ds->get_skeleton()->set_origin_translation(vec3(var1,var2,var3));
-			ds->get_skeleton()->set_scalefactor(scale_factor);
-			post_redraw();*/
-		//std::cout << "source changed!??" << std::endl;
-		// bone number printing 
-			//ds->get_skeleton()->size_of_bone_list();
-			//std::cout << skel_view->get_jointlist().size();
-		// ik - works
-			//Bone* root = ds->get_skeleton()->find_bone("root");
-			//Bone* cur_bone = ds->get_skeleton()->find_bone("lfoot");
-			//ds->set_base(root);
-			//ds->set_endeffector(cur_bone);
-			//ik_view->endeffector_changed(cur_bone);
-
-			//ik_view->set_target_position_vr(Vec4(var1, var2, var3, 1)); // can be done with controller! // -2.2, 0.6, -1.6
-			//ik_view->optimize();
-			//post_redraw();
-		// del bone - works
-			/*Bone* cur_bone = ds->get_skeleton()->find_bone_in_a_list_by_id(1);
-			Bone* parent_bone = ds->get_skeleton()->find_bone_in_a_list_by_id(1)->get_parent();
-			parent_bone->remove_a_child(cur_bone);
-			skel_view->skeleton_changed(ds->get_skeleton());*/
-		// add bone - works
-			//Bone* parent_bone = ds->get_skeleton()->find_bone_in_a_list_by_id(1);
-			//Bone* current_node = new Bone();
-			//current_node->set_name("new_bone_0"); // "new_bone_0, new_bone_1..."
-			//ds->get_skeleton()->add_new_bone_to_map("new_bone_0", current_node);
-			//// adjest bone para. that we have drawn 
-			//Vec3 bonedir_inworldspace = vec3(1, 0, 0);
-			//current_node->set_direction_in_world_space(bonedir_inworldspace);
-			//current_node->set_length(1);
-			///*axis 0 0 -20   XYZ*/
-			//float a[3] = { 0,0,0 };// will be adjested later. todo
-			//std::string order = "XYZ";
-			//for (int i = 0; i < 3; ++i)
-			//{
-			//	AtomicRotationTransform* t;
-			//	if (order.at(i) == 'X')
-			//		t = new AtomicXRotationTransform();
-			//	else if (order.at(i) == 'Y')
-			//		t = new AtomicYRotationTransform();
-			//	else if (order.at(i) == 'Z')
-			//		t = new AtomicZRotationTransform();
-			//	t->set_value(a[i]);
-			//	current_node->add_axis_rotation(t);
-			//}
-			///*dof rx ry rz*/
-			//int n_dofs = 3; // to be adjested in vr
-			//AtomicTransform* dof;
-			//dof = new AtomicXRotationTransform();
-			//current_node->add_dof(dof);
-			//dof = new AtomicYRotationTransform();
-			//current_node->add_dof(dof);
-			//dof = new AtomicZRotationTransform();
-			//current_node->add_dof(dof);
-			///*limits(-160.0 20.0)
-			//	(-70.0 70.0)
-			//	(-70.0 60.0)*/
-			//for (int i = 0; i < n_dofs; ++i)
-			//	current_node->get_dof(n_dofs - i - 1)->set_limits(-180.0, 180.0);
-			//current_node->calculate_matrices(); pf 1h
-			//parent_bone->add_child(current_node);
-			////current_node->calculate_matrices();
-			//skel_view->skeleton_changed(ds->get_skeleton());
-			//std::cout << skel_view->get_jointlist().size();
 		label_content = "[INFO] demo skel. loaded\n" + label_content;
 		label_outofdate = true;
 	}
@@ -751,109 +670,9 @@ public:
 			tmpdata_2->get_skeleton()->apply_dofs_given_skel_pointer(ds->get_skeleton().get());
 		}
 	}
-	void build_skel() { // do not have to do so, skel. can be def. in a simpler way.... do not do it in post processing 
-		//std::cout << "num. of bones: (inc. marked ones) " << fast_bone_posi_vec_as_chain.size() << std::endl;
-		//bool roothasbeenset = false;
-		//vec3 rootposi;
-		//Bone* p_bone;
-		//Bone* reset_bone;
-		//Bone* current_node;
-		//for (int i = 0; i < fast_bone_posi_vec_as_chain.size(); i++) {
-		//	if (fast_bone_posi_vec_as_chain.at(i).x == -100) // reset
-		//	{
-		//		
-		//		continue;
-		//	}
-		//	if (fast_bone_posi_vec_as_chain.at(i + 1).x != -100) // a bone has been found 
-		//	{
-		//		// set root bone, just once. we should start from root node 
-		//		if (!roothasbeenset) {
-		//			rootposi = fast_bone_posi_vec_as_chain.at(i);
-		//			current_node = new Bone();
-		//			current_node->set_name("root_bone"); // "new_bone_0, new_bone_1..."
-		//			ds->get_skeleton()->add_new_bone_to_map("new_bone_" + 
-		//				to_string(newbone_idx++), current_node);
-		//			
-		//			/*dof rx ry rz*/
-		//			int n_dofs = 3; // to be adjested in vr
-		//			AtomicTransform* dof;
-		//			dof = new AtomicXRotationTransform();
-		//			current_node->add_dof(dof);
-		//			dof = new AtomicYRotationTransform();
-		//			current_node->add_dof(dof);
-		//			dof = new AtomicZRotationTransform();
-		//			current_node->add_dof(dof);
-		//			
-		//			/*limits(-160.0 20.0)
-		//			(-70.0 70.0)
-		//			(-70.0 60.0)*/
-		//			for (int i = 0; i < n_dofs; ++i)
-		//				current_node->get_dof(n_dofs - i - 1)->set_limits(-180.0, 180.0);
-
-		//			// pf 1h
-		//			current_node->calculate_matrices();
-
-		//			reset_bone = current_node;
-		//			p_bone = current_node;
-
-		//			roothasbeenset = true;
-		//		}
-
-
-		//	}
-		//}
-
-		//Bone* current_node = new Bone();
-		//current_node->set_name("new_bone_" + to_string(newbone_idx++)); // "new_bone_0, new_bone_1..."
-		//ds->get_skeleton()->add_new_bone_to_map("new_bone_" + to_string(newbone_idx++), current_node);
-
-		//Vec3 bonedir_inworldspace = end_point_list.at(end_point_list.size() - 1)
-		//	- start_point_list.at(start_point_list.size() - 1);
-		//current_node->set_direction_in_world_space(bonedir_inworldspace); // length already included 
-		//current_node->set_length(1);
-
-		///*axis 0 0 -20   XYZ*/
-		//float a[3] = { 0,0,0 };// will be adjested later. todo
-		//std::string order = "XYZ";
-		//for (int i = 0; i < 3; ++i)
-		//{
-		//	AtomicRotationTransform* t;
-		//	if (order.at(i) == 'X')
-		//		t = new AtomicXRotationTransform();
-		//	else if (order.at(i) == 'Y')
-		//		t = new AtomicYRotationTransform();
-		//	else if (order.at(i) == 'Z')
-		//		t = new AtomicZRotationTransform();
-		//	t->set_value(a[i]);
-		//	current_node->add_axis_rotation(t);
-		//}
-
-		///*dof rx ry rz*/
-		//int n_dofs = 3; // to be adjested in vr
-		//AtomicTransform* dof;
-		//dof = new AtomicXRotationTransform();
-		//current_node->add_dof(dof);
-		//dof = new AtomicYRotationTransform();
-		//current_node->add_dof(dof);
-		//dof = new AtomicZRotationTransform();
-		//current_node->add_dof(dof);
-
-		///*limits(-160.0 20.0)
-		//	(-70.0 70.0)
-		//	(-70.0 60.0)*/
-		//for (int i = 0; i < n_dofs; ++i)
-		//	current_node->get_dof(n_dofs - i - 1)->set_limits(-180.0, 180.0);
-
-		//// pf 1h
-		//current_node->calculate_matrices();
-
-		//parent_bone->add_child(current_node);
-		//// update skel. the tree view will be updated at the sametime 
-		//skel_view->skeleton_changed(ds->get_skeleton());
-		////std::cout << skel_view->get_jointlist().size();
-
-
-	}// for the skel. we created
+	void build_skel() { 
+		// for the skel. we created
+	}
 	void gen_asf_skel_file() {
 		ds->get_skeleton()->writeASFFile("tmpskel.asf");
 	}
