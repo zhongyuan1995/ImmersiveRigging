@@ -1,0 +1,252 @@
+# AST/ASF file generated using vrRigging by yzy
+# 
+:units
+  mass 1.0
+  length 0.45
+  angle deg
+:documentation
+:root
+	order TX TY TZ RX RY RZ
+	axis XYZ
+	position 0 0 0
+	orientation 0 0 0
+:bonedata
+ begin
+	id 1
+	name new_bone_0
+	direction  -0.000125 0.191021 -0.011348
+	length 16.666668
+	axis 0 0 0  XYZ
+	dof rx ry rz
+	limits (-180.0 180.0)
+	(-180.0 180.0)
+	(-180.0 180.0)
+ end
+ begin
+	id 2
+	name new_bone_2
+	direction  -0.009156 0.168769 -0.060753
+	length 16.666668
+	axis 0 0 0  XYZ
+	dof rx ry rz
+	limits (-180.0 180.0)
+	(-180.0 180.0)
+	(-180.0 180.0)
+ end
+ begin
+	id 3
+	name new_bone_4
+	direction  -0.123764 -0.022736 0.007720
+	length 16.666668
+	axis 0 0 0  XYZ
+	dof rx ry rz
+	limits (-180.0 180.0)
+	(-180.0 180.0)
+	(-180.0 180.0)
+ end
+ begin
+	id 4
+	name new_bone_12
+	direction  -0.188439 -0.195044 -0.007492
+	length 16.666668
+	axis 0 0 0  XYZ
+	dof rx ry rz
+	limits (-180.0 180.0)
+	(-180.0 180.0)
+	(-180.0 180.0)
+ end
+ begin
+	id 5
+	name new_bone_14
+	direction  -0.179474 -0.172157 0.063821
+	length 16.666668
+	axis 0 0 0  XYZ
+	dof rx ry rz
+	limits (-180.0 180.0)
+	(-180.0 180.0)
+	(-180.0 180.0)
+ end
+ begin
+	id 6
+	name new_bone_20
+	direction  -0.037144 -0.043408 0.057199
+	length 16.666668
+	axis 0 0 0  XYZ
+	dof rx ry rz
+	limits (-180.0 180.0)
+	(-180.0 180.0)
+	(-180.0 180.0)
+ end
+ begin
+	id 7
+	name new_bone_6
+	direction  0.014623 0.113651 0.009731
+	length 16.666668
+	axis 0 0 0  XYZ
+	dof rx ry rz
+	limits (-180.0 180.0)
+	(-180.0 180.0)
+	(-180.0 180.0)
+ end
+ begin
+	id 8
+	name new_bone_8
+	direction  0.004933 0.140274 0.064740
+	length 16.666668
+	axis 0 0 0  XYZ
+	dof rx ry rz
+	limits (-180.0 180.0)
+	(-180.0 180.0)
+	(-180.0 180.0)
+ end
+ begin
+	id 9
+	name new_bone_10
+	direction  0.175128 -0.032152 0.003256
+	length 16.666668
+	axis 0 0 0  XYZ
+	dof rx ry rz
+	limits (-180.0 180.0)
+	(-180.0 180.0)
+	(-180.0 180.0)
+ end
+ begin
+	id 10
+	name new_bone_16
+	direction  0.181709 -0.190408 -0.004280
+	length 16.666668
+	axis 0 0 0  XYZ
+	dof rx ry rz
+	limits (-180.0 180.0)
+	(-180.0 180.0)
+	(-180.0 180.0)
+ end
+ begin
+	id 11
+	name new_bone_18
+	direction  0.172012 -0.173236 0.075339
+	length 16.666668
+	axis 0 0 0  XYZ
+	dof rx ry rz
+	limits (-180.0 180.0)
+	(-180.0 180.0)
+	(-180.0 180.0)
+ end
+ begin
+	id 12
+	name new_bone_22
+	direction  0.035896 -0.049023 0.036620
+	length 16.666668
+	axis 0 0 0  XYZ
+	dof rx ry rz
+	limits (-180.0 180.0)
+	(-180.0 180.0)
+	(-180.0 180.0)
+ end
+ begin
+	id 13
+	name new_bone_24
+	direction  -0.082337 -0.128108 0.000866
+	length 16.666668
+	axis 0 0 0  XYZ
+	dof rx ry rz
+	limits (-180.0 180.0)
+	(-180.0 180.0)
+	(-180.0 180.0)
+ end
+ begin
+	id 14
+	name new_bone_28
+	direction  -0.023059 -0.401105 -0.017004
+	length 16.666668
+	axis 0 0 0  XYZ
+	dof rx ry rz
+	limits (-180.0 180.0)
+	(-180.0 180.0)
+	(-180.0 180.0)
+ end
+ begin
+	id 15
+	name new_bone_30
+	direction  -0.003495 -0.449827 -0.043493
+	length 16.666668
+	axis 0 0 0  XYZ
+	dof rx ry rz
+	limits (-180.0 180.0)
+	(-180.0 180.0)
+	(-180.0 180.0)
+ end
+ begin
+	id 16
+	name new_bone_32
+	direction  -0.012682 -0.059396 0.166783
+	length 16.666668
+	axis 0 0 0  XYZ
+	dof rx ry rz
+	limits (-180.0 180.0)
+	(-180.0 180.0)
+	(-180.0 180.0)
+ end
+ begin
+	id 17
+	name new_bone_26
+	direction  0.080412 -0.112376 0.006582
+	length 16.666668
+	axis 0 0 0  XYZ
+	dof rx ry rz
+	limits (-180.0 180.0)
+	(-180.0 180.0)
+	(-180.0 180.0)
+ end
+ begin
+	id 18
+	name new_bone_34
+	direction  0.035808 -0.409021 -0.031242
+	length 16.666668
+	axis 0 0 0  XYZ
+	dof rx ry rz
+	limits (-180.0 180.0)
+	(-180.0 180.0)
+	(-180.0 180.0)
+ end
+ begin
+	id 19
+	name new_bone_36
+	direction  0.014744 -0.456143 -0.032210
+	length 16.666668
+	axis 0 0 0  XYZ
+	dof rx ry rz
+	limits (-180.0 180.0)
+	(-180.0 180.0)
+	(-180.0 180.0)
+ end
+ begin
+	id 20
+	name new_bone_38
+	direction  0.001479 -0.050105 0.156382
+	length 16.666668
+	axis 0 0 0  XYZ
+	dof rx ry rz
+	limits (-180.0 180.0)
+	(-180.0 180.0)
+	(-180.0 180.0)
+ end
+:hierarchy
+ begin
+	root new_bone_0 new_bone_24 new_bone_26 
+	new_bone_0 new_bone_2 
+	new_bone_2 new_bone_4 new_bone_6 new_bone_10 
+	new_bone_4 new_bone_12 
+	new_bone_12 new_bone_14 
+	new_bone_14 new_bone_20 
+	new_bone_6 new_bone_8 
+	new_bone_10 new_bone_16 
+	new_bone_16 new_bone_18 
+	new_bone_18 new_bone_22 
+	new_bone_24 new_bone_28 
+	new_bone_28 new_bone_30 
+	new_bone_30 new_bone_32 
+	new_bone_26 new_bone_34 
+	new_bone_34 new_bone_36 
+	new_bone_36 new_bone_38 
+ end

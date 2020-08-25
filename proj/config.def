@@ -1,0 +1,11 @@
+show all
+name(main):show_stats=false
+
+persistent
+name(vr interactor):tracking_rotation=45
+name(vr interactor):tracking_origin_x=0;
+name(vr interactor):tracking_origin_y=0;
+name(vr interactor):tracking_origin_z=-3;
+name(vr interactor):tracking_rotation_origin_x=0;
+name(vr interactor):tracking_rotation_origin_y=0;
+name(vr interactor):tracking_rotation_origin_z=0
