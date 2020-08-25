@@ -2704,7 +2704,7 @@ void vr_test::construct_boxgui() {
 		DWORD bufferSize = 65535;
 		std::wstring buff;
 		buff.resize(bufferSize);
-		bufferSize = GetEnvironmentVariableW(L"CGV_PROJECT_DIR", &buff[0], bufferSize);
+		bufferSize = GetEnvironmentVariableW(L"CGV_EXEC_DIR", &buff[0], bufferSize);
 		if (!bufferSize)
 			//error
 			buff.resize(bufferSize);
