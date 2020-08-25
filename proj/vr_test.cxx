@@ -272,9 +272,10 @@ protected:
 	Bone* right_ee;
 	Bone* hmd_ee;
 
-	std::string projdir = "../../../plugins/vr_rigging_pub/";
-	std::string skyboxdir = projdir + "skybox/";
-	std::string meshdir = projdir + "gen_dataset/";
+	std::string projdir;
+		//"../../../plugins/vr_rigging_pub/";
+	std::string skyboxdir;
+	std::string meshdir;
 	// add def.
 
 
@@ -447,6 +448,7 @@ public:
 	vr_test()
 	{
 		set_name("vr_rigging");
+
 		build_scene(5, 7, 3, 0.2f, 1.0f, 1.0f, 0.8f, 0.1f);
 		vr_view_ptr = 0;
 		ray_length = 3;
@@ -1890,9 +1892,28 @@ public:
 
 		skyprog.build_program(ctx, "skycube.glpr");
 
-		img_tex.create_from_images(ctx, skyboxdir + "cm_{xp,xn,yp,yn,zp,zn}.jpg");
-		tmp_tex.create_from_images(ctx, skyboxdir + "BluePinkNebular_{xp,xn,yp,yn,zp,zn}.jpg");
-		test_tex.create_from_images(ctx, skyboxdir + "igen_2/{xp,xn,yp,yn,zp,zn}.jpg");
+		// set up the proj dir from sys. varible
+		//Limit according to http://msdn.microsoft.com/en-us/library/ms683188.aspx
+		DWORD bufferSize = 65535; 
+		std::wstring buff;
+		buff.resize(bufferSize);
+		bufferSize = GetEnvironmentVariableW(L"CGV_PROJECT_DIR", &buff[0], bufferSize);
+		if (!bufferSize)
+			//error
+			buff.resize(bufferSize);
+		int len = WideCharToMultiByte(CP_UTF8, 0, buff.c_str(), -1, 0, 0, 0, 0);
+		vector<char> buf(len-1);
+		WideCharToMultiByte(CP_UTF8, 0, buff.c_str(), -1, &buf[0], len, 0, 0);
+		projdir = std::string(buf.begin(), buf.end());
+		std::string image0 = projdir.append("\\skybox\\cm_{xp,xn,yp,yn,zp,zn}.jpg");
+		std::string image1 = projdir.append("\\skybox\\BluePinkNebular_{xp,xn,yp,yn,zp,zn}.jpg");
+		std::string image2 = projdir.append("\\skybox\\igen_2\\{xp,xn,yp,yn,zp,zn}.jpg");
+
+		cout << "image0 dir:" << image0 << endl;
+
+		img_tex.create_from_images(ctx, image0);
+		tmp_tex.create_from_images(ctx, image1);
+		test_tex.create_from_images(ctx, image2);
 		pg1->icon_shader_prog.build_program(ctx, "image.glpr");
 
 		cull_mode = CM_BACKFACE;
@@ -2503,6 +2524,11 @@ public:
 			}
 			renderer.disable(ctx);
 	}
+	bool self_reflect(cgv::reflect::reflection_handler& srh)
+	{
+		return srh.reflect_member("projdir", projdir) && 
+			srh.reflect_member("skyboxdir", skyboxdir);
+	}
 };
 
 #include <random>
@@ -2667,17 +2693,40 @@ void vr_test::construct_boxgui() {
 	
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.5, -2.5f), 0.1, 0.2, 0.8, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ), "Change Skybox", font_size, "xxx", true);
 	pg1->elements.push_back(first_btn);
-		
+
+		// an other bug pp, projdir will be changed when append here, but not above? 
+		// set up the proj dir from sys. varible
+		//Limit according to http://msdn.microsoft.com/en-us/library/ms683188.aspx
+		DWORD bufferSize = 65535;
+		std::wstring buff;
+		buff.resize(bufferSize);
+		bufferSize = GetEnvironmentVariableW(L"CGV_PROJECT_DIR", &buff[0], bufferSize);
+		if (!bufferSize)
+			//error
+			buff.resize(bufferSize);
+		int len = WideCharToMultiByte(CP_UTF8, 0, buff.c_str(), -1, 0, 0, 0, 0);
+		vector<char> buf(len - 1);
+		WideCharToMultiByte(CP_UTF8, 0, buff.c_str(), -1, &buf[0], len, 0, 0);
+		projdir = std::string(buf.begin(), buf.end());
+
+		std::string image1dir = projdir.append("\\skybox\\cm_xn.jpg");
+		// reset projdir pp a bug 
+		projdir = std::string(buf.begin(), buf.end());
+		std::string image2dir = projdir.append("\\skybox\\BluePinkNebular_yn.jpg");
+		// reset projdir pp a bug 
+		projdir = std::string(buf.begin(), buf.end());
+		std::string image0dir = projdir.append("\\skybox\\igen_2\\xn.jpg");
+
 		first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.5, -1.75f), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"xxx", 0, skyboxdir + "/igen_2/xn.jpg", false);
+			"xxx", 0, image0dir, false);
 		pg1->elements.push_back(first_btn);
 		
 		first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.5, -1.5f), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"xxx", 0, skyboxdir + "cm_xn.jpg", false);
+			"xxx", 0, image1dir, false);
 		pg1->elements.push_back(first_btn);
 		
 		first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.5, -1.25f), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"xxx", 0, skyboxdir + "BluePinkNebular_yn.jpg", false);
+			"xxx", 0, image2dir, false);
 		pg1->elements.push_back(first_btn);
 	
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.25 - 0.5f, -2.5f), 0.1, 0.2, 0.8, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ), "Save/Load Skel.", font_size, "D:/icon_res/default.png", true);
