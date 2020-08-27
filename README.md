@@ -8,7 +8,7 @@
         Setup the resource directory by clicking on the batch file: 
             "define_resource_dir.bat" in the proj folder. 
         Generate makefiles with the help of the vr_rigging.pj (also in the proj folder) 
-            as normal. 
+            as normal. (currently in the master branch of the cgv framework)
         Compile it.
         (Note that the code depends on an other project "proj_pinocchio", don't separate them)
     technique stack:
