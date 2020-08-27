@@ -1,4 +1,8 @@
-    
+
+    try the executable: 
+        
+    build instructions: 
+
     technique stack:
         basic user interface in VR
         create and manipulate bones of a rigging skeleton
