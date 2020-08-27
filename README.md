@@ -1,8 +1,16 @@
 
     try the executable: 
-        
+        One can run the program by simply clicking on the batch file called "run_exec.bat" 
+            in the following folder: "exec\exec_vr_rigging".
+        (Make sure that a visual studio is installed on your computer, 
+            as some dynamic link libraries are required. This may be fixed later.) 
     build instructions: 
-
+        Setup the resource directory by clicking on the batch file: 
+            "define_resource_dir.bat" in the proj folder. 
+        Generate makefiles with the help of the vr_rigging.pj (also in the proj folder) 
+            as normal. 
+        Compile it.
+        (Note that the code depends on an other project "proj_pinocchio", don't separate them)
     technique stack:
         basic user interface in VR
         create and manipulate bones of a rigging skeleton
