@@ -1,4 +1,5 @@
-
+    fast preview:
+        https://github.com/yzyTUD/vr_rigging_pub/blob/master/docs/both_hands_anim.mp4
     try the executable: 
         One can run the program by simply clicking on the batch file called "run_exec.bat" 
             in the following folder: "exec\exec_vr_rigging".
