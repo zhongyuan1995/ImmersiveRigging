@@ -1,5 +1,5 @@
     fast preview:
-[![Demo CountPages alpha](https://share.gifyoutube.com/KzB6Gb.gif)]
+![Demo CountPages alpha](https://share.gifyoutube.com/KzB6Gb.gif)
         
         https://github.com/yzyTUD/vr_rigging_pub/blob/master/docs/both_hands_anim.mp4
     try the executable: 
