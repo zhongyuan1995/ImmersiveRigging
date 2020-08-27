@@ -103,8 +103,8 @@
         later-skeleton edit functions
             del cooresp. line
         operation documentation  
-    tobetested:
         multiple views, imitating skeletons 
+    tobetested:
     todo:  
         * improve IK
             modify the calculate_matrix function
@@ -143,6 +143,7 @@
         12/08/2020
         13/08/2020
         14/08/2020
+        25/08/2020
     current sreenshots:
 ![](docs/with_info_board.png)
 ![](docs/multipleviews.png)
