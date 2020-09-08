@@ -1,6 +1,6 @@
     fast preview:
-![Demo CountPages alpha](pics/preview.gif)
-        
+![](pics/with_info_board.png)
+
     try the executable: 
         One can run the program by simply clicking on the batch file called "run_exec.bat" 
             in the following folder: "exec\exec_vr_rigging".
@@ -13,6 +13,17 @@
             as normal. (currently in the master branch of the cgv framework)
         Compile it.
         (Note that the code depends on an other project "proj_pinocchio", don't separate them)
+    usage: 
+        //
+            Typically, rigging and skinning of a given mesh should be straightforward and no other instructions necessary.
+            Due to the fact that the repo. is under heavy development, it may be a little bit hard to use currently.
+            So i decide to write some instructions here.
+        Basic user interface in VR to control core functionalities
+        Create and manipulate bones of a rigging skeleton
+        Skinning of a mesh with the created skeleton
+        Follows the users movement (motion capture)
+        Recording, saving and loading of animations
+        Creating multiple views
     technique stack:
         basic user interface in VR
         create and manipulate bones of a rigging skeleton
@@ -147,7 +158,7 @@
         14/08/2020
         25/08/2020
     current sreenshots:
-![](pics/with_info_board.png)
+![Demo CountPages alpha](pics/preview.gif)
 ![](pics/multipleviews.png)
 ![](pics/vrrigging_demo1.png)
 ![](pics/colorized_mesh.png)
