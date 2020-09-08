@@ -1,5 +1,5 @@
     fast preview:
-![Demo CountPages alpha](docs/preview.gif)
+![Demo CountPages alpha](pics/preview.gif)
         
     try the executable: 
         One can run the program by simply clicking on the batch file called "run_exec.bat" 
@@ -77,7 +77,7 @@
         merge ponoccio
         make the size of the box or sphere adjestable, 
             for a better locating of the joints 
-            https://github.com/yzyTUD/pub_repo/blob/master/docs/out_20200728-190621.flv.mp4
+            https://github.com/yzyTUD/pub_repo/blob/master/pics/out_20200728-190621.flv.mp4
         build skeleton from user input 
         * gen. skeleton from user input: one for pinocchio and an other for re-edit
         bind func. to gui button, gen. some demos 
@@ -101,7 +101,7 @@
         reset function 
             del jointlists 
         * multiple objects ik(two hands)
-            video: https://github.com/yzyTUD/pub_repo/blob/master/docs/both_hands_anim.mp4
+            video: https://github.com/yzyTUD/pub_repo/blob/master/pics/both_hands_anim.mp4
         later-skeleton edit functions
             del cooresp. line
         operation documentation  
@@ -147,22 +147,22 @@
         14/08/2020
         25/08/2020
     current sreenshots:
-![](docs/with_info_board.png)
-![](docs/multipleviews.png)
-![](docs/vrrigging_demo1.png)
-![](docs/colorized_mesh.png)
-![](docs/mirrorview.png)
-![](docs/withskinning.png)
-![](docs/skinningmeshadded.png)
-![](docs/workstation.png)
-![](docs/bettergui.png)
-![](docs/bettergui_addiskel.png)
-![](docs/loadskelwithboxgui.png)
-![](docs/added.png)
-![](docs/intersection_detected.png)
-![](docs/adj_local_coordi.png)
-![](docs/with_mesh.png)
-![](docs/wireframe_style.png)
-![](docs/framerate_opti.png)
-![](docs/scaled.png)
-![](docs/cgvproj_withskel_not_scaled.png)
+![](pics/with_info_board.png)
+![](pics/multipleviews.png)
+![](pics/vrrigging_demo1.png)
+![](pics/colorized_mesh.png)
+![](pics/mirrorview.png)
+![](pics/withskinning.png)
+![](pics/skinningmeshadded.png)
+![](pics/workstation.png)
+![](pics/bettergui.png)
+![](pics/bettergui_addiskel.png)
+![](pics/loadskelwithboxgui.png)
+![](pics/added.png)
+![](pics/intersection_detected.png)
+![](pics/adj_local_coordi.png)
+![](pics/with_mesh.png)
+![](pics/wireframe_style.png)
+![](pics/framerate_opti.png)
+![](pics/scaled.png)
+![](pics/cgvproj_withskel_not_scaled.png)
