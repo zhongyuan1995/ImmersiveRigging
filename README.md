@@ -1,5 +1,5 @@
     fast preview:
-![](pics/with_info_board.png)
+![](pics/multipleviews.png)
 
     try the executable: 
         One can run the program by simply clicking on the batch file called "run_exec.bat" 
@@ -156,7 +156,7 @@
         25/08/2020
     current sreenshots:
 ![Demo CountPages alpha](pics/preview.gif)
-![](pics/multipleviews.png)
+![](pics/with_info_board.png)
 ![](pics/vrrigging_demo1.png)
 ![](pics/colorized_mesh.png)
 ![](pics/mirrorview.png)
