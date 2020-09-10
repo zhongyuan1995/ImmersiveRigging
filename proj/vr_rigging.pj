@@ -20,8 +20,6 @@ if(SYSTEM=="windows") {
 	addStaticDefines=["REGISTER_SHADER_FILES"];
 }
 
-workingDirectory=INPUT_DIR."/../exec/exec_vr_rigging/gen_dataset/speider_simple0";
-
 useOpenMP = 1;
 cppLanguageStandard = "stdcpp14";
 addSharedDefines=["ANIM_EXPORTS"];

@@ -14,7 +14,6 @@
 #include <cgv_gl/sphere_renderer.h>
 #include <cgv/media/mesh/simple_mesh.h>
 #include <cgv_gl/gl/mesh_render_info.h>
-#include <libs/cg_vr/vr_events.h>
 
 #include <fstream>
 
@@ -138,6 +137,12 @@ protected:
 
 	// sample for rendering a mesh
 	double mesh_scale;
+	dvec3 mesh_location;
+	dquat mesh_orientation;
+
+	// render information for mesh
+	cgv::render::mesh_render_info MI;
+
 
 	// sample for rendering text labels
 	string label_text;
@@ -176,6 +181,8 @@ protected:
 	cgv::media::font::FontFaceAttributes ulabel_face_type;
 
 
+	// keep deadzone and precision vector for left controller
+	cgv::gui::vr_server::vec_flt_flt left_deadzone_and_precision;
 	// store handle to vr kit of which left deadzone and precision is configured
 	void* last_kit_handle;
 
@@ -240,7 +247,7 @@ protected:
 	int newbone_idx = 0;
 	std::string lefthandmode;
 
-	
+
 	std::vector<box3> jointlist;
 	std::vector<rgb> jointlist_colors;
 
@@ -248,7 +255,7 @@ protected:
 	std::vector<rgb> fast_jointlist_colors;
 
 	std::shared_ptr<SkinningMesh> mmesh;
-	
+
 	float tmpboxsize = 0.05f;
 	float enlargestep = 0.0025f;
 
@@ -266,7 +273,7 @@ protected:
 	Bone* hmd_ee;
 
 	std::string projdir;
-		//"../../../plugins/vr_rigging_pub/";
+	//"../../../plugins/vr_rigging_pub/";
 	std::string skyboxdir;
 	std::string meshdir;
 	// add def.
@@ -394,6 +401,8 @@ protected:
 				vr::vr_kit* kit_ptr = vr::get_vr_kit(kit_handle);
 				if (kit_ptr) {
 					last_kit_handle = kit_handle;
+					left_deadzone_and_precision = kit_ptr->get_controller_throttles_and_sticks_deadzone_and_precision(0);
+					cgv::gui::ref_vr_server().provide_controller_throttles_and_sticks_deadzone_and_precision(kit_handle, 0, &left_deadzone_and_precision);
 					post_recreate_gui();
 				}
 			}
@@ -431,10 +440,10 @@ protected:
 	rgb  surface_color;
 	IlluminationMode illumination_mode;
 
-	bool have_new_mesh = true;	
+	bool have_new_mesh = true;
 	cgv::media::mesh::simple_mesh<> M;
 
-	
+
 public:
 	vr_test()
 	{
@@ -447,6 +456,8 @@ public:
 		connect(cgv::gui::ref_vr_server().on_device_change, this, &vr_test::on_device_change);
 
 		mesh_scale = 0.019f;
+		mesh_location = dvec3(-1.5f, 0, -2.8f); // not used 
+		mesh_orientation = dquat(1, 0, 0, 0);
 
 		srs.radius = 0.005f;
 
@@ -460,7 +471,7 @@ public:
 		label_color = rgb(1, 1, 1);
 
 		ulabel_outofdate = true;
-		ulabel_text = 
+		ulabel_text =
 			"Usage Description:\n"
 			"    grasp button on left controller -> move around the scene\n"
 			"    grasp button on right controller -> interact with buttons\n"
@@ -549,7 +560,7 @@ public:
 	}
 	void toggle_mesh_render() {
 		b_render_mesh = !b_render_mesh;
-		if(b_render_mesh)
+		if (b_render_mesh)
 			label_content = "[INFO] show mesh successfully\n" + label_content;
 		else
 			label_content = "[INFO] hide mesh successfully\n" + label_content;
@@ -558,16 +569,16 @@ public:
 	}
 	void toggle_mesh_transparent() {
 		ds->get_mesh()->b_set_transparent = !ds->get_mesh()->b_set_transparent;
-		if(ds->get_mesh()->b_set_transparent)
+		if (ds->get_mesh()->b_set_transparent)
 			label_content = "[INFO] transparent on\n" + label_content;
-		else 
+		else
 			label_content = "[INFO] transparent off\n" + label_content;
 		label_outofdate = true;
 		post_redraw();
 	}
 	void toggle_mesh_wireframe() {
 		ds->get_mesh()->b_set_polygonmode = !ds->get_mesh()->b_set_polygonmode;
-		if(ds->get_mesh()->b_set_polygonmode)
+		if (ds->get_mesh()->b_set_polygonmode)
 			label_content = "[INFO] wireframe button on!\n" + label_content;
 		else
 			label_content = "[INFO] wireframe button off!\n" + label_content;
@@ -624,25 +635,25 @@ public:
 		skel_view->prepare_record_anim();
 		skel_view->start_record_anim();
 
-		label_content = "[INFO] recording...\n" + label_content; 
+		label_content = "[INFO] recording...\n" + label_content;
 		label_outofdate = true;
 	}
 	void stop_record_and_save() {
 		skel_view->stop_record_anim("test.amc");
-		label_content = "[INFO] animation has been exported as 'test.amc' \n" + label_content; 
+		label_content = "[INFO] animation has been exported as 'test.amc' \n" + label_content;
 		label_outofdate = true;
 	}
-	void save_curskel_to_file(){
+	void save_curskel_to_file() {
 		if (ds->get_skeleton()) {
 			ds->get_skeleton()->write_pinocchio_file("tmpskel.txt");
 			//ds->get_skeleton()->set_origin_rotation();
 			// problem occour when rigging with pinocchio, write pinocchio with an other coordi.
 			ds->get_skeleton()->writeASFFile("tmpskel.asf");
 		}
-		label_content = "[INFO] created skel. has been saved \nto tmp. file as 'tmpskel.asf'\n" + label_content; 
+		label_content = "[INFO] created skel. has been saved \nto tmp. file as 'tmpskel.asf'\n" + label_content;
 		label_outofdate = true;
 	}
-	void apply_rigged_skel() 
+	void apply_rigged_skel()
 	{
 		//ds->get_skeleton()->read_pinocchio_file("adjested_skeleton.out"); // do not have to adjest skel. in vr 
 		mmesh->read_attachment("skinned_attachment.out");
@@ -656,7 +667,7 @@ public:
 			tmpdata_2->get_skeleton()->apply_dofs_given_skel_pointer(ds->get_skeleton().get());
 		}
 	}
-	void build_skel() { 
+	void build_skel() {
 		// for the skel. we created
 	}
 	void gen_asf_skel_file() {
@@ -764,8 +775,8 @@ public:
 	}
 	void translate_model_in_y_dir_upwards() {
 		ds->get_mesh()->set_rotation_translation(
-			cgv::math::rotate3<double>(180.0f, vec3(0, 1, 0)), 
-				vec3(1.5, (ds->get_mesh()->getMax().y() - ds->get_mesh()->getMin().y()) / 2.0f, 0));
+			cgv::math::rotate3<double>(180.0f, vec3(0, 1, 0)),
+			vec3(1.5, (ds->get_mesh()->getMax().y() - ds->get_mesh()->getMin().y()) / 2.0f, 0));
 		load_mesh();
 
 		label_content = "[INFO] mesh position adjested!\n" + label_content;
@@ -773,7 +784,7 @@ public:
 	}
 	void load_addi_two_guys(string f) {
 		tmpskel_view_1->load_skeleton_given_name(f);
-		tmpskel_view_1->set_skel_origin_ori_translation(Vec3(0,1,0), 90, Vec3(-2, 1, -1.2));
+		tmpskel_view_1->set_skel_origin_ori_translation(Vec3(0, 1, 0), 90, Vec3(-2, 1, -1.2));
 
 		tmpskel_view_2->load_skeleton_given_name(f);
 		tmpskel_view_2->set_skel_origin_ori_translation(Vec3(0, 1, 0), 45, Vec3(-2, 1, -2.8));
@@ -793,7 +804,7 @@ public:
 		connect_copy(add_button("load_stored_anim1")->click, cgv::signal::rebind(this, &vr_test::load_stored_anim1));
 		connect_copy(add_button("load_stored_anim2")->click, cgv::signal::rebind(this, &vr_test::load_stored_anim2));
 		connect_copy(add_button("apply_dofs_to_multiview")->click, cgv::signal::rebind(this, &vr_test::apply_dofs));
-		
+
 		// skel. rel.
 		connect_copy(add_button("save_skel")->click, cgv::signal::rebind(this, &vr_test::save_curskel_to_file));
 		connect_copy(add_button("start_autorig")->click, cgv::signal::rebind(this, &vr_test::start_autorigging_pinoccio));
@@ -807,10 +818,10 @@ public:
 		connect_copy(add_button("toggle_mesh_transparent")->click, cgv::signal::rebind(this, &vr_test::toggle_mesh_transparent));
 		connect_copy(add_button("toggle_mesh_wireframe")->click, cgv::signal::rebind(this, &vr_test::toggle_mesh_wireframe));
 		connect_copy(add_button("toggle_face_culling")->click, cgv::signal::rebind(this, &vr_test::toggle_face_culling));
-		connect_copy(add_button("adjest mesh scale", "", "\n")->click,cgv::signal::rebind(this, &vr_test::adjest_mesh));
+		connect_copy(add_button("adjest mesh scale", "", "\n")->click, cgv::signal::rebind(this, &vr_test::adjest_mesh));
 		//translate_model_in_y_dir_upwards
 		connect_copy(add_button("upward_translation", "", "\n")->click, cgv::signal::rebind(this, &vr_test::translate_model_in_y_dir_upwards));
-		
+
 
 		//add_member_control(this, "scale factor", scale_factor_skel, "value_slider", "min=0.01;max=10");
 		add_member_control(this, "skel_posi_x", var1, "value_slider", "min=-10;max=10;log=true;ticks=true");
@@ -818,7 +829,29 @@ public:
 		add_member_control(this, "skel_posi_z", var3, "value_slider", "min=-10;max=10;log=true;ticks=true");
 		add_member_control(this, "skel_scale", scale_factor, "value_slider", "min=0.01;max=10;log=true;ticks=true");
 		add_member_control(this, "mesh_scale", mesh_scale, "value_slider", "min=0.1;max=10;log=true;ticks=true");
+		add_gui("mesh_location", mesh_location, "vector", "options='min=-3;max=3;ticks=true");
+		add_gui("mesh_orientation", static_cast<dvec4&>(mesh_orientation), "direction", "options='min=-1;max=1;ticks=true");
 		add_member_control(this, "ray_length", ray_length, "value_slider", "min=0.1;max=10;log=true;ticks=true");
+		if (last_kit_handle) {
+			vr::vr_kit* kit_ptr = vr::get_vr_kit(last_kit_handle);
+			const std::vector<std::pair<int, int> >* t_and_s_ptr = 0;
+			if (kit_ptr)
+				t_and_s_ptr = &kit_ptr->get_controller_throttles_and_sticks(0);
+			add_decorator("deadzone and precisions", "heading", "level=3");
+			int ti = 0;
+			int si = 0;
+			for (unsigned i = 0; i < left_deadzone_and_precision.size(); ++i) {
+				std::string prefix = std::string("unknown[") + cgv::utils::to_string(i) + "]";
+				if (t_and_s_ptr) {
+					if (t_and_s_ptr->at(i).second == -1)
+						prefix = std::string("throttle[") + cgv::utils::to_string(ti++) + "]";
+					else
+						prefix = std::string("stick[") + cgv::utils::to_string(si++) + "]";
+				}
+				add_member_control(this, prefix + ".deadzone", left_deadzone_and_precision[i].first, "value_slider", "min=0;max=1;ticks=true;log=true");
+				add_member_control(this, prefix + ".precision", left_deadzone_and_precision[i].second, "value_slider", "min=0;max=1;ticks=true;log=true");
+			}
+		}
 		if (begin_tree_node("box style", style)) {
 			align("\a");
 			add_gui("box style", style);
@@ -840,6 +873,8 @@ public:
 		if (begin_tree_node("mesh", mesh_scale)) {
 			align("\a");
 			add_member_control(this, "scale", mesh_scale, "value_slider", "min=0.0001;step=0.0000001;max=100;log=true;ticks=true");
+			add_gui("location", mesh_location, "", "main_label='';long_label=true;gui_type='value_slider';options='min=-2;max=2;step=0.001;ticks=true'");
+			add_gui("orientation", static_cast<dvec4&>(mesh_orientation), "direction", "main_label='';long_label=true;gui_type='value_slider';options='min=-1;max=1;step=0.001;ticks=true'");
 			align("\b");
 			end_tree_node(mesh_scale);
 		}
@@ -909,34 +944,26 @@ public:
 				/*std::cout << vrke.get_state().controller[0].button_flags << std::endl;
 				std::cout << vrke.get_state().controller[1].button_flags << std::endl;*/
 				switch (vrke.get_key()) {
-					case vr::VR_GRIP:
-						if (vrke.get_controller_index() == 0) {
-							std::cout << "button 0 of left controller pressed" << std::endl;
-							teleport = true;
-						}
-						else {
-							std::cout << "button 0 of right controller pressed" << std::endl;
-							btn_keydown_boxgui = true;
-						}
-						return true;
-					case vr::VR_MENU:
-						if (vrke.get_controller_index() == 0) {
+				case vr::VR_LEFT_BUTTON0:
+					std::cout << "button 0 of left controller pressed" << std::endl;
+					teleport = true;
+					return true;
+				case vr::VR_LEFT_MENU:
+					std::cout << "button VR_LEFT_MENU of left controller pressed" << std::endl;
+					/*if (lefthandmode._Equal("add bone")) {
+						keydown = true;
+						is_even_point = !is_even_point;
+					}*/
+					object_teleport = true;
 
-							std::cout << "button VR_LEFT_MENU of left controller pressed" << std::endl;
-							/*if (lefthandmode._Equal("add bone")) {
-								keydown = true;
-								is_even_point = !is_even_point;
-							}*/
-							object_teleport = true;
-						}
-						return true;
-					case vr::VR_DPAD_RIGHT:
-						if (vrke.get_controller_index() == 0) {
-						}
-						else {
-							std::cout << "touch pad of right controller pressed at right direction" << std::endl;
-						}
-						return true;
+					return true;
+				case vr::VR_RIGHT_BUTTON0:
+					std::cout << "button 0 of right controller pressed" << std::endl;
+					btn_keydown_boxgui = true;
+					return true;
+				case vr::VR_RIGHT_STICK_RIGHT:
+					std::cout << "touch pad of right controller pressed at right direction" << std::endl;
+					return true;
 				}
 			}
 			break;
@@ -956,18 +983,18 @@ public:
 				// if (state[vrse.get_controller_index()] == IS_OVER)
 				// if both controllers are touched, start ccd. tobetested 
 				if ((vrse.get_state().controller[0].button_flags == 0x0020)
-					&&(vrse.get_state().controller[1].button_flags == 0x0020)) {
+					&& (vrse.get_state().controller[1].button_flags == 0x0020)) {
 					toggle_ccd = !toggle_ccd;
 					// set to the desired position in front of mirror 
 					// pp x component of the position can not be setted correctly, due to calibration?
 					// z component must be set to this value! 
 					vr_view_ptr->set_tracking_origin(Vec3(
 						vr_view_ptr->get_tracking_origin().x(),
-						vr_view_ptr->get_tracking_origin().y(), 
+						vr_view_ptr->get_tracking_origin().y(),
 						-1.2f));
-					if(toggle_ccd)
+					if (toggle_ccd)
 						toggle_chain = !toggle_chain;
-					if(toggle_ccd)
+					if (toggle_ccd)
 						label_content = "[INFO] ccd on!\n" + label_content;
 					else
 						label_content = "[INFO] ccd off!\n" + label_content;
@@ -1022,7 +1049,7 @@ public:
 					state[vrse.get_controller_index()] = IS_OVER;
 				break;
 			case cgv::gui::SA_PRESS:
-				
+
 			case cgv::gui::SA_UNPRESS:
 				std::cout << "stick " << vrse.get_stick_index()
 					<< " of controller " << vrse.get_controller_index()
@@ -1030,18 +1057,18 @@ public:
 					<< " at " << vrse.get_x() << ", " << vrse.get_y() << std::endl;
 				return true;
 			case cgv::gui::SA_MOVE:
-			case cgv::gui::SA_DRAG: 
-//				std::cout << "stick " << vrse.get_stick_index()
-//					<< " of controller " << vrse.get_controller_index()
-//					<< " " << cgv::gui::get_stick_action_string(vrse.get_action())
-//					<< " from " << vrse.get_last_x() << ", " << vrse.get_last_y()
-//					<< " to " << vrse.get_x() << ", " << vrse.get_y() << std::endl;
+			case cgv::gui::SA_DRAG:
+				std::cout << "stick " << vrse.get_stick_index()
+					<< " of controller " << vrse.get_controller_index()
+					<< " " << cgv::gui::get_stick_action_string(vrse.get_action())
+					<< " from " << vrse.get_last_x() << ", " << vrse.get_last_y()
+					<< " to " << vrse.get_x() << ", " << vrse.get_y() << std::endl;
 
 
 				if (vrse.get_state().controller[1].axes[1] > 0 && tmpboxsize < 0.5f) {
 					tmpboxsize += enlargestep;
 				}
-				else if(tmpboxsize > 0.04f){
+				else if (tmpboxsize > 0.04f) {
 					tmpboxsize -= enlargestep;
 				}
 
@@ -1090,9 +1117,9 @@ public:
 					vec3 origin, direction;
 					vrpe.get_state().controller[0].put_ray(&origin(0), &direction(0));
 					// clear skel. intersection list, tmp usage
-						skel_intersection_points.clear();
-						skel_intersection_box_indices.clear();
-						for (auto jc : jointlist_colors) { jc = rgb(1, 1, 1); }
+					skel_intersection_points.clear();
+					skel_intersection_box_indices.clear();
+					for (auto jc : jointlist_colors) { jc = rgb(1, 1, 1); }
 					skel_joint_box_compute_intersections(origin, direction, 1, ci == 0 ? rgb(1, 0, 0) : rgb(0, 0, 1));
 					// has intersec. with skel. joint box 
 					if (skel_intersection_points.size() > 0) {
@@ -1163,16 +1190,16 @@ public:
 				}
 
 				if (toggle_ccd) {
-					if (ds->get_base() && right_ee && left_ee ) { // ds ee not defined now 
+					if (ds->get_base() && right_ee && left_ee) { // ds ee not defined now 
 						vec3 origin, direction;
 
 						// ccd calcu. skel. based on LEFT hand  
 						ds->set_endeffector(left_ee, 0);
-						vrpe.get_state().controller[0].put_ray(&origin(0), &direction(0)); 
+						vrpe.get_state().controller[0].put_ray(&origin(0), &direction(0));
 						ik_view->set_target_position_vr(
 							Vec4(
-								origin.x(), 
-								origin.y(), 
+								origin.x(),
+								origin.y(),
 								2 * mirror_plane_z - origin.z(), 1));
 						//ik_view->set_max_iter(30);
 						ik_view->optimize(0);
@@ -1182,8 +1209,8 @@ public:
 						vrpe.get_state().controller[1].put_ray(&origin(0), &direction(0));
 						ik_view->set_target_position_vr(
 							Vec4(
-								origin.x(), 
-								origin.y(), 
+								origin.x(),
+								origin.y(),
 								2 * mirror_plane_z - origin.z(), 1));
 						//ik_view->set_max_iter(30);
 						ik_view->optimize(0);
@@ -1205,7 +1232,7 @@ public:
 						/*for (int i = 0; i < skel_head_current->get_bone_list().size(); i++) {
 							int num_of_dofs_at_i = skel_head_current->get_bone_list().at(i)->dof_count();
 							for (int j = 0; j < num_of_dofs_at_i; j++) {
-								double left_hand_val = 
+								double left_hand_val =
 									skel_main_hand->get_bone_list().at(i)->get_dof(j)->get_value();
 								double right_hand_val =
 									skel_mirror_hand->get_bone_list().at(i)->get_dof(j)->get_value();
@@ -1239,9 +1266,9 @@ public:
 						vrpe.get_state().controller[0].put_ray(&origin(0), &direction(0));
 						if (is_even_point) {// an intersection is required for even points, but not for odd points
 							// clear skel. intersection list, tmp usage
-								skel_intersection_points.clear();
-								skel_intersection_box_indices.clear();
-								for (auto jc : jointlist_colors) { jc = rgb(1, 1, 1); }
+							skel_intersection_points.clear();
+							skel_intersection_box_indices.clear();
+							for (auto jc : jointlist_colors) { jc = rgb(1, 1, 1); }
 							skel_joint_box_compute_intersections(origin, direction, 1, ci == 0 ? rgb(1, 0, 0) : rgb(0, 0, 1));
 							// has intersec. with skel. joint box 
 							if (skel_intersection_points.size() > 0) {
@@ -1253,7 +1280,7 @@ public:
 								drawingbone = true;
 							}
 						}
-						else if(drawingbone){ // is even point and are drawing bones, has intersection before 
+						else if (drawingbone) { // is even point and are drawing bones, has intersection before 
 							end_point_list.push_back(cur_left_hand_posi + vec3(cur_left_hand_dir * 0.2f)); // tobetested
 							//end_point_size_list.push_back(tmpboxsize);
 
@@ -1309,7 +1336,7 @@ public:
 							// pf 1h
 							// this will be calcu. in the post process step
 							//current_node->calculate_matrices();
-							
+
 							parent_bone->add_child(current_node);
 							// perform post process, bounding box will be re-calculated! we need it to write pinocchio file 
 							ds->get_skeleton()->postprocess(ds->get_skeleton()->get_root(), Vec3(0, 0, 0));
@@ -1587,7 +1614,7 @@ public:
 
 						// add button callback
 					}
-					
+
 					// compute intersec. with sub menu, not used currently 
 					vrpe.get_state().controller[1].put_ray(&origin(0), &direction(0));
 					compute_intersections(origin, direction, 1, ci == 0 ? rgb(1, 0, 0) : rgb(0, 0, 1));
@@ -1607,84 +1634,84 @@ public:
 				else {// no button, usually. // animation, when intersection! anim only works for right controller? pp- 
 					// clean vectors used for intersection calculation (may not need a vector at all, we typically need the first intersec.)
 						// boxgui
-						gui_intersection_points.clear();
-						gui_intersection_colors.clear();
-						gui_intersection_box_indices.clear();
-						gui_intersection_controller_indices.clear();
-						for (auto e : pg1->elements) { e.has_intersec = false; }
-						// skel.
-						skel_intersection_points.clear();
-						skel_intersection_box_indices.clear();
-						for (auto jc : jointlist_colors) { jc = rgb(1, 1, 1); }
+					gui_intersection_points.clear();
+					gui_intersection_colors.clear();
+					gui_intersection_box_indices.clear();
+					gui_intersection_controller_indices.clear();
+					for (auto e : pg1->elements) { e.has_intersec = false; }
+					// skel.
+					skel_intersection_points.clear();
+					skel_intersection_box_indices.clear();
+					for (auto jc : jointlist_colors) { jc = rgb(1, 1, 1); }
 
 					// varible computing 
-						hmd_origin.x() = vrpe.get_state().hmd.pose[9];
-						hmd_origin.y() = vrpe.get_state().hmd.pose[10];
-						hmd_origin.z() = vrpe.get_state().hmd.pose[11];
-						//std::cout << hmd_origin << std::endl;
-						/*ray_origin[0] = pose[9];
-						ray_origin[1] = pose[10];
-						ray_origin[2] = pose[11];*/
+					hmd_origin.x() = vrpe.get_state().hmd.pose[9];
+					hmd_origin.y() = vrpe.get_state().hmd.pose[10];
+					hmd_origin.z() = vrpe.get_state().hmd.pose[11];
+					//std::cout << hmd_origin << std::endl;
+					/*ray_origin[0] = pose[9];
+					ray_origin[1] = pose[10];
+					ray_origin[2] = pose[11];*/
 
 					// compute intersections 
-						vec3 origin, direction;
-						// for getting left hand posi. cur.
-						vrpe.get_state().controller[0].put_ray(&origin(0), &direction(0));
-							// mark cur. posi as global var.
-							cur_left_hand_posi = origin;
-							cur_left_hand_dir = direction;
-							if(!skel_view->playing)
-								skel_joint_box_compute_intersections(origin, direction, 1, ci == 0 ? rgb(1, 0, 0) : rgb(0, 0, 1));
-							//cur_left_hand_rot = vrpe.get_rotation_matrix();
-							vrpe.get_state().controller[1].put_ray(&origin(0), &direction(0));
-						// can be optimized later. todo 
-						gui_compute_intersections(origin, direction, 1, ci == 0 ? rgb(1, 0, 0) : rgb(0, 0, 1));
-					
+					vec3 origin, direction;
+					// for getting left hand posi. cur.
+					vrpe.get_state().controller[0].put_ray(&origin(0), &direction(0));
+					// mark cur. posi as global var.
+					cur_left_hand_posi = origin;
+					cur_left_hand_dir = direction;
+					if (!skel_view->playing)
+						skel_joint_box_compute_intersections(origin, direction, 1, ci == 0 ? rgb(1, 0, 0) : rgb(0, 0, 1));
+					//cur_left_hand_rot = vrpe.get_rotation_matrix();
+					vrpe.get_state().controller[1].put_ray(&origin(0), &direction(0));
+					// can be optimized later. todo 
+					gui_compute_intersections(origin, direction, 1, ci == 0 ? rgb(1, 0, 0) : rgb(0, 0, 1));
+
 					// has intersec. with skel. joint box 
-						if (skel_intersection_points.size() > 0) {
-							// front means the first intersection box idx 
-							jointlist_colors.at(skel_intersection_box_indices.front()) = rgb(1, 1, 102.0f/255.0f);
-							post_redraw();
-						}
+					if (skel_intersection_points.size() > 0) {
+						// front means the first intersection box idx 
+						jointlist_colors.at(skel_intersection_box_indices.front()) = rgb(1, 1, 102.0f / 255.0f);
+						post_redraw();
+					}
 
 					// has intersec. with boxgui
-						if (gui_intersection_points.size() > 0) {
-							/*box3 curbox = pg1->boxvector.at(gui_intersection_box_indices.front());
-							pg1->boxvector.at(gui_intersection_box_indices.front()) =
-								box3(curbox.get_center() + vec3(0.05, 0, 0) - curbox.get_extent() / 2.0f,
-									curbox.get_center() + vec3(0.05, 0, 0) + curbox.get_extent() / 2.0f);*/
-							pg1->elements.at(gui_intersection_box_indices.front()).has_intersec = true;
+					if (gui_intersection_points.size() > 0) {
+						/*box3 curbox = pg1->boxvector.at(gui_intersection_box_indices.front());
+						pg1->boxvector.at(gui_intersection_box_indices.front()) =
+							box3(curbox.get_center() + vec3(0.05, 0, 0) - curbox.get_extent() / 2.0f,
+								curbox.get_center() + vec3(0.05, 0, 0) + curbox.get_extent() / 2.0f);*/
+						pg1->elements.at(gui_intersection_box_indices.front()).has_intersec = true;
+						pg1->push_to_render_vector();// re-gen the vec. for rendering 
+						post_redraw();
+					}
+					else {
+						// no intersection gui
+						bool redrawneeded = false;
+						for (int i = 0; i < pg1->elements.size(); i++) {
+							if (pg1->elements.at(i).has_intersec) {
+								// if there is any intersection in last frame 
+								// re draw needed 
+								redrawneeded = true;
+							}
+						}
+						if (redrawneeded) {
+							for (int i = 0; i < pg1->elements.size(); i++) { // set all flags to false 
+								pg1->elements.at(i).has_intersec = false;
+							}
 							pg1->push_to_render_vector();// re-gen the vec. for rendering 
 							post_redraw();
 						}
-						else {
-							// no intersection gui
-							bool redrawneeded = false;
-							for (int i = 0; i < pg1->elements.size(); i++) {
-								if (pg1->elements.at(i).has_intersec) {
-									// if there is any intersection in last frame 
-									// re draw needed 
-									redrawneeded = true;
-								}
-							}
-							if (redrawneeded) {
-								for (int i = 0; i < pg1->elements.size(); i++) { // set all flags to false 
-									pg1->elements.at(i).has_intersec = false;
-								}
-								pg1->push_to_render_vector();// re-gen the vec. for rendering 
-								post_redraw();
-							}
-						}
+					}
 				}
-				
+
 				if (state[0] == IS_GRAB) {// for left hand , translation of the selected bone node
 					//std::cout << "IS_GRAB~" << "\n";
 					vec3 origin, direction;
 					vrpe.get_state().controller[0].put_ray(&origin(0), &direction(0));
 					// clear skel. intersection list, tmp usage
-						skel_intersection_points.clear();
-						skel_intersection_box_indices.clear();
-						for (auto jc : jointlist_colors) { jc = rgb(1, 1, 1); }
+					skel_intersection_points.clear();
+					skel_intersection_box_indices.clear();
+					for (auto jc : jointlist_colors) { jc = rgb(1, 1, 1); }
 					skel_joint_box_compute_intersections(origin, direction, 1, ci == 0 ? rgb(1, 0, 0) : rgb(0, 0, 1));
 					// get previous and current controller position
 					vec3 last_pos = vrpe.get_last_position();
@@ -1713,7 +1740,7 @@ public:
 						skel_view->skeleton_changed(ds->get_skeleton());// update bone
 					}
 				}
-				else {state[0] = IS_OVER;}
+				else { state[0] = IS_OVER; }
 
 				if (b_fast_add_root) { // add joints as boxes 
 					// click to add bones 
@@ -1732,7 +1759,7 @@ public:
 					Bone* current_node = new Bone();
 					current_node->set_name("root"); // "new_bone_0, new_bone_1..."
 					//ds->get_skeleton()->add_new_bone_to_map("root", current_node); // nullpointer 
-								
+
 					/*dof rx ry rz*/
 					int n_dofs = 3; // to be adjested in vr
 					AtomicTransform* dof;
@@ -1748,7 +1775,7 @@ public:
 					current_node->add_dof(dof);
 					dof = new AtomicZTranslationTransform();
 					current_node->add_dof(dof);
-								
+
 					/*limits(-160.0 20.0)
 					(-70.0 70.0)
 					(-70.0 60.0)*/
@@ -1781,9 +1808,9 @@ public:
 
 				if (b_fast_add_skel) { // add skel as lines // you need to follow the chains! 
 					// clean
-						fast_intersection_points.clear();
-						fast_intersection_box_indices.clear();
-						//for (auto jc : fast_jointlist_colors) { jc = rgb(1, 1, 1); }
+					fast_intersection_points.clear();
+					fast_intersection_box_indices.clear();
+					//for (auto jc : fast_jointlist_colors) { jc = rgb(1, 1, 1); }
 					vec3 origin, direction;
 					vrpe.get_state().controller[0].put_ray(&origin(0), &direction(0));
 					fast_joint_box_compute_intersections(origin, direction, 1, ci == 0 ? rgb(1, 0, 0) : rgb(0, 0, 1));
@@ -1795,7 +1822,7 @@ public:
 						fast_bone_posi_vec_as_chain.push_back(fast_jointlist.at(fast_intersection_box_indices.front()).get_center());
 					}
 					else {
-						
+
 					}
 					b_fast_add_skel = false;
 				}
@@ -1818,7 +1845,7 @@ public:
 					for (auto& tran : movable_box_translations) {
 						tran = cur_left_hand_rot * (tran - last_pos) + pos;
 					}
-					for (auto& rot: movable_box_rotations) {
+					for (auto& rot : movable_box_rotations) {
 						rot = quat(cur_left_hand_rot) * rot;
 					}
 				}
@@ -1846,9 +1873,9 @@ public:
 				vr_view_ptr->set_event_type_flags(
 					cgv::gui::VREventTypeFlags(
 						cgv::gui::VRE_KEY +
-						cgv::gui::VRE_ONE_AXIS +
-						cgv::gui::VRE_TWO_AXES +
-						cgv::gui::VRE_ONE_AXIS_GENERATES_KEY +
+						cgv::gui::VRE_THROTTLE +
+						cgv::gui::VRE_STICK +
+						cgv::gui::VRE_STICK_KEY +
 						cgv::gui::VRE_POSE
 					));
 				vr_view_ptr->enable_vr_event_debugging(false);
@@ -1867,15 +1894,15 @@ public:
 
 		// set up the proj dir from sys. varible
 		//Limit according to http://msdn.microsoft.com/en-us/library/ms683188.aspx
-		DWORD bufferSize = 65535; 
+		DWORD bufferSize = 65535;
 		std::wstring buff;
 		buff.resize(bufferSize);
 		bufferSize = GetEnvironmentVariableW(L"CGV_EXEC_DIR", &buff[0], bufferSize);
 		if (!bufferSize)
 			//error
-		buff.resize(bufferSize);
+			buff.resize(bufferSize);
 		int len = WideCharToMultiByte(CP_UTF8, 0, buff.c_str(), -1, 0, 0, 0, 0);
-		vector<char> buf(len-1);
+		vector<char> buf(len - 1);
 		WideCharToMultiByte(CP_UTF8, 0, buff.c_str(), -1, &buf[0], len, 0, 0);
 		projdir = std::string(buf.begin(), buf.end());
 		std::string image0 = projdir.append("\\skybox\\cm_{xp,xn,yp,yn,zp,zn}.jpg");
@@ -1902,7 +1929,7 @@ public:
 		cgv::render::gl::ensure_glew_initialized();
 		mmesh = std::make_shared<SkinningMesh>();
 		mmesh->init_shaders(ctx);
-		mmesh->set_rotation_translation(cgv::math::rotate3<double>(0 , vec3(0, 1, 0)),vec3(1.2, 0, -2.8));
+		mmesh->set_rotation_translation(cgv::math::rotate3<double>(0, vec3(0, 1, 0)), vec3(1.2, 0, -2.8));
 		mmesh->set_mesh_scale(mesh_scale);
 
 		fast_bone_posi_vec_as_chain.clear();
@@ -1917,6 +1944,20 @@ public:
 	}
 	void init_frame(cgv::render::context& ctx)
 	{
+		if (have_new_mesh) {
+			// auto-compute mesh normals if not available
+			if (!M.has_normals())
+				M.compute_vertex_normals();
+			// [re-]compute mesh render info
+			MI.destruct(ctx);
+			MI.construct_vbos(ctx, M);
+			// bind mesh attributes to standard surface shader program
+			MI.bind(ctx, ctx.ref_surface_shader_program(true));
+
+			// ensure that materials are presented in gui
+			//post_recreate_gui();
+			have_new_mesh = false;
+		}
 		for (int i = 0; i < pg1->elements.size(); i++) {
 			if (pg1->elements.at(i).flag_use_label) {
 				if (pg1->elements.at(i).gui_label_texture->label_fbo.get_width() != pg1->elements.at(i).gui_label_texture->label_resolution) {
@@ -1982,24 +2023,24 @@ public:
 			label_fbo.enable(ctx);
 			label_fbo.push_viewport(ctx);
 			ctx.push_pixel_coords();
-				glClearColor(0.1f,0.1f,0.1f,1.0f);
-				glClear(GL_COLOR_BUFFER_BIT);
+			glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT);
 
-				glColor4f(label_color[0], label_color[1], label_color[2], 1);
-				ctx.set_cursor(20, (int)ceil(label_size) + 20);
-				ctx.enable_font_face(label_font_face, label_size);
-				ctx.output_stream() << label_text << "\n";
-				ctx.output_stream().flush(); // make sure to flush the stream before change of font size or font face
+			glColor4f(label_color[0], label_color[1], label_color[2], 1);
+			ctx.set_cursor(20, (int)ceil(label_size) + 20);
+			ctx.enable_font_face(label_font_face, label_size);
+			ctx.output_stream() << label_text << "\n";
+			ctx.output_stream().flush(); // make sure to flush the stream before change of font size or font face
 
-				ctx.enable_font_face(label_font_face, 0.7f*label_size);
-				/*for (size_t i = 0; i < intersection_points.size(); ++i) {
-					ctx.output_stream()
-						<< "box " << intersection_box_indices[i]
-						<< " at (" << intersection_points[i]
-						<< ") with controller " << intersection_controller_indices[i] << "\n";
-				}*/
-				ctx.output_stream() << label_content;
-				ctx.output_stream().flush();
+			ctx.enable_font_face(label_font_face, 0.7f * label_size);
+			/*for (size_t i = 0; i < intersection_points.size(); ++i) {
+				ctx.output_stream()
+					<< "box " << intersection_box_indices[i]
+					<< " at (" << intersection_points[i]
+					<< ") with controller " << intersection_controller_indices[i] << "\n";
+			}*/
+			ctx.output_stream() << label_content;
+			ctx.output_stream().flush();
 
 			ctx.pop_pixel_coords();
 			label_fbo.pop_viewport(ctx);
@@ -2068,48 +2109,91 @@ public:
 		ctx.set_color(rgb(d, d, c));
 		ctx.tesselate_arrow(cgv::math::fvec<double, 3>(0, 0, 0), cgv::math::fvec<double, 3>(0, 0, l), 0.02);
 	}
+	void draw_surface(context& ctx, bool opaque_part)
+	{
+		// remember current culling setting
+		GLboolean is_culling = glIsEnabled(GL_CULL_FACE);
+		GLint cull_face;
+		glGetIntegerv(GL_CULL_FACE_MODE, &cull_face);
+
+		// ensure that opengl culling is identical to shader program based culling
+		if (cull_mode > 0) {
+			glEnable(GL_CULL_FACE);
+			glCullFace(cull_mode == CM_BACKFACE ? GL_BACK : GL_FRONT);
+		}
+		else
+			glDisable(GL_CULL_FACE);
+
+		// choose a shader program and configure it based on current settings
+		shader_program& prog = ctx.ref_surface_shader_program(true);
+		prog.set_uniform(ctx, "culling_mode", (int)cull_mode);
+		prog.set_uniform(ctx, "map_color_to_material", (int)color_mapping);
+		prog.set_uniform(ctx, "illumination_mode", (int)illumination_mode);
+		// set default surface color for color mapping which only affects 
+		// rendering if mesh does not have per vertex colors and color_mapping is on
+		prog.set_attribute(ctx, prog.get_color_index(), surface_color);
+
+		// render the mesh from the vertex buffers with selected program
+		dmat4 R;
+		mesh_orientation.put_homogeneous_matrix(R);
+		ctx.push_modelview_matrix();
+		ctx.mul_modelview_matrix(
+			cgv::math::translate4<double>(mesh_location) *
+			cgv::math::scale4<double>(mesh_scale, mesh_scale, mesh_scale) *
+			R);
+		//MI.render_mesh(ctx, ctx.ref_surface_shader_program(true));
+		MI.render_mesh(ctx, prog, opaque_part, !opaque_part);
+		ctx.pop_modelview_matrix();
+
+		// recover opengl culling mode
+		if (is_culling)
+			glEnable(GL_CULL_FACE);
+		else
+			glDisable(GL_CULL_FACE);
+		glCullFace(cull_face);
+	}
 	void draw(cgv::render::context& ctx)
 	{
 		// draw skybox 
 		switch (which_skybox) {
-			case 0:
-				glDepthMask(GL_FALSE);
-					glDisable(GL_CULL_FACE);
-						test_tex.enable(ctx, 1);
-						skyprog.enable(ctx);
-						skyprog.set_uniform(ctx, "img_tex", 1);
-						ctx.tesselate_unit_cube();
-						skyprog.disable(ctx);
-						test_tex.disable(ctx);
-					glEnable(GL_CULL_FACE);
-				glDepthMask(GL_TRUE);
-				break;
-			case 1:
-				glDepthMask(GL_FALSE);
-					glDisable(GL_CULL_FACE);
-						img_tex.enable(ctx, 1);
-							skyprog.enable(ctx);
-							skyprog.set_uniform(ctx, "img_tex", 1);
-							ctx.tesselate_unit_cube();
-							skyprog.disable(ctx);
-						img_tex.disable(ctx);
-					glEnable(GL_CULL_FACE);
-				glDepthMask(GL_TRUE);
-				break;
-			case 2:
-				glDepthMask(GL_FALSE);
-					glDisable(GL_CULL_FACE);
-						tmp_tex.enable(ctx, 1);
-							skyprog.enable(ctx);
-							skyprog.set_uniform(ctx, "img_tex", 1);
-							ctx.tesselate_unit_cube();
-							skyprog.disable(ctx);
-						tmp_tex.disable(ctx);
-					glEnable(GL_CULL_FACE);
-				glDepthMask(GL_TRUE);
-				break;
+		case 0:
+			glDepthMask(GL_FALSE);
+			glDisable(GL_CULL_FACE);
+			test_tex.enable(ctx, 1);
+			skyprog.enable(ctx);
+			skyprog.set_uniform(ctx, "img_tex", 1);
+			ctx.tesselate_unit_cube();
+			skyprog.disable(ctx);
+			test_tex.disable(ctx);
+			glEnable(GL_CULL_FACE);
+			glDepthMask(GL_TRUE);
+			break;
+		case 1:
+			glDepthMask(GL_FALSE);
+			glDisable(GL_CULL_FACE);
+			img_tex.enable(ctx, 1);
+			skyprog.enable(ctx);
+			skyprog.set_uniform(ctx, "img_tex", 1);
+			ctx.tesselate_unit_cube();
+			skyprog.disable(ctx);
+			img_tex.disable(ctx);
+			glEnable(GL_CULL_FACE);
+			glDepthMask(GL_TRUE);
+			break;
+		case 2:
+			glDepthMask(GL_FALSE);
+			glDisable(GL_CULL_FACE);
+			tmp_tex.enable(ctx, 1);
+			skyprog.enable(ctx);
+			skyprog.set_uniform(ctx, "img_tex", 1);
+			ctx.tesselate_unit_cube();
+			skyprog.disable(ctx);
+			tmp_tex.disable(ctx);
+			glEnable(GL_CULL_FACE);
+			glDepthMask(GL_TRUE);
+			break;
 
-				//test_tex
+			//test_tex
 		}
 
 		// render dynamic mesh 
@@ -2136,12 +2220,12 @@ public:
 			glDisable(GL_BLEND);
 		}
 		// imitating only when dofs are changed 
-			if (b_toggle_imitating && skel_view->should_apply_dofs_to_others_for_imitating) {
-				apply_dofs();
-				skel_view->should_apply_dofs_to_others_for_imitating = false;
-			}
+		if (b_toggle_imitating && skel_view->should_apply_dofs_to_others_for_imitating) {
+			apply_dofs();
+			skel_view->should_apply_dofs_to_others_for_imitating = false;
+		}
 		// draw the other two guys
-		if(b_toggle_show_imitating_skel){
+		if (b_toggle_show_imitating_skel) {
 			if (tmpdata_1->get_skeleton() != nullptr)
 			{
 				glEnable(GL_BLEND);
@@ -2175,7 +2259,7 @@ public:
 					state_ptr->controller[ci].put_ray(&ray_origin(0), &ray_direction(0));
 					P.push_back(ray_origin);
 					P.push_back(ray_origin + ray_length * ray_direction);
-					rgb c(float(1 - ci), 0.5f*(int)state[ci], float(ci));
+					rgb c(float(1 - ci), 0.5f * (int)state[ci], float(ci));
 					C.push_back(c);
 					C.push_back(c);
 				}
@@ -2199,37 +2283,37 @@ public:
 		}
 
 		// draw static boxes
-			cgv::render::box_renderer& renderer = cgv::render::ref_box_renderer(ctx);
-			renderer.set_render_style(style);
-			renderer.set_box_array(ctx, boxes);
-			renderer.set_color_array(ctx, box_colors);
-			if (renderer.validate_and_enable(ctx)) {
-				glDrawArrays(GL_POINTS, 0, (GLsizei)boxes.size());
-			}
-			renderer.disable(ctx);
+		cgv::render::box_renderer& renderer = cgv::render::ref_box_renderer(ctx);
+		renderer.set_render_style(style);
+		renderer.set_box_array(ctx, boxes);
+		renderer.set_color_array(ctx, box_colors);
+		if (renderer.validate_and_enable(ctx)) {
+			glDrawArrays(GL_POINTS, 0, (GLsizei)boxes.size());
+		}
+		renderer.disable(ctx);
 
 		// rendering joint points at static state 
-			if (!jointlist.empty() && (!skel_view->playing)) {
-				renderer = cgv::render::ref_box_renderer(ctx);
-				renderer.set_render_style(style);
-				renderer.set_box_array(ctx, jointlist);
-				renderer.set_color_array(ctx, jointlist_colors);
-				if (renderer.validate_and_enable(ctx)) {
-					glDrawArrays(GL_POINTS, 0, (GLsizei)jointlist.size());
-				}
-				renderer.disable(ctx);
-			}
-
-		// draw dynamic boxes 
-			renderer.set_render_style(movable_style);
-			renderer.set_box_array(ctx, movable_boxes);
-			renderer.set_color_array(ctx, movable_box_colors);
-			renderer.set_translation_array(ctx, movable_box_translations);
-			renderer.set_rotation_array(ctx, movable_box_rotations);
+		if (!jointlist.empty() && (!skel_view->playing)) {
+			renderer = cgv::render::ref_box_renderer(ctx);
+			renderer.set_render_style(style);
+			renderer.set_box_array(ctx, jointlist);
+			renderer.set_color_array(ctx, jointlist_colors);
 			if (renderer.validate_and_enable(ctx)) {
-				glDrawArrays(GL_POINTS, 0, (GLsizei)movable_boxes.size());
+				glDrawArrays(GL_POINTS, 0, (GLsizei)jointlist.size());
 			}
 			renderer.disable(ctx);
+		}
+
+		// draw dynamic boxes 
+		renderer.set_render_style(movable_style);
+		renderer.set_box_array(ctx, movable_boxes);
+		renderer.set_color_array(ctx, movable_box_colors);
+		renderer.set_translation_array(ctx, movable_box_translations);
+		renderer.set_rotation_array(ctx, movable_box_rotations);
+		if (renderer.validate_and_enable(ctx)) {
+			glDrawArrays(GL_POINTS, 0, (GLsizei)movable_boxes.size());
+		}
+		renderer.disable(ctx);
 
 		// draw intersection points
 			/*if (!intersection_points.empty()) {
@@ -2243,7 +2327,7 @@ public:
 				}
 			}*/
 
-		// draw info label
+			// draw info label
 		if (label_tex.is_created()) {
 			cgv::render::shader_program& prog = ctx.ref_default_shader_program(true);
 			int pi = prog.get_position_index();
@@ -2396,16 +2480,16 @@ public:
 				}
 			// spec. care needed
 			if (start_point_list.size() > 0)
-				if (is_even_point && drawingbone) {  
+				if (is_even_point && drawingbone) {
 					vertex_array_in_point_list.push_back(start_point_list.at(start_point_list.size() - 1));
 					vertex_array_in_point_list.push_back(
-						cur_left_hand_posi + vec3( cur_left_hand_dir * 0.2f)); // shall be modified. todo
+						cur_left_hand_posi + vec3(cur_left_hand_dir * 0.2f)); // shall be modified. todo
 						// pointing to submenu box // correct
 					colorarray.push_back(rgb(0, 0, 0));
 					colorarray.push_back(rgb(0, 0, 0));
 					// an addi. box should be rendered 
 				}
-				else if (end_point_list.size() > 0) { 
+				else if (end_point_list.size() > 0) {
 					vertex_array_in_point_list.push_back(start_point_list.at(start_point_list.size() - 1));
 					vertex_array_in_point_list.push_back(end_point_list.at(end_point_list.size() - 1));
 					colorarray.push_back(rgb(0, 0, 0));
@@ -2429,24 +2513,24 @@ public:
 			}
 		}
 		//render demo box 
-			vec3 boxcenter = cur_left_hand_posi + vec3(cur_left_hand_dir * 0.2f);
-			box3 demobox = box3(vec3(boxcenter - tmpboxsize / 2.0f),
-				vec3(boxcenter + tmpboxsize / 2.0f));
-			vector<box3> boxarray; vector<rgb> boxcolorarray;
-			boxarray.push_back(demobox);
-			boxcolorarray.push_back(rgb(1,1,0));
+		vec3 boxcenter = cur_left_hand_posi + vec3(cur_left_hand_dir * 0.2f);
+		box3 demobox = box3(vec3(boxcenter - tmpboxsize / 2.0f),
+			vec3(boxcenter + tmpboxsize / 2.0f));
+		vector<box3> boxarray; vector<rgb> boxcolorarray;
+		boxarray.push_back(demobox);
+		boxcolorarray.push_back(rgb(1, 1, 0));
 
-			renderer.set_render_style(movable_style);
-			renderer.set_box_array(ctx, boxarray);
-			renderer.set_color_array(ctx, boxcolorarray);
-			if (renderer.validate_and_enable(ctx)) {
-				glDrawArrays(GL_POINTS, 0, (GLsizei)boxarray.size());
-			}
-			renderer.disable(ctx);
+		renderer.set_render_style(movable_style);
+		renderer.set_box_array(ctx, boxarray);
+		renderer.set_color_array(ctx, boxcolorarray);
+		if (renderer.validate_and_enable(ctx)) {
+			glDrawArrays(GL_POINTS, 0, (GLsizei)boxarray.size());
+		}
+		renderer.disable(ctx);
 	}
 	bool self_reflect(cgv::reflect::reflection_handler& srh)
 	{
-		return srh.reflect_member("projdir", projdir) && 
+		return srh.reflect_member("projdir", projdir) &&
 			srh.reflect_member("skyboxdir", skyboxdir);
 	}
 };
@@ -2460,21 +2544,21 @@ void vr_test::construct_table(float tw, float td, float th, float tW)
 	std::uniform_real_distribution<float> distribution(0, 1);
 	// construct table
 	rgb table_clr = rgb(// 26, 82, 45
-		26/255.0f,
-		82/255.0f,
-		45/255.0f
+		26 / 255.0f,
+		82 / 255.0f,
+		45 / 255.0f
 	);
 	float zdiff = -2.8f;
 	float xdiff = -0.5f;
 	boxes.push_back(box3(
-		vec3(-0.5f*tw - 2*tW + xdiff, th, -0.5f*td - 2*tW + zdiff),
-		vec3( 0.5f*tw + 2*tW + xdiff, th + tW, 0.5f*td + 2*tW + zdiff)));
+		vec3(-0.5f * tw - 2 * tW + xdiff, th, -0.5f * td - 2 * tW + zdiff),
+		vec3(0.5f * tw + 2 * tW + xdiff, th + tW, 0.5f * td + 2 * tW + zdiff)));
 	box_colors.push_back(table_clr);
 
-	boxes.push_back(box3(vec3(-0.5f*tw + xdiff, 0, -0.5f*td + zdiff), vec3(-0.5f*tw - tW + xdiff, th, -0.5f*td - tW + zdiff)));
-	boxes.push_back(box3(vec3(-0.5f*tw + xdiff, 0, 0.5f*td + zdiff), vec3(-0.5f*tw - tW + xdiff, th, 0.5f*td + tW + zdiff)));
-	boxes.push_back(box3(vec3(0.5f*tw + xdiff, 0, -0.5f*td + zdiff), vec3(0.5f*tw + tW + xdiff, th, -0.5f*td - tW + zdiff)));
-	boxes.push_back(box3(vec3(0.5f*tw + xdiff, 0, 0.5f*td + zdiff), vec3(0.5f*tw + tW + xdiff, th, 0.5f*td + tW + zdiff)));
+	boxes.push_back(box3(vec3(-0.5f * tw + xdiff, 0, -0.5f * td + zdiff), vec3(-0.5f * tw - tW + xdiff, th, -0.5f * td - tW + zdiff)));
+	boxes.push_back(box3(vec3(-0.5f * tw + xdiff, 0, 0.5f * td + zdiff), vec3(-0.5f * tw - tW + xdiff, th, 0.5f * td + tW + zdiff)));
+	boxes.push_back(box3(vec3(0.5f * tw + xdiff, 0, -0.5f * td + zdiff), vec3(0.5f * tw + tW + xdiff, th, -0.5f * td - tW + zdiff)));
+	boxes.push_back(box3(vec3(0.5f * tw + xdiff, 0, 0.5f * td + zdiff), vec3(0.5f * tw + tW + xdiff, th, 0.5f * td + tW + zdiff)));
 	box_colors.push_back(table_clr);
 	box_colors.push_back(table_clr);
 	box_colors.push_back(table_clr);
@@ -2484,7 +2568,7 @@ void vr_test::construct_table(float tw, float td, float th, float tW)
 void vr_test::construct_room(float w, float d, float h, float W, bool walls, bool ceiling)
 {
 	// construct floor
-	boxes.push_back(box3(vec3(-0.5f*w, -W, -0.5f*d), vec3(0.5f*w, 0, 0.5f*d)));
+	boxes.push_back(box3(vec3(-0.5f * w, -W, -0.5f * d), vec3(0.5f * w, 0, 0.5f * d)));
 	box_colors.push_back(rgb(0.2f, 0.2f, 0.2f));
 
 	if (walls) {
@@ -2494,12 +2578,12 @@ void vr_test::construct_room(float w, float d, float h, float W, bool walls, boo
 		boxes.push_back(box3(vec3(-0.5f*w, -W, 0.5f*d), vec3(0.5f*w, h, 0.5f*d + W)));
 		box_colors.push_back(rgb(0.8f, 0.5f, 0.5f));*/
 
-		boxes.push_back(box3(vec3(0.5f*w, -W, -0.5f*d - W), vec3(0.5f*w + W, h, 0.5f*d + W)));
+		boxes.push_back(box3(vec3(0.5f * w, -W, -0.5f * d - W), vec3(0.5f * w + W, h, 0.5f * d + W)));
 		box_colors.push_back(rgb(0.5f, 0.8f, 0.5f));
 	}
 	if (ceiling) {
 		// construct ceiling
-		boxes.push_back(box3(vec3(-0.5f*w - W, h, -0.5f*d - W), vec3(0.5f*w + W, h + W, 0.5f*d + W)));
+		boxes.push_back(box3(vec3(-0.5f * w - W, h, -0.5f * d - W), vec3(0.5f * w + W, h + W, 0.5f * d + W)));
 		box_colors.push_back(rgb(0.5f, 0.5f, 0.8f));
 	}
 }
@@ -2512,15 +2596,15 @@ void vr_test::construct_environment(float s, float ew, float ed, float eh, float
 	unsigned n = unsigned(ew / s);
 	unsigned m = unsigned(ed / s);
 	for (unsigned i = 0; i < n; ++i) {
-		float x = i * s - 0.5f*ew;
+		float x = i * s - 0.5f * ew;
 		for (unsigned j = 0; j < m; ++j) {
-			float z = j * s - 0.5f*ed;
+			float z = j * s - 0.5f * ed;
 			/*if ( (x + 0.5f*s > -0.5f*w && x < 0.5f*w + 1) && (z + 0.5f*s > -0.5f*d && z < 0.5f*d) )
 				continue;*/
 			if ((x + 0.5f * s > -0.5f * w && x < 0.5f * w) && (z + 0.5f * s > -0.5f * d && z < 0.5f * d))
 				continue;
-			float h = 0.2f*(std::max(abs(x)-0.5f*w,0.0f)+std::max(abs(z)-0.5f*d,0.0f))*distribution(generator)+0.1f;
-			boxes.push_back(box3(vec3(x, 0, z), vec3(x+s, h, z+s)));
+			float h = 0.2f * (std::max(abs(x) - 0.5f * w, 0.0f) + std::max(abs(z) - 0.5f * d, 0.0f)) * distribution(generator) + 0.1f;
+			boxes.push_back(box3(vec3(x, 0, z), vec3(x + s, h, z + s)));
 			box_colors.push_back(
 				rgb(
 					0.4f * distribution(generator) + 0.1f,
@@ -2577,14 +2661,14 @@ void vr_test::construct_movable_boxes()
 
 		vec3 center(-0.5f*tw + x * tw, th + tW, -0.5f*td + y * td);
 		movable_boxes.push_back(box3(-0.5f*extent, 0.5f*extent));
-		movable_box_colors.push_back(rgb(distribution(generator), 
-				distribution(generator), 
+		movable_box_colors.push_back(rgb(distribution(generator),
+				distribution(generator),
 				distribution(generator)));
 		movable_box_translations.push_back(center);
 		quat rot(
-			signed_distribution(generator), 
-			signed_distribution(generator), 
-			signed_distribution(generator), 
+			signed_distribution(generator),
+			signed_distribution(generator),
+			signed_distribution(generator),
 			signed_distribution(generator)
 		);
 		rot.normalize();
@@ -2603,384 +2687,384 @@ void vr_test::construct_boxgui() {
 
 	//rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f );
 	// title
-	boxgui_button first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.8f, -3.0f), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ), "<", 120, "xxx", true);
+	boxgui_button first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.8f, -3.0f), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f), "<", 120, "xxx", true);
 	pg1->elements.push_back(first_btn);
-	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.8f, -2.5f), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ), ">", 120, "xxx", true);
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.8f, -2.5f), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f), ">", 120, "xxx", true);
 	pg1->elements.push_back(first_btn);
 	/*first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.8f, 0), 0.1, 0.2, 0.8, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ), "Settings", font_size, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);*/
 	// list
-	
-	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.5, -2.5f), 0.1, 0.2, 0.8, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ), "Change Skybox", font_size, "xxx", true);
+
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.5, -2.5f), 0.1, 0.2, 0.8, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f), "Change Skybox", font_size, "xxx", true);
 	pg1->elements.push_back(first_btn);
 
-		// an other bug pp, projdir will be changed when append here, but not above? 
-		// set up the proj dir from sys. varible
-		//Limit according to http://msdn.microsoft.com/en-us/library/ms683188.aspx
-		DWORD bufferSize = 65535;
-		std::wstring buff;
+	// an other bug pp, projdir will be changed when append here, but not above? 
+	// set up the proj dir from sys. varible
+	//Limit according to http://msdn.microsoft.com/en-us/library/ms683188.aspx
+	DWORD bufferSize = 65535;
+	std::wstring buff;
+	buff.resize(bufferSize);
+	bufferSize = GetEnvironmentVariableW(L"CGV_EXEC_DIR", &buff[0], bufferSize);
+	if (!bufferSize)
+		//error
 		buff.resize(bufferSize);
-		bufferSize = GetEnvironmentVariableW(L"CGV_EXEC_DIR", &buff[0], bufferSize);
-		if (!bufferSize)
-			//error
-			buff.resize(bufferSize);
-		int len = WideCharToMultiByte(CP_UTF8, 0, buff.c_str(), -1, 0, 0, 0, 0);
-		vector<char> buf(len - 1);
-		WideCharToMultiByte(CP_UTF8, 0, buff.c_str(), -1, &buf[0], len, 0, 0);
-		projdir = std::string(buf.begin(), buf.end());
+	int len = WideCharToMultiByte(CP_UTF8, 0, buff.c_str(), -1, 0, 0, 0, 0);
+	vector<char> buf(len - 1);
+	WideCharToMultiByte(CP_UTF8, 0, buff.c_str(), -1, &buf[0], len, 0, 0);
+	projdir = std::string(buf.begin(), buf.end());
 
-		std::string image1dir = projdir.append("\\skybox\\cm_xn.jpg");
-		// reset projdir pp a bug 
-		projdir = std::string(buf.begin(), buf.end());
-		std::string image2dir = projdir.append("\\skybox\\BluePinkNebular_yn.jpg");
-		// reset projdir pp a bug 
-		projdir = std::string(buf.begin(), buf.end());
-		std::string image0dir = projdir.append("\\skybox\\igen_2\\xn.jpg");
+	std::string image1dir = projdir.append("\\skybox\\cm_xn.jpg");
+	// reset projdir pp a bug 
+	projdir = std::string(buf.begin(), buf.end());
+	std::string image2dir = projdir.append("\\skybox\\BluePinkNebular_yn.jpg");
+	// reset projdir pp a bug 
+	projdir = std::string(buf.begin(), buf.end());
+	std::string image0dir = projdir.append("\\skybox\\igen_2\\xn.jpg");
 
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.5, -1.75f), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"xxx", 0, image0dir, false);
-		pg1->elements.push_back(first_btn);
-		
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.5, -1.5f), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"xxx", 0, image1dir, false);
-		pg1->elements.push_back(first_btn);
-		
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.5, -1.25f), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"xxx", 0, image2dir, false);
-		pg1->elements.push_back(first_btn);
-	
-	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.25 - 0.5f, -2.5f), 0.1, 0.2, 0.8, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ), "Save/Load Skel.", font_size, "D:/icon_res/default.png", true);
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.5, -1.75f), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"xxx", 0, image0dir, false);
 	pg1->elements.push_back(first_btn);
-		
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.25 - 0.5f, -1.75f), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"demoskel", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);
-		
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.25 - 0.5f, -1.75f + 0.25f * 1), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"s_skel1", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);
-		
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.25 - 0.5f, -1.75f + 0.25f * 2), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"s_skel2", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);
-		
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.25 - 0.5f, -1.75f + 0.25f * 3), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"s_skel3", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);
-		
+
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.5, -1.5f), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"xxx", 0, image1dir, false);
+	pg1->elements.push_back(first_btn);
+
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.5, -1.25f), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"xxx", 0, image2dir, false);
+	pg1->elements.push_back(first_btn);
+
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.25 - 0.5f, -2.5f), 0.1, 0.2, 0.8, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f), "Save/Load Skel.", font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.25 - 0.5f, -1.75f), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"demoskel", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.25 - 0.5f, -1.75f + 0.25f * 1), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"s_skel1", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.25 - 0.5f, -1.75f + 0.25f * 2), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"s_skel2", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.25 - 0.5f, -1.75f + 0.25f * 3), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"s_skel3", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+
 	/*first_btn = boxgui_button(vec3(2.5f - 0.05f, 2, -2.5f), 0.1, 0.2, 0.8, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ), "Save Skel.", font_size, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);*/
-	
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.25 - 0.5f, -1.75f + 0.25f * 4), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"l_skel1", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);
-		
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.25 - 0.5f, -1.75f + 0.25f * 5), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"l_skel2", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);
-		
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.25 - 0.5f, -1.75f + 0.25f * 6), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"l_skel3", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);
-		
-	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.0f - 0.5, -2.5f), 0.1, 0.2, 0.8, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ), "Save/Load Animation", font_size, "D:/icon_res/default.png", true);
+
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.25 - 0.5f, -1.75f + 0.25f * 4), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"l_skel1", smallbox_font_size, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);
-	
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.0f - 0.5, -1.75f), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"start_rec", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);
-		
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.0f - 0.5, -1.75f + 0.25f * 1), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"pause_rec", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);
-		
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.0f - 0.5, -1.75f + 0.25f * 2), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"stop_rec", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);
-		
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.0f - 0.5, -1.75f + 0.25f * 3), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"s_anim1", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.0f - 0.5, -1.75f + 0.25f * 4), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"s_anim2", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.0f - 0.5, -1.75f + 0.25f * 5), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"s_anim3", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);
+
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.25 - 0.5f, -1.75f + 0.25f * 5), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"l_skel2", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.25 - 0.5f, -1.75f + 0.25f * 6), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"l_skel3", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.0f - 0.5, -2.5f), 0.1, 0.2, 0.8, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f), "Save/Load Animation", font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.0f - 0.5, -1.75f), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"start_rec", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.0f - 0.5, -1.75f + 0.25f * 1), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"pause_rec", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.0f - 0.5, -1.75f + 0.25f * 2), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"stop_rec", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.0f - 0.5, -1.75f + 0.25f * 3), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"s_anim1", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.0f - 0.5, -1.75f + 0.25f * 4), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"s_anim2", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.0f - 0.5, -1.75f + 0.25f * 5), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"s_anim3", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
 	/*first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.5f, -2.5f), 0.1, 0.2, 0.8, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ), "Save Animation", font_size, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);*/
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.0f - 0.5, -1.75f + 0.25f * 6), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"l_anim1", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.0f - 0.5, -1.75f + 0.25f * 7), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"l_anim2", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.0f - 0.5, -1.75f + 0.25f * 8), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"l_anim3", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);
-	first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.25f , -2.5f), 0.1, 0.2, 0.8, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ), "Bone Edit", font_size, "D:/icon_res/default.png", true);
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.0f - 0.5, -1.75f + 0.25f * 6), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"l_anim1", smallbox_font_size, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);
-		//-----------------------------add to existing skel.-------------------//
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.25f + 0.5f - 0.5, -1.75f), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"add_bone_\nexist", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn); 
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.25f + 0.5f - 0.5, -1.75f + 0.25f * 1), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-			"add_\nroot", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn); 
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.25f + 0.5f - 0.5, -1.75f + 0.25f * 2), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"del_bone_\nexist", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.25f + 0.5f - 0.5, -1.75f + 0.25f * 3), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-			"edit_bone_\nexist", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.25f + 0.5f - 0.5, -1.75f + 0.25f * 4), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-			"backward", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.25f + 0.5f - 0.5, -1.75f + 0.25f * 5), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-			"del_all", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.25f + 0.5f - 0.5, -1.75f + 0.25f * 6), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"f_del_\nall", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.25f + 0.5f - 0.5, -1.75f + 0.25f * 7), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"f_back", smallbox_font_size, "D:/icon_res/default.png", true);
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.0f - 0.5, -1.75f + 0.25f * 7), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"l_anim2", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.0f - 0.5, -1.75f + 0.25f * 8), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"l_anim3", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.25f, -2.5f), 0.1, 0.2, 0.8, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f), "Bone Edit", font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+	//-----------------------------add to existing skel.-------------------//
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.25f + 0.5f - 0.5, -1.75f), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"add_bone_\nexist", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.25f + 0.5f - 0.5, -1.75f + 0.25f * 1), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"add_\nroot", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.25f + 0.5f - 0.5, -1.75f + 0.25f * 2), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"del_bone_\nexist", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.25f + 0.5f - 0.5, -1.75f + 0.25f * 3), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"edit_bone_\nexist", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.25f + 0.5f - 0.5, -1.75f + 0.25f * 4), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"backward", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.25f + 0.5f - 0.5, -1.75f + 0.25f * 5), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"del_all", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.25f + 0.5f - 0.5, -1.75f + 0.25f * 6), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"f_del_\nall", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.25f + 0.5f - 0.5, -1.75f + 0.25f * 7), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"f_back", smallbox_font_size, "D:/icon_res/default.png", true);
 	/*first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.0f, -2.5f), 0.1, 0.2, 0.8, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ), "Mode for Left Control.", font_size, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);*/
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.0f + 0.5f - 0.5, -1.75f), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"adjest_\ncoordi.", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.0f + 0.5f - 0.5, -1.75f + 0.25f * 1), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"reset_\nall_\nadjestment", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.0f+ 0.5f - 0.5, -1.75f + 0.25f * 2), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-			"scale_\njointbox", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);
-		/*
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.0f+ 0.5f, -1.75f + 0.25f * 6), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-			"walk around", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.0f+ 0.5f, -1.75f + 0.25f * 7), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-			"walk around", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);*/
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.0f + 0.5f - 0.5, -1.75f + 0.25f * 3), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-			"build_skel", smallbox_font_size, "D:/icon_res/default.png", true); 
-			// maybe do not have to click it explicitly 
-		pg1->elements.push_back(first_btn);
-		/*first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.0f+ 0.5f, -1.75f + 0.25f * 2), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"s_anim3", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);*/
-	first_btn = boxgui_button(vec3(2.5f - 0.05f, .75f + 0.5f + 1, -2.5f), 0.1, 0.2, 0.8, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ), "Mesh Style", font_size, "D:/icon_res/default.png", true);
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.0f + 0.5f - 0.5, -1.75f), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"adjest_\ncoordi.", smallbox_font_size, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, .75f + 0.5f + 1, -1.75f), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"l_demo1", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, .75f + 0.5f + 1, -1.75f + 0.25f * 1), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"l_demo2", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, .75f + 0.5f + 1, -1.75f + 0.25f * 2), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"l_demo3", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, .75f + 0.5f + 1, -1.75f + 0.25f * 3), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"l_demo4", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, .75f + 0.5f + 1, -1.75f + 0.25f * 4), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"l_demo5", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);
-		/*first_btn = boxgui_button(vec3(2.5f - 0.05f, .75f, -1.75f + 0.25f * 7), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"demo8", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);*/
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.0f + 0.5f - 0.5, -1.75f + 0.25f * 1), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"reset_\nall_\nadjestment", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.0f + 0.5f - 0.5, -1.75f + 0.25f * 2), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"scale_\njointbox", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+	/*
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.0f+ 0.5f, -1.75f + 0.25f * 6), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"walk around", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.0f+ 0.5f, -1.75f + 0.25f * 7), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"walk around", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);*/
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.0f + 0.5f - 0.5, -1.75f + 0.25f * 3), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"build_skel", smallbox_font_size, "D:/icon_res/default.png", true);
+	// maybe do not have to click it explicitly 
+	pg1->elements.push_back(first_btn);
+	/*first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.0f+ 0.5f, -1.75f + 0.25f * 2), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
+		"s_anim3", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);*/
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, .75f + 0.5f + 1, -2.5f), 0.1, 0.2, 0.8, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f), "Mesh Style", font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, .75f + 0.5f + 1, -1.75f), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"l_demo1", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, .75f + 0.5f + 1, -1.75f + 0.25f * 1), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"l_demo2", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, .75f + 0.5f + 1, -1.75f + 0.25f * 2), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"l_demo3", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, .75f + 0.5f + 1, -1.75f + 0.25f * 3), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"l_demo4", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, .75f + 0.5f + 1, -1.75f + 0.25f * 4), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"l_demo5", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+	/*first_btn = boxgui_button(vec3(2.5f - 0.05f, .75f, -1.75f + 0.25f * 7), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
+		"demo8", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);*/
 	/*first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.5f+ 1, -2.5f), 0.1, 0.2, 0.8, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f), "Mesh Style", font_size, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);*/
-		/*first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.5f+ 1, -1.75f + 0.25f * 0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-			"show_\nwireframe", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.5f+ 1, -1.75f + 0.25f * 1), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-			"show_\nvertices", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);*/
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.5f+ 1, -1.75f + 0.25f * 0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-			"trans.", smallbox_font_size, "D:/icon_res/default.png", true);
-			pg1->elements.push_back(first_btn);
-
-			//vec3 center_gan, extend_gan, center_slider, extend_slider; box3 gan; box3 slider;
-			//center_gan = vec3(2.45f - 0.3 - 0.6, 2.0f, -1.75f + 0.25f * 2);
-			//extend_gan = vec3(0.6, 0.01, 0.01);
-			//gan = box3(vec3(center_gan - extend_gan), vec3(center_gan + extend_gan));
-			//boxes.push_back(gan);
-			//box_colors.push_back(rgb(1, 0, 0));
-
-			//center_slider = vec3(2.45f - 0.3 - 0.6, 2.0f, -1.75f + 0.25f * 2); // adjestable x 
-			//extend_slider = vec3(0.05);
-			//slider = box3(vec3(center_slider - extend_slider), vec3(center_slider + extend_slider));
-			//boxes.push_back(slider);
-			//box_colors.push_back(rgb(1, 0, 0)); 
-
-			////---------- y
-			//center_gan = vec3(2.45f - 0.3 - 0.6 - 1.5 * 1, 2.0f, -1.75f + 0.25f * 2);
-			//extend_gan = vec3(0.6, 0.01, 0.01);
-			//gan = box3(vec3(center_gan - extend_gan), vec3(center_gan + extend_gan));
-			//boxes.push_back(gan);
-			//box_colors.push_back(rgb(0, 1, 0));
-
-			//center_slider = vec3(2.45f - 0.3 - 0.6 - 1.5 * 1, 2.0f, -1.75f + 0.25f * 2); // adjestable x 
-			//extend_slider = vec3(0.05);
-			//slider = box3(vec3(center_slider - extend_slider), vec3(center_slider + extend_slider));
-			//boxes.push_back(slider);
-			//box_colors.push_back(rgb(0, 1, 0));
-
-			////------------- z
-			//center_gan = vec3(2.45f - 0.3 - 0.6 - 1.5 * 2 , 2.0f, -1.75f + 0.25f * 2);
-			//extend_gan = vec3(0.6, 0.01, 0.01);
-			//gan = box3(vec3(center_gan - extend_gan), vec3(center_gan + extend_gan));
-			//boxes.push_back(gan);
-			//box_colors.push_back(rgb(0, 0, 1));
-
-			//center_slider = vec3(2.45f - 0.3 - 0.6 - 1.5 * 2, 2.0f, -1.75f + 0.25f * 2); // adjestable x 
-			//extend_slider = vec3(0.05);
-			//slider = box3(vec3(center_slider - extend_slider), vec3(center_slider + extend_slider));
-			//boxes.push_back(slider);
-			//box_colors.push_back(rgb(0, 0, 1));
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.5f+ 1, -1.75f + 0.25f * 1), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-			"rotation.", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);
-			//center_gan = vec3(2.45f - 0.3 - 0.6, 2.0f, -1.75f + 0.25f * 3);
-			//extend_gan = vec3(0.6, 0.01, 0.01);
-			//gan = box3(vec3(center_gan - extend_gan), vec3(center_gan + extend_gan));
-			//boxes.push_back(gan);
-			//box_colors.push_back(rgb(1, 0, 0));
-
-			//center_slider = vec3(2.45f - 0.3, 2.0f, -1.75f + 0.25f * 3); // adjestable x 
-			//extend_slider = vec3(0.05);
-			//slider = box3(vec3(center_slider - extend_slider), vec3(center_slider + extend_slider));
-			//boxes.push_back(slider);
-			//box_colors.push_back(rgb(1, 0, 0));
-		rgb cur_color = rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f);
-		first_btn = boxgui_button(vec3(2.45f, 2.0f, -1.75f + 0.25f * 2), 0.1, 0.2, 0.2, cur_color,
-			"scale", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);
-		/*first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.5f + 0.06, -1.75f + 0.25f * 5 - 0.06), 0.1, 0.08, 0.08, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-			"+", 200, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);*/
-			//center_gan = vec3(2.45f - 0.3 - 0.6, 2.0f, -0.75f);
-			//extend_gan = vec3(0.6,0.01, 0.01);
-			//gan = box3(vec3(center_gan - extend_gan),vec3(center_gan + extend_gan));
-			//boxes.push_back(gan);
-			//box_colors.push_back(cur_color);
-		
-			//center_slider = vec3(2.45f - 0.3-0.6, 2.0f, -0.75f); // adjestable x 
-			//extend_slider = vec3(0.05);
-			//slider = box3(vec3(center_slider - extend_slider), vec3(center_slider + extend_slider));
-			//boxes.push_back(slider);
-			//box_colors.push_back(cur_color);
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.5f + 1, -1.75f + 0.25f * 3), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-			"toggle\nmesh", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.5f + 1, -1.75f + 0.25f * 4), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-			"toggle\ntransparent", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.5f + 1, -1.75f + 0.25f * 5), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-			"toggle\nwireframe", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.5f + 1, -1.75f + 0.25f * 6), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-			"toggle\nface_culling", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);
-
-	first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.25f, -2.5f), 0.1, 0.2, 0.8, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ), "Skinning", font_size, "D:/icon_res/default.png", true);
+	/*first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.5f+ 1, -1.75f + 0.25f * 0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"show_\nwireframe", smallbox_font_size, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);
-		/*first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.25f, -1.75f), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"adjest bone posi.", smaller_f, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);*/
-		/*first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.25f, -1.75f + 0.25f * 0), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"skinning", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);*/
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.25f, -1.75f + 0.25f * 0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-			"write_\npinocchio\n_skel.", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.25f, -1.75f + 0.25f * 1), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-			"autorig_\nwith_\npinocchio", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.25f, -1.75f + 0.25f * 2), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-			"autorig_\nwith_heat_\ndiffusion", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);
-		first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.25f, -1.75f + 0.25f * 3), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-			"apply_\nattachments", smallbox_font_size, "D:/icon_res/default.png", true);
-		pg1->elements.push_back(first_btn);
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.5f+ 1, -1.75f + 0.25f * 1), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"show_\nvertices", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);*/
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.5f + 1, -1.75f + 0.25f * 0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"trans.", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+
+	//vec3 center_gan, extend_gan, center_slider, extend_slider; box3 gan; box3 slider;
+	//center_gan = vec3(2.45f - 0.3 - 0.6, 2.0f, -1.75f + 0.25f * 2);
+	//extend_gan = vec3(0.6, 0.01, 0.01);
+	//gan = box3(vec3(center_gan - extend_gan), vec3(center_gan + extend_gan));
+	//boxes.push_back(gan);
+	//box_colors.push_back(rgb(1, 0, 0));
+
+	//center_slider = vec3(2.45f - 0.3 - 0.6, 2.0f, -1.75f + 0.25f * 2); // adjestable x 
+	//extend_slider = vec3(0.05);
+	//slider = box3(vec3(center_slider - extend_slider), vec3(center_slider + extend_slider));
+	//boxes.push_back(slider);
+	//box_colors.push_back(rgb(1, 0, 0)); 
+
+	////---------- y
+	//center_gan = vec3(2.45f - 0.3 - 0.6 - 1.5 * 1, 2.0f, -1.75f + 0.25f * 2);
+	//extend_gan = vec3(0.6, 0.01, 0.01);
+	//gan = box3(vec3(center_gan - extend_gan), vec3(center_gan + extend_gan));
+	//boxes.push_back(gan);
+	//box_colors.push_back(rgb(0, 1, 0));
+
+	//center_slider = vec3(2.45f - 0.3 - 0.6 - 1.5 * 1, 2.0f, -1.75f + 0.25f * 2); // adjestable x 
+	//extend_slider = vec3(0.05);
+	//slider = box3(vec3(center_slider - extend_slider), vec3(center_slider + extend_slider));
+	//boxes.push_back(slider);
+	//box_colors.push_back(rgb(0, 1, 0));
+
+	////------------- z
+	//center_gan = vec3(2.45f - 0.3 - 0.6 - 1.5 * 2 , 2.0f, -1.75f + 0.25f * 2);
+	//extend_gan = vec3(0.6, 0.01, 0.01);
+	//gan = box3(vec3(center_gan - extend_gan), vec3(center_gan + extend_gan));
+	//boxes.push_back(gan);
+	//box_colors.push_back(rgb(0, 0, 1));
+
+	//center_slider = vec3(2.45f - 0.3 - 0.6 - 1.5 * 2, 2.0f, -1.75f + 0.25f * 2); // adjestable x 
+	//extend_slider = vec3(0.05);
+	//slider = box3(vec3(center_slider - extend_slider), vec3(center_slider + extend_slider));
+	//boxes.push_back(slider);
+	//box_colors.push_back(rgb(0, 0, 1));
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.5f + 1, -1.75f + 0.25f * 1), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"rotation.", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+	//center_gan = vec3(2.45f - 0.3 - 0.6, 2.0f, -1.75f + 0.25f * 3);
+	//extend_gan = vec3(0.6, 0.01, 0.01);
+	//gan = box3(vec3(center_gan - extend_gan), vec3(center_gan + extend_gan));
+	//boxes.push_back(gan);
+	//box_colors.push_back(rgb(1, 0, 0));
+
+	//center_slider = vec3(2.45f - 0.3, 2.0f, -1.75f + 0.25f * 3); // adjestable x 
+	//extend_slider = vec3(0.05);
+	//slider = box3(vec3(center_slider - extend_slider), vec3(center_slider + extend_slider));
+	//boxes.push_back(slider);
+	//box_colors.push_back(rgb(1, 0, 0));
+	rgb cur_color = rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f);
+	first_btn = boxgui_button(vec3(2.45f, 2.0f, -1.75f + 0.25f * 2), 0.1, 0.2, 0.2, cur_color,
+		"scale", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+	/*first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.5f + 0.06, -1.75f + 0.25f * 5 - 0.06), 0.1, 0.08, 0.08, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"+", 200, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);*/
+	//center_gan = vec3(2.45f - 0.3 - 0.6, 2.0f, -0.75f);
+	//extend_gan = vec3(0.6,0.01, 0.01);
+	//gan = box3(vec3(center_gan - extend_gan),vec3(center_gan + extend_gan));
+	//boxes.push_back(gan);
+	//box_colors.push_back(cur_color);
+
+	//center_slider = vec3(2.45f - 0.3-0.6, 2.0f, -0.75f); // adjestable x 
+	//extend_slider = vec3(0.05);
+	//slider = box3(vec3(center_slider - extend_slider), vec3(center_slider + extend_slider));
+	//boxes.push_back(slider);
+	//box_colors.push_back(cur_color);
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.5f + 1, -1.75f + 0.25f * 3), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"toggle\nmesh", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.5f + 1, -1.75f + 0.25f * 4), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"toggle\ntransparent", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.5f + 1, -1.75f + 0.25f * 5), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"toggle\nwireframe", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.5f + 1, -1.75f + 0.25f * 6), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"toggle\nface_culling", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.25f, -2.5f), 0.1, 0.2, 0.8, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f), "Skinning", font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+	/*first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.25f, -1.75f), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
+		"adjest bone posi.", smaller_f, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);*/
+	/*first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.25f, -1.75f + 0.25f * 0), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
+		"skinning", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);*/
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.25f, -1.75f + 0.25f * 0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"write_\npinocchio\n_skel.", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.25f, -1.75f + 0.25f * 1), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"autorig_\nwith_\npinocchio", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.25f, -1.75f + 0.25f * 2), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"autorig_\nwith_heat_\ndiffusion", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.25f, -1.75f + 0.25f * 3), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"apply_\nattachments", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
 	//---------------------------------------------------------------second part of gui------------------------//
-	first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.8, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ), "Load Scene", font_size, "D:/icon_res/icon_chg_skybox.png", true);
+	first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.8, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f), "Load Scene", font_size, "D:/icon_res/icon_chg_skybox.png", true);
 	first_btn.do_transform = true;
 	first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
 	first_btn.set_trans(vec3(2.25f - 0.5f, 2.5, 0.5f));
 	pg1->elements.push_back(first_btn);
-		first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"l_scene1", smallbox_font_size, "D:/icon_res/default.png", true);
-		first_btn.do_transform = true;
-		first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
-		first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 0, 2.5, 0.5f));
-		pg1->elements.push_back(first_btn);
+	first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"l_scene1", smallbox_font_size, "D:/icon_res/default.png", true);
+	first_btn.do_transform = true;
+	first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
+	first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 0, 2.5, 0.5f));
+	pg1->elements.push_back(first_btn);
 
-		first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"toggle_addi\n_skel", smallbox_font_size, "D:/icon_res/default.png", true);
-		first_btn.do_transform = true;
-		first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
-		first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 1, 2.5, 0.5f));
-		pg1->elements.push_back(first_btn);
+	first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"toggle_addi\n_skel", smallbox_font_size, "D:/icon_res/default.png", true);
+	first_btn.do_transform = true;
+	first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
+	first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 1, 2.5, 0.5f));
+	pg1->elements.push_back(first_btn);
 
-		first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-			"toggle_\nimitating", smallbox_font_size, "D:/icon_res/default.png", true);
-		first_btn.do_transform = true;
-		first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
-		first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 2, 2.5, 0.5f));
-		pg1->elements.push_back(first_btn);
-	first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.8, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ), "IK", font_size, "D:/icon_res/icon_chg_skybox.png", true);
+	first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"toggle_\nimitating", smallbox_font_size, "D:/icon_res/default.png", true);
+	first_btn.do_transform = true;
+	first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
+	first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 2, 2.5, 0.5f));
+	pg1->elements.push_back(first_btn);
+	first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.8, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f), "IK", font_size, "D:/icon_res/icon_chg_skybox.png", true);
 	first_btn.do_transform = true;
 	first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
 	first_btn.set_trans(vec3(2.25f - 0.5f, 2.5 - 0.25 * 1, 0.5f));
 	pg1->elements.push_back(first_btn);
-		first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"ccd", smallbox_font_size, "D:/icon_res/default.png", true);
-		first_btn.do_transform = true;
-		first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
-		first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 0, 2.5 - 0.25 * 1, 0.5f));
-		pg1->elements.push_back(first_btn);
-		first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"opti. ccd", smallbox_font_size, "D:/icon_res/default.png", true);
-		first_btn.do_transform = true;
-		first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
-		first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 1, 2.5 - 0.25 * 1, 0.5f));
-		pg1->elements.push_back(first_btn);
-		first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"ik1", smallbox_font_size, "D:/icon_res/default.png", true);
-		first_btn.do_transform = true;
-		first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
-		first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 2, 2.5 - 0.25 * 1, 0.5f));
-		pg1->elements.push_back(first_btn);
-		//
-		first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"s_base", smallbox_font_size, "D:/icon_res/default.png", true);
-		first_btn.do_transform = true;
-		first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
-		first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 3, 2.5 - 0.25 * 1, 0.5f));
-		pg1->elements.push_back(first_btn);
-		//
-		first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-			"s_ee_left", smallbox_font_size, "D:/icon_res/default.png", true);
-		first_btn.do_transform = true;
-		first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
-		first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 4, 2.5 - 0.25 * 1, 0.5f));
-		pg1->elements.push_back(first_btn);
-		//
-		first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-			"s_ee_right", smallbox_font_size, "D:/icon_res/default.png", true);
-		first_btn.do_transform = true;
-		first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
-		first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 5, 2.5 - 0.25 * 1, 0.5f));
-		pg1->elements.push_back(first_btn);
-		//
-		first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-			"s_ee_head", smallbox_font_size, "D:/icon_res/default.png", true);
-		first_btn.do_transform = true;
-		first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
-		first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 6, 2.5 - 0.25 * 1, 0.5f));
-		pg1->elements.push_back(first_btn);
+	first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"ccd", smallbox_font_size, "D:/icon_res/default.png", true);
+	first_btn.do_transform = true;
+	first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
+	first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 0, 2.5 - 0.25 * 1, 0.5f));
+	pg1->elements.push_back(first_btn);
+	first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"opti. ccd", smallbox_font_size, "D:/icon_res/default.png", true);
+	first_btn.do_transform = true;
+	first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
+	first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 1, 2.5 - 0.25 * 1, 0.5f));
+	pg1->elements.push_back(first_btn);
+	first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"ik1", smallbox_font_size, "D:/icon_res/default.png", true);
+	first_btn.do_transform = true;
+	first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
+	first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 2, 2.5 - 0.25 * 1, 0.5f));
+	pg1->elements.push_back(first_btn);
+	//
+	first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"s_base", smallbox_font_size, "D:/icon_res/default.png", true);
+	first_btn.do_transform = true;
+	first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
+	first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 3, 2.5 - 0.25 * 1, 0.5f));
+	pg1->elements.push_back(first_btn);
+	//
+	first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"s_ee_left", smallbox_font_size, "D:/icon_res/default.png", true);
+	first_btn.do_transform = true;
+	first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
+	first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 4, 2.5 - 0.25 * 1, 0.5f));
+	pg1->elements.push_back(first_btn);
+	//
+	first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"s_ee_right", smallbox_font_size, "D:/icon_res/default.png", true);
+	first_btn.do_transform = true;
+	first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
+	first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 5, 2.5 - 0.25 * 1, 0.5f));
+	pg1->elements.push_back(first_btn);
+	//
+	first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"s_ee_head", smallbox_font_size, "D:/icon_res/default.png", true);
+	first_btn.do_transform = true;
+	first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
+	first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 6, 2.5 - 0.25 * 1, 0.5f));
+	pg1->elements.push_back(first_btn);
 	/*first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.8, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ), "Skel. Retargeting", font_size, "D:/icon_res/icon_chg_skybox.png", true);
 	first_btn.do_transform = true;
 	first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
