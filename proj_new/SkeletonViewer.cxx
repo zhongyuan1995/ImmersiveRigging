@@ -370,7 +370,7 @@ void SkeletonViewer::load_skeleton_given_name(std::string f) {
 		}
 		else
 		{
-			cgv::gui::message("Could not load specified ASF file.");
+			std::cout<<"Could not load specified ASF file.\n";
 		}
 	}
 }

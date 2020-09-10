@@ -44,12 +44,12 @@ public:
 	bool b_set_polygonmode = true;
 	bool b_face_culling = false;
 
+	static cgv::render::shader_program prog;
 private:
 	float mesh_scale = 1;
 	cgv::math::fmat<float, 3, 3> rot;
 	cgv::math::fvec<float, 3> trans;
 
-	static cgv::render::shader_program prog;
 
 	std::vector<cgv::math::fvec<float, 3>> positions;
 	std::vector<unsigned int> indices;	
@@ -58,7 +58,7 @@ private:
 	GLuint positionBuffer;
 	GLuint boneIndexBuffer;
 	GLuint boneWeightBuffer;
-	GLuint vao;
+	GLuint mmesh_vao;
 
 	GLfloat* skinning_matrices;
 	int n_bones;

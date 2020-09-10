@@ -50,29 +50,18 @@ SkinningMesh::SkinningMesh()
 	glGenBuffers(1, &positionBuffer);
 	glGenBuffers(1, &boneIndexBuffer);
 	glGenBuffers(1, &boneWeightBuffer);
-	glGenVertexArrays(1, &vao);
+	glGenVertexArrays(1, &mmesh_vao);
 
-	glBindVertexArray(vao);
-	glBindBuffer(GL_ARRAY_BUFFER, positionBuffer);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);	
-
-	glBindBuffer(GL_ARRAY_BUFFER, boneWeightBuffer);
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, 0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, boneIndexBuffer);
-	glVertexAttribPointer(2, 4, GL_INT, GL_FALSE, 0, 0);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-
-	glEnableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
-	glDisableVertexAttribArray(2);
-	glBindVertexArray(0);
+	//glBindVertexArray(mmesh_vao);
+	//glDisableVertexAttribArray(0);
+	//glDisableVertexAttribArray(1);
+	//glDisableVertexAttribArray(2);
+	//glBindVertexArray(0);
 
 	skinning_matrices = new GLfloat[50 * 16];
-
 	rot.identity();
 	trans = cgv::math::fvec<float, 3>(0);
+	has_attachment = false;
 }
 
 SkinningMesh::~SkinningMesh()
@@ -81,7 +70,7 @@ SkinningMesh::~SkinningMesh()
 	glDeleteBuffers(1, &positionBuffer);
 	glDeleteBuffers(1, &boneIndexBuffer);
 	glDeleteBuffers(1, &boneWeightBuffer);
-	glDeleteVertexArrays(1, &vao);
+	glDeleteVertexArrays(1, &mmesh_vao);
 
 	delete[] skinning_matrices;
 }
@@ -131,14 +120,15 @@ bool SkinningMesh::read_obj(const char* filename)
 	}
 
 	f.close();
-	
-	glBindVertexArray(vao);
+
+	glBindVertexArray(mmesh_vao);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	glBindBuffer(GL_ARRAY_BUFFER, positionBuffer);
-	glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof(cgv::math::fvec<float, 3>), &positions[0], GL_STATIC_DRAW);	
+	glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof(cgv::math::fvec<float, 3>), &positions[0], GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(cgv::math::fvec<float, 3>), 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
@@ -189,13 +179,17 @@ void SkinningMesh::read_attachment(std::string filename)
 		bone_weights.push_back(weights);
 	}
 
-	glBindVertexArray(vao);
+	glBindVertexArray(mmesh_vao);
 	glBindBuffer(GL_ARRAY_BUFFER, boneIndexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, bone_indices.size() * sizeof(ivec4), &bone_indices[0], GL_STATIC_DRAW);
+	//glVertexAttribPointer(2, 4, GL_INT, GL_FALSE, 0, 0);
+	glVertexAttribPointer(2, 4, GL_INT, GL_FALSE, sizeof(ivec4), 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glBindBuffer(GL_ARRAY_BUFFER, boneWeightBuffer);
 	glBufferData(GL_ARRAY_BUFFER, bone_weights.size() * sizeof(Vec4), &bone_weights[0], GL_STATIC_DRAW);
+	//glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, 0);
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vec4), 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glBindVertexArray(0);
@@ -236,12 +230,12 @@ void SkinningMesh::draw(cgv::render::context& ctx) // not called automatically, 
 	prog.set_uniform(ctx, "skinned", has_attachment);
 	prog.enable(ctx);
 
-	glBindVertexArray(vao);
-
+	glBindVertexArray(mmesh_vao);
+	glEnableVertexAttribArray(0);
 	if (has_attachment)
 	{
 		glEnableVertexAttribArray(1);
-		glEnableVertexAttribArray(2);	
+		glEnableVertexAttribArray(2);
 
 		GLint program;
 		glGetIntegerv(GL_CURRENT_PROGRAM, &program);
@@ -252,9 +246,9 @@ void SkinningMesh::draw(cgv::render::context& ctx) // not called automatically, 
 	{
 		glDisableVertexAttribArray(1);
 		glDisableVertexAttribArray(2);
-	}	
+	}
 
-	if(b_set_polygonmode)
+	if (b_set_polygonmode)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer); // imp.! 
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
@@ -265,8 +259,4 @@ void SkinningMesh::draw(cgv::render::context& ctx) // not called automatically, 
 	glBindVertexArray(0);
 
 	prog.disable(ctx);
-
-	//glDisable(GL_CULL_FACE);
-	//glDisable(GL_BLEND);
-
 }

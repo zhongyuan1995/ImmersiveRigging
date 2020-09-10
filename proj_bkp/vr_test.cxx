@@ -14,6 +14,7 @@
 #include <cgv_gl/sphere_renderer.h>
 #include <cgv/media/mesh/simple_mesh.h>
 #include <cgv_gl/gl/mesh_render_info.h>
+#include <libs/cg_vr/vr_events.h>
 
 #include <fstream>
 
@@ -137,12 +138,6 @@ protected:
 
 	// sample for rendering a mesh
 	double mesh_scale;
-	dvec3 mesh_location;
-	dquat mesh_orientation;
-
-	// render information for mesh
-	cgv::render::mesh_render_info MI;
-
 
 	// sample for rendering text labels
 	string label_text;
@@ -181,8 +176,6 @@ protected:
 	cgv::media::font::FontFaceAttributes ulabel_face_type;
 
 
-	// keep deadzone and precision vector for left controller
-	cgv::gui::vr_server::vec_flt_flt left_deadzone_and_precision;
 	// store handle to vr kit of which left deadzone and precision is configured
 	void* last_kit_handle;
 
@@ -401,8 +394,6 @@ protected:
 				vr::vr_kit* kit_ptr = vr::get_vr_kit(kit_handle);
 				if (kit_ptr) {
 					last_kit_handle = kit_handle;
-					left_deadzone_and_precision = kit_ptr->get_controller_throttles_and_sticks_deadzone_and_precision(0);
-					cgv::gui::ref_vr_server().provide_controller_throttles_and_sticks_deadzone_and_precision(kit_handle, 0, &left_deadzone_and_precision);
 					post_recreate_gui();
 				}
 			}
@@ -456,8 +447,6 @@ public:
 		connect(cgv::gui::ref_vr_server().on_device_change, this, &vr_test::on_device_change);
 
 		mesh_scale = 0.019f;
-		mesh_location = dvec3(-1.5f, 0, -2.8f); // not used 
-		mesh_orientation = dquat(1, 0, 0, 0);
 
 		srs.radius = 0.005f;
 
@@ -829,29 +818,7 @@ public:
 		add_member_control(this, "skel_posi_z", var3, "value_slider", "min=-10;max=10;log=true;ticks=true");
 		add_member_control(this, "skel_scale", scale_factor, "value_slider", "min=0.01;max=10;log=true;ticks=true");
 		add_member_control(this, "mesh_scale", mesh_scale, "value_slider", "min=0.1;max=10;log=true;ticks=true");
-		add_gui("mesh_location", mesh_location, "vector", "options='min=-3;max=3;ticks=true");
-		add_gui("mesh_orientation", static_cast<dvec4&>(mesh_orientation), "direction", "options='min=-1;max=1;ticks=true");
 		add_member_control(this, "ray_length", ray_length, "value_slider", "min=0.1;max=10;log=true;ticks=true");
-		if (last_kit_handle) {
-			vr::vr_kit* kit_ptr = vr::get_vr_kit(last_kit_handle);
-			const std::vector<std::pair<int, int> >* t_and_s_ptr = 0;
-			if (kit_ptr)
-				t_and_s_ptr = &kit_ptr->get_controller_throttles_and_sticks(0);
-			add_decorator("deadzone and precisions", "heading", "level=3");
-			int ti = 0;
-			int si = 0;
-			for (unsigned i = 0; i < left_deadzone_and_precision.size(); ++i) {
-				std::string prefix = std::string("unknown[") + cgv::utils::to_string(i) + "]";
-				if (t_and_s_ptr) {
-					if (t_and_s_ptr->at(i).second == -1)
-						prefix = std::string("throttle[") + cgv::utils::to_string(ti++) + "]";
-					else
-						prefix = std::string("stick[") + cgv::utils::to_string(si++) + "]";
-				}
-				add_member_control(this, prefix + ".deadzone", left_deadzone_and_precision[i].first, "value_slider", "min=0;max=1;ticks=true;log=true");
-				add_member_control(this, prefix + ".precision", left_deadzone_and_precision[i].second, "value_slider", "min=0;max=1;ticks=true;log=true");
-			}
-		}
 		if (begin_tree_node("box style", style)) {
 			align("\a");
 			add_gui("box style", style);
@@ -873,8 +840,6 @@ public:
 		if (begin_tree_node("mesh", mesh_scale)) {
 			align("\a");
 			add_member_control(this, "scale", mesh_scale, "value_slider", "min=0.0001;step=0.0000001;max=100;log=true;ticks=true");
-			add_gui("location", mesh_location, "", "main_label='';long_label=true;gui_type='value_slider';options='min=-2;max=2;step=0.001;ticks=true'");
-			add_gui("orientation", static_cast<dvec4&>(mesh_orientation), "direction", "main_label='';long_label=true;gui_type='value_slider';options='min=-1;max=1;step=0.001;ticks=true'");
 			align("\b");
 			end_tree_node(mesh_scale);
 		}
@@ -944,25 +909,33 @@ public:
 				/*std::cout << vrke.get_state().controller[0].button_flags << std::endl;
 				std::cout << vrke.get_state().controller[1].button_flags << std::endl;*/
 				switch (vrke.get_key()) {
-				case vr::VR_LEFT_BUTTON0:
-					std::cout << "button 0 of left controller pressed" << std::endl;
-					teleport = true;
+				case vr::VR_GRIP:
+					if (vrke.get_controller_index() == 0) {
+						std::cout << "button 0 of left controller pressed" << std::endl;
+						teleport = true;
+					}
+					else {
+						std::cout << "button 0 of right controller pressed" << std::endl;
+						btn_keydown_boxgui = true;
+					}
 					return true;
-				case vr::VR_LEFT_MENU:
-					std::cout << "button VR_LEFT_MENU of left controller pressed" << std::endl;
-					/*if (lefthandmode._Equal("add bone")) {
-						keydown = true;
-						is_even_point = !is_even_point;
-					}*/
-					object_teleport = true;
+				case vr::VR_MENU:
+					if (vrke.get_controller_index() == 0) {
 
+						std::cout << "button VR_LEFT_MENU of left controller pressed" << std::endl;
+						/*if (lefthandmode._Equal("add bone")) {
+							keydown = true;
+							is_even_point = !is_even_point;
+						}*/
+						object_teleport = true;
+					}
 					return true;
-				case vr::VR_RIGHT_BUTTON0:
-					std::cout << "button 0 of right controller pressed" << std::endl;
-					btn_keydown_boxgui = true;
-					return true;
-				case vr::VR_RIGHT_STICK_RIGHT:
-					std::cout << "touch pad of right controller pressed at right direction" << std::endl;
+				case vr::VR_DPAD_RIGHT:
+					if (vrke.get_controller_index() == 0) {
+					}
+					else {
+						std::cout << "touch pad of right controller pressed at right direction" << std::endl;
+					}
 					return true;
 				}
 			}
@@ -1058,11 +1031,11 @@ public:
 				return true;
 			case cgv::gui::SA_MOVE:
 			case cgv::gui::SA_DRAG:
-				std::cout << "stick " << vrse.get_stick_index()
-					<< " of controller " << vrse.get_controller_index()
-					<< " " << cgv::gui::get_stick_action_string(vrse.get_action())
-					<< " from " << vrse.get_last_x() << ", " << vrse.get_last_y()
-					<< " to " << vrse.get_x() << ", " << vrse.get_y() << std::endl;
+				//				std::cout << "stick " << vrse.get_stick_index()
+				//					<< " of controller " << vrse.get_controller_index()
+				//					<< " " << cgv::gui::get_stick_action_string(vrse.get_action())
+				//					<< " from " << vrse.get_last_x() << ", " << vrse.get_last_y()
+				//					<< " to " << vrse.get_x() << ", " << vrse.get_y() << std::endl;
 
 
 				if (vrse.get_state().controller[1].axes[1] > 0 && tmpboxsize < 0.5f) {
@@ -1873,9 +1846,9 @@ public:
 				vr_view_ptr->set_event_type_flags(
 					cgv::gui::VREventTypeFlags(
 						cgv::gui::VRE_KEY +
-						cgv::gui::VRE_THROTTLE +
-						cgv::gui::VRE_STICK +
-						cgv::gui::VRE_STICK_KEY +
+						cgv::gui::VRE_ONE_AXIS +
+						cgv::gui::VRE_TWO_AXES +
+						cgv::gui::VRE_ONE_AXIS_GENERATES_KEY +
 						cgv::gui::VRE_POSE
 					));
 				vr_view_ptr->enable_vr_event_debugging(false);
@@ -1892,32 +1865,10 @@ public:
 
 		skyprog.build_program(ctx, "skycube.glpr");
 
-		// set up the proj dir from sys. varible
-		//Limit according to http://msdn.microsoft.com/en-us/library/ms683188.aspx
-		DWORD bufferSize = 65535;
-		std::wstring buff;
-		buff.resize(bufferSize);
-		bufferSize = GetEnvironmentVariableW(L"CGV_EXEC_DIR", &buff[0], bufferSize);
-		if (!bufferSize)
-			//error
-			buff.resize(bufferSize);
-		int len = WideCharToMultiByte(CP_UTF8, 0, buff.c_str(), -1, 0, 0, 0, 0);
-		vector<char> buf(len - 1);
-		WideCharToMultiByte(CP_UTF8, 0, buff.c_str(), -1, &buf[0], len, 0, 0);
-		projdir = std::string(buf.begin(), buf.end());
-		std::string image0 = projdir.append("\\skybox\\cm_{xp,xn,yp,yn,zp,zn}.jpg");
-		// have to reset 
-		projdir = std::string(buf.begin(), buf.end());
-		std::string image1 = projdir.append("\\skybox\\BluePinkNebular_{xp,xn,yp,yn,zp,zn}.jpg");
-		// have to reset 
-		projdir = std::string(buf.begin(), buf.end());
-		std::string image2 = projdir.append("\\skybox\\igen_2\\{xp,xn,yp,yn,zp,zn}.jpg");
 
-		cout << "image0 dir:" << image0 << endl;
-
-		img_tex.create_from_images(ctx, image0);
-		tmp_tex.create_from_images(ctx, image1);
-		test_tex.create_from_images(ctx, image2);
+		img_tex.create_from_images(ctx, "../../../plugins/vr_rigging_pub/proj_new/skybox/cm_{xp,xn,yp,yn,zp,zn}.jpg");
+		tmp_tex.create_from_images(ctx, "../../../plugins/vr_rigging_pub/proj_new/skybox/BluePinkNebular_{xp,xn,yp,yn,zp,zn}.jpg");
+		test_tex.create_from_images(ctx, "../../../plugins/vr_rigging_pub/proj_new/skybox/igen_2/{xp,xn,yp,yn,zp,zn}.jpg");
 		pg1->icon_shader_prog.build_program(ctx, "image.glpr");
 
 		cull_mode = CM_BACKFACE;
@@ -1944,20 +1895,6 @@ public:
 	}
 	void init_frame(cgv::render::context& ctx)
 	{
-		if (have_new_mesh) {
-			// auto-compute mesh normals if not available
-			if (!M.has_normals())
-				M.compute_vertex_normals();
-			// [re-]compute mesh render info
-			MI.destruct(ctx);
-			MI.construct_vbos(ctx, M);
-			// bind mesh attributes to standard surface shader program
-			MI.bind(ctx, ctx.ref_surface_shader_program(true));
-
-			// ensure that materials are presented in gui
-			//post_recreate_gui();
-			have_new_mesh = false;
-		}
 		for (int i = 0; i < pg1->elements.size(); i++) {
 			if (pg1->elements.at(i).flag_use_label) {
 				if (pg1->elements.at(i).gui_label_texture->label_fbo.get_width() != pg1->elements.at(i).gui_label_texture->label_resolution) {
@@ -2108,49 +2045,6 @@ public:
 		ctx.tesselate_arrow(cgv::math::fvec<double, 3>(0, 0, 0), cgv::math::fvec<double, 3>(0, l, 0), 0.02);
 		ctx.set_color(rgb(d, d, c));
 		ctx.tesselate_arrow(cgv::math::fvec<double, 3>(0, 0, 0), cgv::math::fvec<double, 3>(0, 0, l), 0.02);
-	}
-	void draw_surface(context& ctx, bool opaque_part)
-	{
-		// remember current culling setting
-		GLboolean is_culling = glIsEnabled(GL_CULL_FACE);
-		GLint cull_face;
-		glGetIntegerv(GL_CULL_FACE_MODE, &cull_face);
-
-		// ensure that opengl culling is identical to shader program based culling
-		if (cull_mode > 0) {
-			glEnable(GL_CULL_FACE);
-			glCullFace(cull_mode == CM_BACKFACE ? GL_BACK : GL_FRONT);
-		}
-		else
-			glDisable(GL_CULL_FACE);
-
-		// choose a shader program and configure it based on current settings
-		shader_program& prog = ctx.ref_surface_shader_program(true);
-		prog.set_uniform(ctx, "culling_mode", (int)cull_mode);
-		prog.set_uniform(ctx, "map_color_to_material", (int)color_mapping);
-		prog.set_uniform(ctx, "illumination_mode", (int)illumination_mode);
-		// set default surface color for color mapping which only affects 
-		// rendering if mesh does not have per vertex colors and color_mapping is on
-		prog.set_attribute(ctx, prog.get_color_index(), surface_color);
-
-		// render the mesh from the vertex buffers with selected program
-		dmat4 R;
-		mesh_orientation.put_homogeneous_matrix(R);
-		ctx.push_modelview_matrix();
-		ctx.mul_modelview_matrix(
-			cgv::math::translate4<double>(mesh_location) *
-			cgv::math::scale4<double>(mesh_scale, mesh_scale, mesh_scale) *
-			R);
-		//MI.render_mesh(ctx, ctx.ref_surface_shader_program(true));
-		MI.render_mesh(ctx, prog, opaque_part, !opaque_part);
-		ctx.pop_modelview_matrix();
-
-		// recover opengl culling mode
-		if (is_culling)
-			glEnable(GL_CULL_FACE);
-		else
-			glDisable(GL_CULL_FACE);
-		glCullFace(cull_face);
 	}
 	void draw(cgv::render::context& ctx)
 	{
@@ -2698,28 +2592,10 @@ void vr_test::construct_boxgui() {
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.5, -2.5f), 0.1, 0.2, 0.8, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f), "Change Skybox", font_size, "xxx", true);
 	pg1->elements.push_back(first_btn);
 
-	// an other bug pp, projdir will be changed when append here, but not above? 
-	// set up the proj dir from sys. varible
-	//Limit according to http://msdn.microsoft.com/en-us/library/ms683188.aspx
-	DWORD bufferSize = 65535;
-	std::wstring buff;
-	buff.resize(bufferSize);
-	bufferSize = GetEnvironmentVariableW(L"CGV_EXEC_DIR", &buff[0], bufferSize);
-	if (!bufferSize)
-		//error
-		buff.resize(bufferSize);
-	int len = WideCharToMultiByte(CP_UTF8, 0, buff.c_str(), -1, 0, 0, 0, 0);
-	vector<char> buf(len - 1);
-	WideCharToMultiByte(CP_UTF8, 0, buff.c_str(), -1, &buf[0], len, 0, 0);
-	projdir = std::string(buf.begin(), buf.end());
 
-	std::string image1dir = projdir.append("\\skybox\\cm_xn.jpg");
-	// reset projdir pp a bug 
-	projdir = std::string(buf.begin(), buf.end());
-	std::string image2dir = projdir.append("\\skybox\\BluePinkNebular_yn.jpg");
-	// reset projdir pp a bug 
-	projdir = std::string(buf.begin(), buf.end());
-	std::string image0dir = projdir.append("\\skybox\\igen_2\\xn.jpg");
+	string image0dir = "../../../plugins/vr_rigging_pub/proj/skybox/cm_xp.jpg";
+	string image1dir = "../../../plugins/vr_rigging_pub/proj/skybox/BluePinkNebular_xp.jpg";
+	string image2dir = "../../../plugins/vr_rigging_pub/proj/skybox/igen_2/xp.jpg";
 
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.5, -1.75f), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
 		"xxx", 0, image0dir, false);

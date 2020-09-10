@@ -53,18 +53,7 @@ SkinningMesh::SkinningMesh()
 	glGenVertexArrays(1, &vao);
 
 	glBindVertexArray(vao);
-	glBindBuffer(GL_ARRAY_BUFFER, positionBuffer);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);	
-
-	glBindBuffer(GL_ARRAY_BUFFER, boneWeightBuffer);
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, 0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, boneIndexBuffer);
-	glVertexAttribPointer(2, 4, GL_INT, GL_FALSE, 0, 0);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-
-	glEnableVertexAttribArray(0);
+	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
 	glDisableVertexAttribArray(2);
 	glBindVertexArray(0);
@@ -139,6 +128,7 @@ bool SkinningMesh::read_obj(const char* filename)
 
 	glBindBuffer(GL_ARRAY_BUFFER, positionBuffer);
 	glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof(cgv::math::fvec<float, 3>), &positions[0], GL_STATIC_DRAW);	
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(cgv::math::fvec<float, 3>), 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
@@ -237,7 +227,7 @@ void SkinningMesh::draw(cgv::render::context& ctx) // not called automatically, 
 	prog.enable(ctx);
 
 	glBindVertexArray(vao);
-
+	glEnableVertexAttribArray(0);
 	if (has_attachment)
 	{
 		glEnableVertexAttribArray(1);
