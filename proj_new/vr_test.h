@@ -296,6 +296,7 @@ protected:
 	std::vector<float> end_point_size_list; // no size for root node 
 	bool is_even_point = false; // start from -1
 	bool fast_is_reset = true;
+	bool mesh_scale_mode = false;
 	std::vector<vec3> fast_bone_posi_vec_as_chain;
 
 	int bone_tobeaddednext_idx = -1;

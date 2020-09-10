@@ -568,6 +568,9 @@ void vr_test::construct_boxgui() {
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, .75f + 0.5f + 1, -1.75f + 0.25f * 5), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
 		"scale_\nadjestment", smallbox_font_size, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, .75f + 0.5f + 1, -1.75f + 0.25f * 6), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"reset_\nscale", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
 	/*first_btn = boxgui_button(vec3(2.5f - 0.05f, .75f, -1.75f + 0.25f * 7), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
 		"demo8", smallbox_font_size, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);*/
@@ -963,6 +966,7 @@ bool vr_test::handle(cgv::gui::event& e)
 			if (vrse.get_controller_index() == 0) {// left hand touch to perform actions  
 				std::cout << vrse.get_state().controller[0].button_flags << std::endl;
 				std::cout << vrse.get_state().controller[1].button_flags << std::endl;
+				
 				if (lefthandmode._Equal("add bone")) {
 					keydown = true;
 					is_even_point = !is_even_point;
@@ -1035,10 +1039,10 @@ bool vr_test::handle(cgv::gui::event& e)
 			return true;
 		case cgv::gui::SA_MOVE:
 		case cgv::gui::SA_DRAG:
-			if (vrse.get_state().controller[1].axes[1] > 0 && tmpboxsize < 0.5f) {
+			if ((vrse.get_controller_index() == 1) && tmpboxsize < 0.5f && (vrse.get_x() > 0.9)) {
 				tmpboxsize += enlargestep;
 			}
-			else if (tmpboxsize > 0.04f) {
+			else if ((vrse.get_controller_index() == 1) && tmpboxsize > 0.04f && (vrse.get_x() < -0.9)) {
 				tmpboxsize -= enlargestep;
 			}
 
@@ -1049,6 +1053,17 @@ bool vr_test::handle(cgv::gui::event& e)
 			// right block of left controller 
 			if (vrse.get_controller_index() == 0 && (vrse.get_x() > 0.9) && (vrse.get_y() < 0.1f) && (vrse.get_y() > -0.1f)) {
 				vr_view_ptr->set_tracking_rotation(vr_view_ptr->get_tracking_rotation() - 10);
+			}
+			if (vrse.get_controller_index() == 1 && mesh_scale_mode) {
+				cout << "adjesting mesh!\n";
+				mesh_scale = (1 + vrse.get_y()) * mesh_scale;
+				ds->get_mesh()->set_mesh_scale(mesh_scale);
+				// re-load mesh
+				mmesh->read_obj(mesh_dir.c_str());
+				ds->set_mesh(mmesh);
+				label_content = "[INFO] mesh loaded!\n" + label_content;
+				label_outofdate = true;
+				post_redraw();
 			}
 			return true;
 		}
@@ -1364,6 +1379,19 @@ bool vr_test::handle(cgv::gui::event& e)
 					}
 					if (pg1->elements.at(cur_btn_idx).label._Equal("scale_\nadjestment")) {
 						adjest_mesh();
+					}
+					if (pg1->elements.at(cur_btn_idx).label._Equal("scale")) {
+						mesh_scale_mode =!mesh_scale_mode;
+					}
+					if (pg1->elements.at(cur_btn_idx).label._Equal("reset_\nscale")) {
+						mesh_scale = 0.019f;
+						ds->get_mesh()->set_mesh_scale(mesh_scale);
+						// re-load mesh
+						mmesh->read_obj(mesh_dir.c_str());
+						ds->set_mesh(mmesh);
+						label_content = "[INFO] mesh loaded!\n" + label_content;
+						label_outofdate = true;
+						post_redraw();
 					}
 					// load demo mesh 
 					if (pg1->elements.at(cur_btn_idx).label._Equal("l_demo1")) {
