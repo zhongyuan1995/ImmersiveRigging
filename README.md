@@ -7,7 +7,6 @@
 
     build instructions: (in develop branch)
         Clone the develop branch of the cgv framework 
-
         Click on define_system_variables.bat to define the path to the framework.
         * Clone this project in the "plugins" folder in the cgv framework, this is required by some relative file paths in the code.
         Generate makefiles with the help of the proj_new/vr_rigging_new.pj as normal.
