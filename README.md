@@ -2,7 +2,9 @@
 ![](pics/multipleviews.png)
 
     build instructions: (in develop branch)
-        Clone the develop branch of the cgv framework [cgv framework](https://github.com/sgumhold/cgv/tree/develop)
+        Clone the develop branch of the cgv framework 
+[cgv framework](https://github.com/sgumhold/cgv/tree/develop)
+
         Click on define_system_variables.bat to define the path to the framework.
         * Clone this project in the "plugins" folder in the cgv framework, this is required by some relative file paths in the code.
         Generate makefiles with the help of the proj_new/vr_rigging_new.pj as normal.
@@ -11,7 +13,8 @@
         One can run the program by simply clicking on the batch file called "run_exec.bat" 
             in the following folder: "exec\exec_vr_rigging".
     usage description: 
-        [description](https://cloudstore.zih.tu-dresden.de/index.php/s/C8G4TGdDrzGqfkp)
+[description](https://cloudstore.zih.tu-dresden.de/index.php/s/C8G4TGdDrzGqfkp)
+
         //
             Typically, rigging and skinning of a given mesh should be straightforward and no other instructions necessary.
             Due to the fact that the repo. is under heavy development, it may be a little bit hard to use currently.
