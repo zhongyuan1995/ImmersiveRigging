@@ -418,16 +418,16 @@ public:
 		context* ctx = get_context();
 		if (ctx == 0)
 			return;
-		ctx->write_frame_buffer_to_image("screen_capture.png");
+		ctx->write_frame_buffer_to_image(working_dir + "speider_simple0/screen_capture.png");
 	}
 	void load_demo_animation() {
-		skel_view->load_animation_given_name("FFA_REGULAR/zrdevpacks/zract_easyRigging/data_attached/_workdemo1_spiderman/jump.amc", false);
+		skel_view->load_animation_given_name(working_dir + "speider_simple0/jump.amc", false);
 	}
 	void load_stored_anim1() {
-		skel_view->load_animation_given_name("anim_1.amc", true);
+		skel_view->load_animation_given_name(working_dir + "speider_simple0/anim_1.amc", true);
 	}
 	void load_stored_anim2() {
-		skel_view->load_animation_given_name("anim_2.amc", true);
+		skel_view->load_animation_given_name(working_dir + "speider_simple0/anim_2.amc", true);
 	}
 	void start_record() {
 		skel_view->prepare_record_anim();
@@ -437,16 +437,16 @@ public:
 		label_outofdate = true;
 	}
 	void stop_record_and_save() {
-		skel_view->stop_record_anim("test.amc");
+		skel_view->stop_record_anim(working_dir + "speider_simple0/test.amc");
 		label_content = "[INFO] animation has been exported as 'test.amc' \n" + label_content;
 		label_outofdate = true;
 	}
 	void save_curskel_to_file() {
 		if (ds->get_skeleton()) {
-			ds->get_skeleton()->write_pinocchio_file("tmpskel.txt");
+			ds->get_skeleton()->write_pinocchio_file(working_dir + "speider_simple0/tmpskel.txt");
 			//ds->get_skeleton()->set_origin_rotation();
 			// problem occour when rigging with pinocchio, write pinocchio with an other coordi.
-			ds->get_skeleton()->writeASFFile("tmpskel.asf");
+			ds->get_skeleton()->writeASFFile(working_dir + "speider_simple0/tmpskel.asf");
 		}
 		label_content = "[INFO] created skel. has been saved \nto tmp. file as 'tmpskel.asf'\n" + label_content;
 		label_outofdate = true;
@@ -454,7 +454,7 @@ public:
 	void apply_rigged_skel()
 	{
 		//ds->get_skeleton()->read_pinocchio_file("adjested_skeleton.out"); // do not have to adjest skel. in vr 
-		mmesh->read_attachment("skinned_attachment.out");
+		mmesh->read_attachment(working_dir + "speider_simple0/skinned_attachment.out");
 		post_redraw();
 		label_content = "[INFO] attachment has been loaded! mesh skinned\n" + label_content;
 		label_outofdate = true;
@@ -469,7 +469,7 @@ public:
 		// for the skel. we created
 	}
 	void gen_asf_skel_file() {
-		ds->get_skeleton()->writeASFFile("tmpskel.asf");
+		ds->get_skeleton()->writeASFFile(working_dir + "speider_simple0/tmpskel.asf");
 	}
 	void start_autorigging_pinoccio() {
 		label_content = "[INFO] autorig started! This may take a while...\n" + label_content;
@@ -477,8 +477,8 @@ public:
 		int i;
 		ArgData a;
 
-		a.filename = g_mesh_filename;
-		string skelfile = "tmpskel.txt";
+		a.filename = mesh_dir;
+		string skelfile = working_dir + "speider_simple0/tmpskel.txt";
 		a.skeleton = FileSkeleton(skelfile);
 		a.skeletonname = skelfile;
 
@@ -540,14 +540,14 @@ public:
 		//output skeleton embedding
 		for (int i = 0; i < (int)o.embedding.size(); ++i)
 			o.embedding[i] = (o.embedding[i] - m.toAdd) / m.scale;
-		ofstream oss("adjested_skeleton.out");
+		ofstream oss(working_dir + "speider_simple0/adjested_skeleton.out");
 		for (i = 0; i < (int)o.embedding.size(); ++i) {
 			oss << i << " " << o.embedding[i][0] << " " << o.embedding[i][1] <<
 				" " << o.embedding[i][2] << " " << a.skeleton.fPrev()[i] << endl;
 		}
 
 		//output attachment
-		ofstream astrm("skinned_attachment.out");
+		ofstream astrm(working_dir + "speider_simple0/skinned_attachment.out");
 		for (i = 0; i < (int)m.vertices.size(); ++i) {
 			Vector<double, -1> v = o.attachment->getWeights(i);
 			for (int j = 0; j < v.size(); ++j) {

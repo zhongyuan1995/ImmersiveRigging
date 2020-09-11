@@ -98,7 +98,7 @@ public:
 	bool stop_record_anim(std::string filename) {
 		recording = false;
 		anim_to_record->saveframe_to_file(filename);
-		std::cout << "succ. wrote to file" << std::endl;
+		std::cout << "succ. writtren to file" << std::endl;
 		return true;
 	}
 	void draw_skeleton_subtree(Bone* node, const Mat4& global_to_parent_local, context& ctx, int level, bool arrows, bool indicators);

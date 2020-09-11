@@ -473,9 +473,9 @@ void vr_test::construct_boxgui() {
 		"pause_rec", smallbox_font_size, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);
 
-	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.0f - 0.5, -1.75f + 0.25f * 2), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+	/*first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.0f - 0.5, -1.75f + 0.25f * 2), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
 		"stop_rec", smallbox_font_size, "D:/icon_res/default.png", true);
-	pg1->elements.push_back(first_btn);
+	pg1->elements.push_back(first_btn);*/
 
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.0f - 0.5, -1.75f + 0.25f * 3), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
 		"s_anim1", smallbox_font_size, "D:/icon_res/default.png", true);
@@ -1619,33 +1619,33 @@ bool vr_test::handle(cgv::gui::event& e)
 					if (pg1->elements.at(cur_btn_idx).label._Equal("s_anim1")) {
 						label_content = "[INFO] button clicked!\n" + label_content;
 						label_outofdate = true;
-						skel_view->stop_record_anim("anim_1.amc");
+						skel_view->stop_record_anim(working_dir + "speider_simple0/anim_1.amc");
 					}
 					if (pg1->elements.at(cur_btn_idx).label._Equal("s_anim2")) {
 						label_content = "[INFO] button clicked!\n" + label_content;
 						label_outofdate = true;
-						skel_view->stop_record_anim("anim_2.amc");
+						skel_view->stop_record_anim(working_dir + "speider_simple0/anim_2.amc");
 					}
 					if (pg1->elements.at(cur_btn_idx).label._Equal("s_anim3")) {
 						label_content = "[INFO] button clicked!\n" + label_content;
 						label_outofdate = true;
-						skel_view->stop_record_anim("anim_3.amc");
+						skel_view->stop_record_anim(working_dir + "speider_simple0/anim_3.amc");
 					}
 					// load animation 
 					if (pg1->elements.at(cur_btn_idx).label._Equal("l_anim1")) {
 						label_content = "[INFO] button clicked!\n" + label_content;
 						label_outofdate = true;
-						skel_view->load_animation_given_name("anim_1.amc", true);
+						skel_view->load_animation_given_name(working_dir + "speider_simple0/anim_1.amc", true);
 					}
 					if (pg1->elements.at(cur_btn_idx).label._Equal("l_anim2")) {
 						label_content = "[INFO] button clicked!\n" + label_content;
 						label_outofdate = true;
-						skel_view->load_animation_given_name("anim_2.amc", true);
+						skel_view->load_animation_given_name(working_dir + "speider_simple0/anim_2.amc", true);
 					}
 					if (pg1->elements.at(cur_btn_idx).label._Equal("l_anim3")) {
 						label_content = "[INFO] button clicked!\n" + label_content;
 						label_outofdate = true;
-						skel_view->load_animation_given_name("anim_3.amc", true);
+						skel_view->load_animation_given_name(working_dir + "speider_simple0/anim_3.amc", true);
 					}
 
 					if (pg1->elements.at(cur_btn_idx).label._Equal("l_scene1")) {
