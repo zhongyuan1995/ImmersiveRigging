@@ -1,0 +1,30 @@
+#version 150
+
+in vec4 position;
+in vec3 normal;
+in vec2 texcoord; 
+in vec4 color;
+
+out vec3 p_eye;
+out vec3 n_eye;
+out vec4 col;
+out vec3 tc;
+
+//***** begin interface of view.glsl ***********************************
+mat4 get_modelview_matrix();
+mat4 get_projection_matrix();
+mat4 get_modelview_projection_matrix();
+mat4 get_inverse_modelview_matrix();
+mat4 get_inverse_modelview_projection_matrix();
+mat3 get_normal_matrix();
+mat3 get_inverse_normal_matrix();
+//***** end interface of view.glsl ***********************************
+
+void main()
+{
+	mat4 tmpm = mat4(mat3(get_modelview_matrix()));
+	//tmpm[0][3] = 0;
+	vec4 pos =get_projection_matrix() * tmpm *  position;
+	gl_Position = pos;
+	tc    = position.xyz;
+}

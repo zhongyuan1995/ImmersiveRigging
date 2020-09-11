@@ -303,7 +303,7 @@ protected:
 	int newbone_idx = 0;
 	std::string lefthandmode;
 
-	std::string working_dir = "../../../plugins/vr_rigging_pub/proj_new/gen_dataset/";
+	std::string working_dir = "../../../plugins/vr_rigging_pub/gen_dataset/";
 	std::string mesh_dir = "";
 
 public:

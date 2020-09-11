@@ -1,0 +1,52 @@
+# AST/ASF file generated using vrRigging by yzy
+# 
+:units
+  mass 1.0
+  length 0.45
+  angle deg
+:documentation
+:root
+	order TX TY TZ RX RY RZ
+	axis XYZ
+	position 0 0 0
+	orientation 0 0 0
+:bonedata
+ begin
+	id 1
+	name new_bone_4
+	direction  0.007694 0.362741 0.025865
+	length 16.666668
+	axis 0 0 0  XYZ
+	dof rx ry rz
+	limits (-180.0 180.0)
+	(-180.0 180.0)
+	(-180.0 180.0)
+ end
+ begin
+	id 2
+	name new_bone_6
+	direction  -0.001625 0.168062 -0.013402
+	length 16.666668
+	axis 0 0 0  XYZ
+	dof rx ry rz
+	limits (-180.0 180.0)
+	(-180.0 180.0)
+	(-180.0 180.0)
+ end
+ begin
+	id 3
+	name new_bone_8
+	direction  0.164563 -0.149744 0.037159
+	length 16.666668
+	axis 0 0 0  XYZ
+	dof rx ry rz
+	limits (-180.0 180.0)
+	(-180.0 180.0)
+	(-180.0 180.0)
+ end
+:hierarchy
+ begin
+	root new_bone_4 
+	new_bone_4 new_bone_6 
+	new_bone_6 new_bone_8 
+ end

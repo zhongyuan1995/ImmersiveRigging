@@ -1,0 +1,67 @@
+#version 150 
+
+uniform vec4 halo_color;
+uniform float halo_color_strength = 0.5;
+
+//***** begin interface of sphere_lib.glfs ***********************************
+bool computer_ray_sphere_intersection(out vec3 p_eye, out vec3 n_eye, out vec2 splat_tc, out float clip_depth, out int side);
+bool computer_ray_sphere_intersection(in float percentual_splat_size, out vec3 p_eye, out vec3 n_eye, out vec2 splat_tc, out float clip_depth, out int side, out float percentual_radial_position);
+//***** end interface of sphere_lib.glfs ***********************************
+
+in vec4 color_fs;
+
+in float percentual_blend_width;
+in float percentual_point_size;
+in float percentual_core_size;
+in float percentual_splat_size;
+
+//***** begin interface of splat.glsl ***********************************
+vec4 compute_blended_color_with_halo(
+	in float percentual_radial_position,
+	in vec4 core_color, in float percentual_core_size,
+	in vec4 halo_color, in float percentual_point_size,
+	in float percentual_blend_width);
+//***** end interface of splat.glsl ***********************************
+
+//***** begin interface of surface.glsl ***********************************
+struct Material {
+	int brdf_type;
+	vec3 diffuse_reflectance;
+	float roughness;
+	float metalness;
+	float ambient_occlusion;
+	vec3 emission;
+	float transparency;
+	vec2 propagation_slow_down;
+	float roughness_anisotropy;
+	float roughness_orientation;
+	vec3 specular_reflectance;
+};
+
+vec4 compute_reflected_radiance(in Material M, vec3 position_eye, vec3 normal_eye);
+vec4 compute_reflected_appearance(vec3 position_eye, vec3 normal_eye, vec4 color_fs, int side);
+vec4 compute_reflected_appearance_texture(vec3 position_eye, vec3 normal_eye, vec2 texcoords, vec4 color_fs, int side);
+//***** end interface of surface.glsl ***********************************
+
+//***** begin interface of fragment.glfs ***********************************
+uniform float gamma = 2.2;
+void finish_fragment(vec4 color);
+//***** end interface of fragment.glfs ***********************************
+
+void main()
+{
+	
+	vec3 p_eye;
+	vec3 n_eye;
+	int side;
+	vec2 tc;
+	float percentual_radial_position;
+
+	if (!computer_ray_sphere_intersection(percentual_splat_size, p_eye, n_eye, tc, gl_FragDepth, side, percentual_radial_position))
+		discard;
+
+	vec4 color = compute_reflected_appearance_texture(p_eye, n_eye, tc, color_fs, side);
+	vec4 halo_color = vec4(mix(color_fs.rgb, halo_color.rgb, halo_color_strength), halo_color.a);
+	vec4 blend_color = compute_blended_color_with_halo(percentual_radial_position, color, percentual_core_size, halo_color, percentual_point_size, percentual_blend_width);
+	finish_fragment(blend_color);
+}
