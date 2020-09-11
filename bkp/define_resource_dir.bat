@@ -1,1 +1,0 @@
-setx CGV_EXEC_DIR "%CD%"
