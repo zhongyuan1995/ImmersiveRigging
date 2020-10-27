@@ -1,0 +1,87 @@
+
+
+    09.09.2020 
+        usage 
+        merge to dev 
+        additional reqirements
+        pthread 
+        share our work!
+    additional reqirements 
+        move to develop branch 
+        ...
+    paper related 
+        交互模式
+        不同重点
+        和普通的rigging区别
+        possible projects? 
+        share our work!
+    usage description 
+        hello everyone, i am going to show you my research project "immersive rigging". 
+            The project is about rigging, skinning and animating a given mesh.
+        0.when the programm starts, we can see a button wall in front of us. we can use right hand controller to choose the mode we 
+            would like to work with in the vr env. and left hand controller to perform some operations. 
+        1.The first thing, we have to load a mesh into the scene, by clicking l_demo1/2/... each represents a mesh 
+        ///rig 
+        2.after that, we can add bone manuelly or load pre-defined skel. or the skel. we saved on disk.  
+        lets load it first. 
+        as you can see, there is a skel. placed in the middle of the mesh, we can modify it easily. 
+            add bone: clicking the grip button on right hand to select "bone addition mode", then, we use left hand controller to add bones. 
+                in detail, we have to select the parent bone first. when there is an intersection,   
+            modify a bone: ...
+            del bone:... touch on the left hand controller 
+        ///skinning 
+        3.after the bone is adjested, we can get the skel. skined with the pinnoccio library 
+            in order to do so, we have to write the skel. to a external file will be feed to pinnoccio, so, click on grip button to do this. 
+            then, we perfrom the skinning operation by ckicking this. This may take a well, it depends how camplex our skel. is. 
+            after that, we have to apply the attachments to the mesh manuelly, those three steps can be merged to one if needed. 
+        ///animation 
+        4.let try to animate the mesh! 
+            currently, a simple ccd algorithm is imp. the mesh can follow our movements. 
+            to do this, we have select the end effectors of both hands, click on this on right hand, and touch on left hand. You should be 
+            able to see such lines if ee selected successfully. 
+            the same thing for right hand ee. 
+            everything is done, we can start ccd now, click the touchpad on positive y axis on left hand controller to start. it will follow 
+            our movements. 
+        ///recording 
+        5.if you wanna record the movements, you should click on recording button first. then, start ccd, and stop recording. to check, 
+            you can load it again by this. look, it works! 
+
+
+    formal report 
+        // as a whole system 
+            Title: Immersive Rigging, Skinning and Motion Capturing 
+            Abstract
+                The animation of 3d models through rigging and skinning usually involves sophisticated algorithms for fitting skeletons 
+                into meshes and motion capturing to gather realistic movement data. Immersed in a VR environment the user finds himself 
+                in a familiar coordinate space, where working with 3d models seems more intuitive. We present a simple yet effective 
+                application for rigging skinning and motion capturing. Main contributions are: 
+                    1. Interactive creation and manipulation of a skeleton in 3d space. (rigging)
+                    2. fitting skeletons into meshes. (skinning)
+                    3. Use controllers and trackers to animate the skinned mesh. (custom motion capturing algorithm)
+                    4. Recording, saving and loading of animations.
+            Related Work
+            Motivation 
+            Introduction 
+
+            Our Approach
+                
+            Experiments
+                human, animal, figure, man like 
+            Discussion and Future work 
+            Conclusion and Limitations
+
+
+
+    easyRigging-a fast rigging and skinning scheme in vr 
+
+    keywords: rigging, skinning, virtual reality, ... 
+    categ.: vr, vis papers 
+
+    related works:
+
+
+    main contribution:
+        An intunitive rigging scheme which allows us to constru. a skel. very fast in vr 
+        skinning method besed on heat diffusion, manipulation of the bone weights 
+
+

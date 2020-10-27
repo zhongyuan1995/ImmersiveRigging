@@ -91,7 +91,7 @@
             for a better locating of the joints 
             https://github.com/yzyTUD/pub_repo/blob/master/pics/out_20200728-190621.flv.mp4
         build skeleton from user input 
-        * gen. skeleton from user input: one for pinocchio and an other for re-edit
+        gen. skeleton from user input: one for pinocchio and an other for re-edit
         bind func. to gui button, gen. some demos 
         skeleton gen. can be saved 
         performance improvement
@@ -103,36 +103,34 @@
         adjest rotation and translation for a given mesh 
             use the stick on left hand
             ok
-        * mirror effect IK: animation with IK ccd 
+        mirror effect IK: animation with IK ccd 
             touch to start/stop ccd
-            ok 
-        * bind functionalities to gui button
+        bind functionalities to gui button
             up to 3 tmp. skeleton to choose and record
             ok  
         info board 
         reset function 
             del jointlists 
-        * multiple objects ik(two hands)
-            video: https://github.com/yzyTUD/pub_repo/blob/master/pics/both_hands_anim.mp4
+        multiple objects ik(two hands)
         later-skeleton edit functions
             del cooresp. line
         operation documentation  
         multiple views, imitating skeletons 
+        code style improvement 
     tobetested:
     todo:  
         * improve IK
             modify the calculate_matrix function
-        report
-        code style improvement  
+        report 
         (additional)adjest dofs in vr (details designed in private repository)
-        (additional)fix the dof adjestment in course cg2, implement a numerical optimization process
-        (additional)rig half of a mesh and auto-complete 
-            add a button: skel_auto_complete 
+        (additional)rig half of a mesh and auto-complete. Add a button: skel_auto_complete 
         (additional)cut out part of the mesh with right hand controller 
         (additional)fix the problem in mesh loading 
         (additional)vis bone weights for each components (vertices)
         (additional)enable texturing for the mesh loader
-        (additional)a better mesh loader, which is too simple now, 
+        (additional)fix the dof adjestment in course cg2, implement a numerical            
+            optimization process
+        (additional)a better custom mesh loader, which is too simple now, 
             ref. the one from the prof.
     change log: 	
         07/05/2020	
