@@ -45,9 +45,7 @@
         ///recording 
         5.if you wanna record the movements, you should click on recording button first. then, start ccd, and stop recording. to check, 
             you can load it again by this. look, it works! 
-
-
-    formal report 
+    formal report/ paper 
         // as a whole system 
             Title: Immersive Rigging, Skinning and Motion Capturing 
             Abstract
@@ -71,17 +69,17 @@
             Conclusion and Limitations
 
 
+        //
+            easyRigging-a fast rigging and skinning scheme in vr 
 
-    easyRigging-a fast rigging and skinning scheme in vr 
+            keywords: rigging, skinning, virtual reality, ... 
+            categ.: vr, vis papers 
 
-    keywords: rigging, skinning, virtual reality, ... 
-    categ.: vr, vis papers 
-
-    related works:
+            related works:
 
 
-    main contribution:
-        An intunitive rigging scheme which allows us to constru. a skel. very fast in vr 
-        skinning method besed on heat diffusion, manipulation of the bone weights 
+            main contribution:
+                An intunitive rigging scheme which allows us to constru. a skel. very fast in vr 
+                skinning method besed on heat diffusion, manipulation of the bone weights 
 
 
