@@ -1964,6 +1964,8 @@ bool vr_test::init(cgv::render::context& ctx)
 	cgv::render::ref_sphere_renderer(ctx, 1);
 	cgv::render::ref_rounded_cone_renderer(ctx, 1);
 
+	toggle_usage_description = true;
+
 	return true;
 }
 
@@ -2209,12 +2211,12 @@ void vr_test::draw(cgv::render::context& ctx)
 	case 1:
 		glDepthMask(GL_FALSE);
 		glDisable(GL_CULL_FACE);
-		img_tex.enable(ctx, 1);
-		skyprog.enable(ctx);
-		skyprog.set_uniform(ctx, "img_tex", 1);
-		ctx.tesselate_unit_cube();
-		skyprog.disable(ctx);
-		img_tex.disable(ctx);
+			img_tex.enable(ctx, 1);
+				skyprog.enable(ctx);
+				skyprog.set_uniform(ctx, "img_tex", 1);
+					ctx.tesselate_unit_cube();
+				skyprog.disable(ctx);
+			img_tex.disable(ctx);
 		glEnable(GL_CULL_FACE);
 		glDepthMask(GL_TRUE);
 		break;
@@ -2422,7 +2424,8 @@ void vr_test::draw(cgv::render::context& ctx)
 		cgv::render::attribute_array_binding::disable_global_array(ctx, pi);
 		cgv::render::attribute_array_binding::disable_global_array(ctx, ti);
 	}
-	if (vr_view_ptr && ulabel_tex.is_created()) {
+	
+	if (vr_view_ptr && ulabel_tex.is_created() && toggle_usage_description) {
 		cgv::render::shader_program& prog = ctx.ref_default_shader_program(true);
 		int pi = prog.get_position_index();
 		int ti = prog.get_texcoord_index();
@@ -2712,6 +2715,7 @@ void vr_test::create_gui() {
 	add_gui("mesh_orientation", static_cast<dvec4&>(mesh_orientation), "direction", "options='min=-1;max=1;ticks=true");
 	add_member_control(this, "ray_length", ray_length, "value_slider", "min=0.1;max=10;log=true;ticks=true");
 	add_member_control(this, "show_seethrough", show_seethrough, "check");
+	add_member_control(this, "toggle_usage_description", toggle_usage_description, "check");
 
 	connect_copy(add_button("load_mesh")->click, cgv::signal::rebind(this, &vr_test::load_mesh));
 	connect_copy(add_button("load_mesh_with_gui")->click, cgv::signal::rebind(this, &vr_test::load_mesh_with_gui));

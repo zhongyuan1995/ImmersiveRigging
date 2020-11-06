@@ -170,9 +170,7 @@ void Animation::saveframe_to_file(std::string filename) {
 			for (auto bone : f) {
 				if (bone.bone->dof_count() > 0) {
 					o << bone.bone->get_name();
-					for (int i = 0; i < bone.bone->dof_count(); ++i)
-					{
-						//bone.bone->get_dof(i)->set_value(bone.dof_values[i]);
+					for (int i = 0; i < bone.bone->dof_count(); ++i){
 						o << " " << bone.dof_values[i];
 					}
 					o << std::endl;

@@ -290,6 +290,7 @@ protected:
 	// current font face used
 	cgv::media::font::font_face_ptr ulabel_font_face;
 	cgv::media::font::FontFaceAttributes ulabel_face_type;
+	bool toggle_usage_description;
 
 	std::vector<vec3> start_point_list;
 	std::vector<vec3> end_point_list;
@@ -590,6 +591,9 @@ public:
 		tmpskel_view_2->load_skeleton_given_name(f);
 		tmpskel_view_2->set_skel_origin_ori_translation(Vec3(0, 1, 0), 45, Vec3(-2, 1, -2.8));
 	}
+	/*void toggle_usage_description_func() {
+		toggle_usage_description = !toggle_usage_description;
+	}*/
 public:
 	vr_test();
 
