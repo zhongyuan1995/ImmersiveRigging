@@ -14,7 +14,7 @@
 #include <random>
 
 #include "intersection.h"
-#include <plugins\vr_rigging_pub\proj_new\math_helper.h>
+#include <math_helper.h>
 
 
 void vr_test::init_cameras(vr::vr_kit* kit_ptr)
