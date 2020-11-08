@@ -310,6 +310,8 @@ protected:
 	bool confirmed = false;
 	vec3 confirm_gui_posi = 0;
 
+	bool from_jump_asf = true;
+
 public:
 	void init_cameras(vr::vr_kit* kit_ptr);
 
@@ -464,7 +466,10 @@ public:
 	}
 	void apply_rigged_skel()
 	{
-		//ds->get_skeleton()->read_pinocchio_file("adjested_skeleton.out"); // do not have to adjest skel. in vr 
+		if (from_jump_asf) { // do not have to adjest skel. in vr 
+			ds->get_skeleton()->read_pinocchio_file(working_dir + "speider_simple0/adjested_skeleton.out"); 
+			skel_view->skeleton_changed(ds->get_skeleton());
+		}
 		mmesh->read_attachment(working_dir + "speider_simple0/skinned_attachment.out");
 		post_redraw();
 		label_content = "[INFO] attachment has been loaded! mesh skinned\n" + label_content;

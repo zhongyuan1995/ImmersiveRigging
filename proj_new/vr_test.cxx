@@ -1199,43 +1199,49 @@ bool vr_test::handle(cgv::gui::event& e)
 			}
 
 			if (toggle_ccd) {
-				if (ds->get_base() && right_ee && left_ee) { // ds ee not defined now 
+				if (ds->get_base() && (right_ee || left_ee)) { // ds ee not defined now 
 					vec3 origin, direction;
 
-					// ccd calcu. skel. based on LEFT hand  
-					ds->set_endeffector(left_ee, 0);
-					vrpe.get_state().controller[0].put_ray(&origin(0), &direction(0));
-					ik_view->set_target_position_vr(
-						Vec4(
-							origin.x(),
-							origin.y(),
-							2 * mirror_plane_z - origin.z(), 1));
-					//ik_view->set_max_iter(30);
-					ik_view->optimize(0);
+					if (left_ee) {
+						// ccd calcu. skel. based on LEFT hand  
+						ds->set_endeffector(left_ee, 0);
+						vrpe.get_state().controller[0].put_ray(&origin(0), &direction(0));
+						ik_view->set_target_position_vr(
+							Vec4(
+								origin.x(),
+								origin.y(),
+								2 * mirror_plane_z - origin.z(), 1));
+						//ik_view->set_max_iter(30);
+						ik_view->optimize(0);
+					}
 
-					// ccd calcu. skel. based on RIGHT hand
-					ds->set_endeffector(right_ee, 0);
-					vrpe.get_state().controller[1].put_ray(&origin(0), &direction(0));
-					ik_view->set_target_position_vr(
-						Vec4(
-							origin.x(),
-							origin.y(),
-							2 * mirror_plane_z - origin.z(), 1));
-					//ik_view->set_max_iter(30);
-					ik_view->optimize(0);
+					if (right_ee) {
+						// ccd calcu. skel. based on RIGHT hand
+						ds->set_endeffector(right_ee, 0);
+						vrpe.get_state().controller[1].put_ray(&origin(0), &direction(0));
+						ik_view->set_target_position_vr(
+							Vec4(
+								origin.x(),
+								origin.y(),
+								2 * mirror_plane_z - origin.z(), 1));
+						//ik_view->set_max_iter(30);
+						ik_view->optimize(0);
+					}
 
-					//// ccd calcu. skel. based on head position 
-					//ds->set_endeffector(hmd_ee, 0);
-					//hmd_origin.x() = vrpe.get_state().hmd.pose[9];
-					//hmd_origin.y() = vrpe.get_state().hmd.pose[10];
-					//hmd_origin.z() = vrpe.get_state().hmd.pose[11];
-					//ik_view->set_target_position_vr(
-					//	Vec4(
-					//		hmd_origin.x(),
-					//		hmd_origin.y(),
-					//		2 * mirror_plane_z - hmd_origin.z(), 1));
-					//ik_view->set_max_iter(2);
-					//ik_view->optimize(0); // optimize the chain2, head chain 
+					if (hmd_ee) {
+						// ccd calcu. skel. based on head position 
+						ds->set_endeffector(hmd_ee, 0);
+						hmd_origin.x() = vrpe.get_state().hmd.pose[9];
+						hmd_origin.y() = vrpe.get_state().hmd.pose[10];
+						hmd_origin.z() = vrpe.get_state().hmd.pose[11];
+						ik_view->set_target_position_vr(
+							Vec4(
+								hmd_origin.x(),
+								hmd_origin.y(),
+								2 * mirror_plane_z - hmd_origin.z(), 1));
+						//ik_view->set_max_iter(2);
+						ik_view->optimize(0); // optimize the chain2, head chain 
+					}
 
 					//cur_bone->get_dof(i)->set_value(masterbone->get_dof(i)->get_value());
 					/*for (int i = 0; i < skel_head_current->get_bone_list().size(); i++) {
@@ -1466,7 +1472,8 @@ bool vr_test::handle(cgv::gui::event& e)
 						label_outofdate = true;
 						//skel_view->load_skeleton_given_name("FFA_REGULAR/zrdevpacks/zract_easyRigging/data_attached/_workdemo1_spiderman/jump.asf");
 						//skel_view->set_skel_origin_ori_translation(Vec3(0, 1, 0), 0, Vec3(1.25, 1, -2.8));
-
+						from_jump_asf = true;
+						left_ee = right_ee = hmd_ee = nullptr;
 						skel_view->load_skeleton_given_name(working_dir + "speider_simple0/jump.asf");
 						skel_view->set_skel_origin_ori_translation(Vec3(0, 1, 0), 0, Vec3(1.2, 1, -2.8));
 						load_addi_two_guys(working_dir + "speider_simple0/jump.asf");
@@ -1477,25 +1484,37 @@ bool vr_test::handle(cgv::gui::event& e)
 					}
 					//l_skel1
 					if (pg1->elements.at(cur_btn_idx).label._Equal("l_skel1")) {
+						from_jump_asf = false;
+						left_ee = right_ee = hmd_ee = nullptr;
+						skel_view->load_skeleton_given_name(working_dir + "speider_simple0/tmpskel_1.asf");
+						skel_view->set_skel_origin_ori_translation(Vec3(0, 1, 0), 0, Vec3(1.2, 1, -2.8));
+						load_addi_two_guys(working_dir + "speider_simple0/tmpskel_1.asf");
+						post_redraw();
+
 						label_content = "[INFO] button clicked!\n" + label_content;
 						label_outofdate = true;
-						skel_view->load_skeleton_given_name("tmpskel_1.asf");
-						skel_view->set_skel_origin_ori_translation(Vec3(0, 1, 0), 0, Vec3(1.2, 1, -2.8));
-						post_redraw();
 					}
 					if (pg1->elements.at(cur_btn_idx).label._Equal("l_skel2")) {
+						from_jump_asf = false;
+						left_ee = right_ee = hmd_ee = nullptr;
+						skel_view->load_skeleton_given_name(working_dir + "speider_simple0/tmpskel_2.asf");
+						skel_view->set_skel_origin_ori_translation(Vec3(0, 1, 0), 0, Vec3(1.2, 1, -2.8));
+						load_addi_two_guys(working_dir + "speider_simple0/tmpskel_2.asf");
+						post_redraw();
+
 						label_content = "[INFO] button clicked!\n" + label_content;
 						label_outofdate = true;
-						skel_view->load_skeleton_given_name("tmpskel_2.asf");
-						skel_view->set_skel_origin_ori_translation(Vec3(0, 1, 0), 0, Vec3(1.2, 1, -2.8));
-						post_redraw();
 					}
 					if (pg1->elements.at(cur_btn_idx).label._Equal("l_skel3")) {
+						from_jump_asf = false;
+						left_ee = right_ee = hmd_ee = nullptr;
+						skel_view->load_skeleton_given_name(working_dir + "speider_simple0/tmpskel_3.asf");
+						skel_view->set_skel_origin_ori_translation(Vec3(0, 1, 0), 0, Vec3(1.2, 1, -2.8));
+						load_addi_two_guys(working_dir + "speider_simple0/tmpskel_3.asf");
+						post_redraw();
+
 						label_content = "[INFO] button clicked!\n" + label_content;
 						label_outofdate = true;
-						skel_view->load_skeleton_given_name("tmpskel_3.asf");
-						skel_view->set_skel_origin_ori_translation(Vec3(0, 1, 0), 0, Vec3(1.2, 1, -2.8));
-						post_redraw();
 					}
 					// save skel. 
 					if (pg1->elements.at(cur_btn_idx).label._Equal("s_skel1")) {
@@ -2591,10 +2610,10 @@ void vr_test::draw(cgv::render::context& ctx)
 			glDisable(GL_BLEND);
 		}
 	// imitating only when dofs are changed 
-		/*if (b_toggle_imitating && skel_view->should_apply_dofs_to_others_for_imitating) {
+		if (b_toggle_imitating && skel_view->should_apply_dofs_to_others_for_imitating) {
 			apply_dofs();
 			skel_view->should_apply_dofs_to_others_for_imitating = false;
-		}*/
+		}
 	// draw the other two guys
 		if (b_toggle_show_imitating_skel) {
 			if (tmpdata_1->get_skeleton() != nullptr)
