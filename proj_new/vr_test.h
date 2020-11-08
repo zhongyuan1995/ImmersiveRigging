@@ -339,7 +339,7 @@ public:
 	void skel_joint_box_compute_intersections(const vec3& origin, const vec3& direction, int ci, const rgb& color);
 	void fast_joint_box_compute_intersections(const vec3& origin, const vec3& direction, int ci, const rgb& color);
 	void construct_boxgui();
-	void render_or_erase_confirm_panel(bool erase_it);
+	void render_confirm_panel();
 	vec3 compute_ray_plane_intersection_point(const vec3& origin, const vec3& direction);
 	void load_mesh() {
 		g_mesh_filename = cgv::gui::file_open_dialog("Open", "OBJ Files (*.obj):*.obj");
@@ -583,6 +583,15 @@ public:
 		ds->set_mesh(mmesh);
 		label_content = "[INFO] mesh loaded!\n" + label_content;
 		label_outofdate = true;
+		post_redraw();
+	}
+	void remove_pg1() {
+		/*pg1->elements.pop_back();
+		pg1->boxvector.pop_back();
+		pg1->colorvector.pop_back();*/
+		pg1->elements.clear();
+		pg1->boxvector.clear();
+		pg1->colorvector.clear();
 		post_redraw();
 	}
 	void translate_model_in_y_dir_upwards() {

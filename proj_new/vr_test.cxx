@@ -779,31 +779,21 @@ void vr_test::construct_boxgui() {
 	pg1->push_to_render_vector();
 }
 
-void vr_test::render_or_erase_confirm_panel(bool erase_it) {
-	if (!erase_it) {
+void vr_test::render_confirm_panel() {
 		int smaller_f = 25;
 		int smallbox_font_size = 50;
-		if (confirm_needed && confirm_gui_posi.y() != 0) { // we have to set confirm posi before enabling confirm panel
-			pg1->elements.clear();
-			pg1->boxvector.clear();
-			pg1->colorvector.clear();
-			boxgui_button first_btn = boxgui_button(vec3(confirm_gui_posi.x() - 0.2f, confirm_gui_posi.y(), confirm_gui_posi.z()), 0.1, 0.4, 0.4, rgb(0, 1, 0),
-				"This will overwrite \nthe existing file!\nContinue?", smaller_f, "D:/icon_res/default.png", true);
-			pg1->elements.push_back(first_btn);
-			first_btn = boxgui_button(vec3(confirm_gui_posi.x() - 0.2f, confirm_gui_posi.y(), confirm_gui_posi.z() - 0.35f), 0.1, 0.2, 0.2, rgb(0, 1, 0),
-				"yes", smallbox_font_size, "D:/icon_res/default.png", true);
-			pg1->elements.push_back(first_btn);
-			first_btn = boxgui_button(vec3(confirm_gui_posi.x() - 0.2f, confirm_gui_posi.y(), confirm_gui_posi.z() + 0.35f), 0.1, 0.2, 0.2, rgb(0, 1, 0),
-				"no", smallbox_font_size, "D:/icon_res/default.png", true);
-			pg1->elements.push_back(first_btn);
-		}
+
+		boxgui_button first_btn = boxgui_button(vec3(confirm_gui_posi.x() - 0.2f, confirm_gui_posi.y(), confirm_gui_posi.z()), 0.1, 0.4, 0.4, rgb(0, 1, 0),
+			"This will overwrite \nthe existing file!\nContinue?", smaller_f, "D:/icon_res/default.png", true);
+		pg1->elements.push_back(first_btn);
+		/*first_btn = boxgui_button(vec3(confirm_gui_posi.x() - 0.2f, confirm_gui_posi.y(), confirm_gui_posi.z() - 0.35f), 0.1, 0.2, 0.2, rgb(0, 1, 0),
+			"yes", smallbox_font_size, "D:/icon_res/default.png", true);
+		pg1->elements.push_back(first_btn);
+		first_btn = boxgui_button(vec3(confirm_gui_posi.x() - 0.2f, confirm_gui_posi.y(), confirm_gui_posi.z() + 0.35f), 0.1, 0.2, 0.2, rgb(0, 1, 0),
+			"no", smallbox_font_size, "D:/icon_res/default.png", true);
+		pg1->elements.push_back(first_btn);*/
 		pg1->push_to_render_vector();
 		post_redraw();
-	}
-	else {
-		construct_boxgui();
-		post_redraw();
-	}
 }
 
 cgv::render::render_types::vec3 vr_test::compute_ray_plane_intersection_point(const vec3& origin, const vec3& direction)
@@ -1502,12 +1492,12 @@ bool vr_test::handle(cgv::gui::event& e)
 					}
 					// save skel. 
 					if (pg1->elements.at(cur_btn_idx).label._Equal("s_skel1")) {
-						/*pg1->elements.clear();
-						pg1->boxvector.clear();
-						pg1->colorvector.clear();*/
+						/*pg1->elements.pop_back();
+						pg1->boxvector.pop_back();
+						pg1->colorvector.pop_back();*/
 						//confirm_gui_posi = vec3(2.5f - 0.05f, 2.25 - 0.5f, -1.75f + 0.25f * 1);
-						//confirm_needed = true;
-						//render_or_erase_confirm_panel(false); // re-construct the box gui, shall be modified 
+						/*confirm_needed = true;
+						render_confirm_panel();  */
 						//if (confirmed) {
 						//	confirmed = false;
 							ds->get_skeleton()->write_pinocchio_file("tmpskel_1.txt");
@@ -1515,29 +1505,19 @@ bool vr_test::handle(cgv::gui::event& e)
 							label_content = "[INFO] skel. saved!\n" + label_content;
 							label_outofdate = true;
 						//}
-					}
-					if (pg1->elements.at(cur_btn_idx).label._Equal("yes")) {
-						if (confirm_needed) {
-							confirmed = true;
-							confirm_needed = false;
-						}
-					}
-					if (pg1->elements.at(cur_btn_idx).label._Equal("no")) {
-						confirmed = false;
-						confirm_needed = false; 
-						render_or_erase_confirm_panel(true);
+							//remove_pg1();
 					}
 					if (pg1->elements.at(cur_btn_idx).label._Equal("s_skel2")) {
-						label_content = "[INFO] button clicked!\n" + label_content;
-						label_outofdate = true;
 						ds->get_skeleton()->write_pinocchio_file("tmpskel_2.txt");
 						ds->get_skeleton()->writeASFFile("tmpskel_2.asf");
+						label_content = "[INFO] skel. saved!\n" + label_content;
+						label_outofdate = true;
 					}
 					if (pg1->elements.at(cur_btn_idx).label._Equal("s_skel3")) {
-						label_content = "[INFO] button clicked!\n" + label_content;
-						label_outofdate = true;
 						ds->get_skeleton()->write_pinocchio_file("tmpskel_3.txt");
 						ds->get_skeleton()->writeASFFile("tmpskel_3.asf");
+						label_content = "[INFO] skel. saved!\n" + label_content;
+						label_outofdate = true;
 					}
 					// load demo animation 
 					/*if (pg1->elements.at(cur_btn_idx).label._Equal("jump")) {
@@ -2778,6 +2758,7 @@ void vr_test::create_gui() {
 	connect_copy(add_button("load_mesh_with_gui")->click, cgv::signal::rebind(this, &vr_test::load_mesh_with_gui));
 	connect_copy(add_button("load_skel")->click, cgv::signal::rebind(this, &vr_test::load_skel));
 	connect_copy(add_button("adjest_mesh")->click, cgv::signal::rebind(this, &vr_test::adjest_mesh));
+	connect_copy(add_button("remove_pg1")->click, cgv::signal::rebind(this, &vr_test::remove_pg1));
 	// 
 
 
