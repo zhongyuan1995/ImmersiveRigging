@@ -409,11 +409,11 @@ public:
 		label_content = "[INFO] bones deleted\n" + label_content;
 		label_outofdate = true;
 	}
-	void load_skel() { // those three skel. should be added at the same time 
+	void load_skel_with_dofs() { // those three skel. should be added at the same time 
 		// editable one 
-		skel_view->load_skeleton_given_name(working_dir + "speider_simple0/tmpskel.asf");
+		skel_view->load_skeleton_given_name(working_dir + "speider_simple0/jump.asf");
 		skel_view->set_skel_origin_ori_translation(Vec3(0, 1, 0), 0, Vec3(1.2, 1, -2.8));
-		load_addi_two_guys(working_dir + "speider_simple0/tmpskel.asf");
+		load_addi_two_guys(working_dir + "speider_simple0/jump.asf");
 		post_redraw();
 
 		label_content = "[INFO] demo skel. loaded\n" + label_content;

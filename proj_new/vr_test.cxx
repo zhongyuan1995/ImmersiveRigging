@@ -1466,7 +1466,14 @@ bool vr_test::handle(cgv::gui::event& e)
 						label_outofdate = true;
 						//skel_view->load_skeleton_given_name("FFA_REGULAR/zrdevpacks/zract_easyRigging/data_attached/_workdemo1_spiderman/jump.asf");
 						//skel_view->set_skel_origin_ori_translation(Vec3(0, 1, 0), 0, Vec3(1.25, 1, -2.8));
-						load_skel();
+
+						skel_view->load_skeleton_given_name(working_dir + "speider_simple0/jump.asf");
+						skel_view->set_skel_origin_ori_translation(Vec3(0, 1, 0), 0, Vec3(1.2, 1, -2.8));
+						load_addi_two_guys(working_dir + "speider_simple0/jump.asf");
+						post_redraw();
+
+						label_content = "[INFO] demo skel. loaded\n" + label_content;
+						label_outofdate = true;
 					}
 					//l_skel1
 					if (pg1->elements.at(cur_btn_idx).label._Equal("l_skel1")) {
@@ -2584,10 +2591,10 @@ void vr_test::draw(cgv::render::context& ctx)
 			glDisable(GL_BLEND);
 		}
 	// imitating only when dofs are changed 
-		if (b_toggle_imitating && skel_view->should_apply_dofs_to_others_for_imitating) {
+		/*if (b_toggle_imitating && skel_view->should_apply_dofs_to_others_for_imitating) {
 			apply_dofs();
 			skel_view->should_apply_dofs_to_others_for_imitating = false;
-		}
+		}*/
 	// draw the other two guys
 		if (b_toggle_show_imitating_skel) {
 			if (tmpdata_1->get_skeleton() != nullptr)
@@ -2754,9 +2761,9 @@ void vr_test::create_gui() {
 	add_member_control(this, "show_seethrough", show_seethrough, "check");
 	add_member_control(this, "toggle_usage_description", toggle_usage_description, "check");
 
-	connect_copy(add_button("load_mesh")->click, cgv::signal::rebind(this, &vr_test::load_mesh));
+	//connect_copy(add_button("load_mesh")->click, cgv::signal::rebind(this, &vr_test::load_mesh));
 	connect_copy(add_button("load_mesh_with_gui")->click, cgv::signal::rebind(this, &vr_test::load_mesh_with_gui));
-	connect_copy(add_button("load_skel")->click, cgv::signal::rebind(this, &vr_test::load_skel));
+	connect_copy(add_button("load_skel_with_dofs")->click, cgv::signal::rebind(this, &vr_test::load_skel_with_dofs));
 	connect_copy(add_button("adjest_mesh")->click, cgv::signal::rebind(this, &vr_test::adjest_mesh));
 	connect_copy(add_button("remove_pg1")->click, cgv::signal::rebind(this, &vr_test::remove_pg1));
 	// 
