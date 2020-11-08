@@ -30,3 +30,17 @@
     skel. fitting 
         也是一个最优化问题
         网上有很多最优化问题的c++实现，但是py对于可视化这个东西很方便
+    CMU Graphics Lab Motion Capture Database
+    Acclaim ASF/AMC
+        https://research.cs.wisc.edu/graphics/Courses/cs-838-1999/Jeff/ASF-AMC.html
+        The Acclaim format is made up of two files, a skeleton file and a motion file
+        ASF file (Acclaim Skeleton File)
+        AMC file (Acclaim Motion Capture data).
+        Each segment has information regarding the way the segment is to be drawn as well as information that can be 
+            used for physical dynamics programs, inverse kinematic programs or skinning programs.
+        
+    pinnoccio library
+    dof adjestment 
+    numerical optimization
+    rotation with quaternion
+    humanoid character animation

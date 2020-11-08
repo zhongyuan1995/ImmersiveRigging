@@ -122,6 +122,7 @@
         report 
     tobetested:
     todo:  
+        define the dofs manually, to test the effect
         (additional)adjest dofs in vr (details designed in private repository)
         (additional)rig half of a mesh and auto-complete. Add a button: skel_auto_complete 
         (additional)cut out part of the mesh with right hand controller 
