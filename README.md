@@ -117,11 +117,11 @@
         operation documentation  
         multiple views, imitating skeletons 
         code style improvement 
-    tobetested:
-    todo:  
-        * improve IK
+        improve IK
             modify the calculate_matrix function
         report 
+    tobetested:
+    todo:  
         (additional)adjest dofs in vr (details designed in private repository)
         (additional)rig half of a mesh and auto-complete. Add a button: skel_auto_complete 
         (additional)cut out part of the mesh with right hand controller 
@@ -156,6 +156,9 @@
         13/08/2020
         14/08/2020
         25/08/2020
+        25/09/2020
+        07/11/2020
+        08/11/2020
     current sreenshots:
 ![Demo CountPages alpha](pics/preview.gif)
 ![](pics/with_info_board.png)
