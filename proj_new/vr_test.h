@@ -306,6 +306,9 @@ protected:
 
 	std::string working_dir = "../../../plugins/vr_rigging_pub/gen_dataset/";
 	std::string mesh_dir = "";
+	bool confirm_needed = false;
+	bool confirmed = false;
+	vec3 confirm_gui_posi = 0;
 
 public:
 	void init_cameras(vr::vr_kit* kit_ptr);
@@ -336,6 +339,7 @@ public:
 	void skel_joint_box_compute_intersections(const vec3& origin, const vec3& direction, int ci, const rgb& color);
 	void fast_joint_box_compute_intersections(const vec3& origin, const vec3& direction, int ci, const rgb& color);
 	void construct_boxgui();
+	void render_or_erase_confirm_panel(bool erase_it);
 	vec3 compute_ray_plane_intersection_point(const vec3& origin, const vec3& direction);
 	void load_mesh() {
 		g_mesh_filename = cgv::gui::file_open_dialog("Open", "OBJ Files (*.obj):*.obj");
@@ -429,6 +433,12 @@ public:
 	}
 	void load_stored_anim2() {
 		skel_view->load_animation_given_name(working_dir + "speider_simple0/anim_2.amc", true);
+	}
+	void load_stored_anim3() {
+		skel_view->load_animation_given_name(working_dir + "speider_simple0/anim_3.amc", true);
+	}
+	void stop_anim() {
+	
 	}
 	void start_record() {
 		skel_view->prepare_record_anim();

@@ -62,8 +62,6 @@ private:
 	double animationTime;
 	double recordingTime;
 
-	void start_animation();
-	void stop_animation();
 	
 
 	bool render_axis_arrow = true;
@@ -72,6 +70,8 @@ private:
 	std::vector<rgb> jointlist_color;
 	void compute_posi_jointlist_recur(Bone* node, const Mat4& global_to_parent_local, int level);
 public:
+	void start_animation();
+	void stop_animation();
 	bool should_apply_dofs_to_others_for_imitating = false;
 	void start_record_anim() {
 		recording = true;

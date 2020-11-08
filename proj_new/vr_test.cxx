@@ -497,6 +497,9 @@ void vr_test::construct_boxgui() {
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.0f - 0.5, -1.75f + 0.25f * 8), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
 		"l_anim3", smallbox_font_size, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.0f - 0.5, -1.75f + 0.25f * 9), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"stop_anim", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.25f, -2.5f), 0.1, 0.2, 0.8, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f), "Bone Edit", font_size, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);
 	//-----------------------------add to existing skel.-------------------//
@@ -772,7 +775,35 @@ void vr_test::construct_boxgui() {
 	first_btn.set_trans(vec3(2.25f - 0.5f, 2.5 - 0.25 * 2, 0.5f));
 	pg1->elements.push_back(first_btn);*/
 	//
+
 	pg1->push_to_render_vector();
+}
+
+void vr_test::render_or_erase_confirm_panel(bool erase_it) {
+	if (!erase_it) {
+		int smaller_f = 25;
+		int smallbox_font_size = 50;
+		if (confirm_needed && confirm_gui_posi.y() != 0) { // we have to set confirm posi before enabling confirm panel
+			pg1->elements.clear();
+			pg1->boxvector.clear();
+			pg1->colorvector.clear();
+			boxgui_button first_btn = boxgui_button(vec3(confirm_gui_posi.x() - 0.2f, confirm_gui_posi.y(), confirm_gui_posi.z()), 0.1, 0.4, 0.4, rgb(0, 1, 0),
+				"This will overwrite \nthe existing file!\nContinue?", smaller_f, "D:/icon_res/default.png", true);
+			pg1->elements.push_back(first_btn);
+			first_btn = boxgui_button(vec3(confirm_gui_posi.x() - 0.2f, confirm_gui_posi.y(), confirm_gui_posi.z() - 0.35f), 0.1, 0.2, 0.2, rgb(0, 1, 0),
+				"yes", smallbox_font_size, "D:/icon_res/default.png", true);
+			pg1->elements.push_back(first_btn);
+			first_btn = boxgui_button(vec3(confirm_gui_posi.x() - 0.2f, confirm_gui_posi.y(), confirm_gui_posi.z() + 0.35f), 0.1, 0.2, 0.2, rgb(0, 1, 0),
+				"no", smallbox_font_size, "D:/icon_res/default.png", true);
+			pg1->elements.push_back(first_btn);
+		}
+		pg1->push_to_render_vector();
+		post_redraw();
+	}
+	else {
+		construct_boxgui();
+		post_redraw();
+	}
 }
 
 cgv::render::render_types::vec3 vr_test::compute_ray_plane_intersection_point(const vec3& origin, const vec3& direction)
@@ -1011,7 +1042,7 @@ bool vr_test::handle(cgv::gui::event& e)
 			if (state[vrse.get_controller_index()] == IS_GRAB)
 				state[vrse.get_controller_index()] = IS_OVER;
 			break;
-		case cgv::gui::SA_PRESS: // press at y dir to start ccd 
+		case cgv::gui::SA_PRESS: // press at y dir on left controller to start ccd 
 			if (vrse.get_controller_index() == 0 && (vrse.get_y() > 0.9)) {
 				toggle_ccd = !toggle_ccd;
 				// set to the desired position in front of mirror 
@@ -1351,7 +1382,7 @@ bool vr_test::handle(cgv::gui::event& e)
 				vrpe.get_state().controller[1].put_ray(&origin(0), &direction(0));
 				gui_compute_intersections(origin, direction, 1, ci == 0 ? rgb(1, 0, 0) : rgb(0, 0, 1));
 				//std::cout << "entering button  :" << std::endl;
-				if (gui_intersection_points.size() > 0) {
+				if (pg1->elements.size()>0 && gui_intersection_points.size() > 0) {
 					// button clicked! button handlers!
 					// std::cout << "gui button " << gui_intersection_box_indices.front() << " clicked!" << std::endl;
 					// call back func.!
@@ -1471,10 +1502,30 @@ bool vr_test::handle(cgv::gui::event& e)
 					}
 					// save skel. 
 					if (pg1->elements.at(cur_btn_idx).label._Equal("s_skel1")) {
-						label_content = "[INFO] button clicked!\n" + label_content;
-						label_outofdate = true;
-						ds->get_skeleton()->write_pinocchio_file("tmpskel_1.txt");
-						ds->get_skeleton()->writeASFFile("tmpskel_1.asf");
+						/*pg1->elements.clear();
+						pg1->boxvector.clear();
+						pg1->colorvector.clear();*/
+						//confirm_gui_posi = vec3(2.5f - 0.05f, 2.25 - 0.5f, -1.75f + 0.25f * 1);
+						//confirm_needed = true;
+						//render_or_erase_confirm_panel(false); // re-construct the box gui, shall be modified 
+						//if (confirmed) {
+						//	confirmed = false;
+							ds->get_skeleton()->write_pinocchio_file("tmpskel_1.txt");
+							ds->get_skeleton()->writeASFFile("tmpskel_1.asf");
+							label_content = "[INFO] skel. saved!\n" + label_content;
+							label_outofdate = true;
+						//}
+					}
+					if (pg1->elements.at(cur_btn_idx).label._Equal("yes")) {
+						if (confirm_needed) {
+							confirmed = true;
+							confirm_needed = false;
+						}
+					}
+					if (pg1->elements.at(cur_btn_idx).label._Equal("no")) {
+						confirmed = false;
+						confirm_needed = false; 
+						render_or_erase_confirm_panel(true);
 					}
 					if (pg1->elements.at(cur_btn_idx).label._Equal("s_skel2")) {
 						label_content = "[INFO] button clicked!\n" + label_content;
@@ -1647,6 +1698,10 @@ bool vr_test::handle(cgv::gui::event& e)
 						label_outofdate = true;
 						skel_view->load_animation_given_name(working_dir + "speider_simple0/anim_3.amc", true);
 					}
+					if (pg1->elements.at(cur_btn_idx).label._Equal("stop_anim")) {
+						skel_view->stop_animation();
+						label_content = "[INFO] animation stopped!\n" + label_content;
+					}
 
 					if (pg1->elements.at(cur_btn_idx).label._Equal("l_scene1")) {
 						label_content = "[INFO] button clicked!\n" + label_content;
@@ -1716,7 +1771,7 @@ bool vr_test::handle(cgv::gui::event& e)
 				}
 
 				// has intersec. with boxgui
-				if (gui_intersection_points.size() > 0) {
+				if (pg1->elements.size() > 0 && gui_intersection_points.size() > 0) {
 					/*box3 curbox = pg1->boxvector.at(gui_intersection_box_indices.front());
 					pg1->boxvector.at(gui_intersection_box_indices.front()) =
 						box3(curbox.get_center() + vec3(0.05, 0, 0) - curbox.get_extent() / 2.0f,
@@ -2515,6 +2570,7 @@ void vr_test::draw(cgv::render::context& ctx)
 	}
 
 	// draw boxgui, pg1->ele 
+	if (pg1->elements.size() > 0) {
 		renderer.set_render_style(movable_style);
 		renderer.set_box_array(ctx, pg1->boxvector);
 		renderer.set_color_array(ctx, pg1->colorvector);
@@ -2522,6 +2578,7 @@ void vr_test::draw(cgv::render::context& ctx)
 			glDrawArrays(GL_POINTS, 0, (GLsizei)pg1->boxvector.size());
 		}
 		renderer.disable(ctx);
+	}
 
 	// render dynamic mesh 
 		if (ds->get_mesh() && b_render_mesh)

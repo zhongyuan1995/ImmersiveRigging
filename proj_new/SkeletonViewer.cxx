@@ -225,7 +225,15 @@ void SkeletonViewer::timer_event(double, double dt)
 }
 
 void SkeletonViewer::start_animation() { playing = true; }
-void SkeletonViewer::stop_animation() { playing = false; }
+void SkeletonViewer::stop_animation() {
+	playing = false;
+	recording = false;
+	if (animation)
+	{
+		delete animation;
+		animation = nullptr;
+	}
+}
 
 void SkeletonViewer::skeleton_changed(std::shared_ptr<SkinningSkeleton> s)
 {
@@ -451,6 +459,7 @@ void SkeletonViewer::load_animation_given_name(std::string f,bool myanim)
 		{
 			delete animation;
 			animation = nullptr;
+			playing = false;
 		}
 		auto a = new Animation();
 		if (a->read_amc_file(filename, data->get_skeleton().get(),myanim))

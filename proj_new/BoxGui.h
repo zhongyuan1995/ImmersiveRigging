@@ -112,9 +112,10 @@ class boxgui_page : public cgv::render::render_types {
 	// can also be modi. in vr scene
 public:
 	cgv::render::shader_program icon_shader_prog;
+	// for rendering 
 	std::vector<box3> boxvector;
 	std::vector<rgb> colorvector;
-
+	// for gui logic
 	std::vector<boxgui_button> elements; // only buttons cur. 
 	void push_to_render_vector() {
 		boxvector.clear();
