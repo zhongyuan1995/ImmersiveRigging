@@ -7,23 +7,30 @@
     opti.
         line fitting, curve fitting 
     ik 
-        IK is a ill-posed problem 
-        as in example on  the right
-        unsolvable
-        leading to  oscillations during IK
+        cg2 slides 
+            IK is a ill-posed problem 
+            as in example on  the right
+            unsolvable leading to oscillations during IK
+            how IK on a whole human body is different from IK on a single arm.
+            several end effector constraints
+            character animation.
+            comfortable with math
+            foot placement, arm grabbing door
+            configuration space
+            fundamental task of IK is to control degrees of freedom to attain goal
+            CCD only handles serial chains
+            serial chains
+            CCD must start at a fixed root
+            ik with several end effector
+            non-serial chains 
         http://www.chrishecker.com/Inverse_kinematics
-        several end  effector constraints
-        how IK on a whole human body is different from IK on a single arm.
-        character animation.
-        comfortable with math
-        foot placement, arm grabbing door
-        configuration space
-        fundamental task of IK is to control degrees of freedom to attain goal
-        CCD only handles serial chains
-        serial chains
-        CCD must start at a fixed root
-        ik with several end  effector
-        non-serial chains 
+        Cyclic Coordinate Descent (CCD) 
+            used to generate initial
+                guess for secondary method with fast convergence rate
+                close to optimum 
+            coordinate descent can be implemented efficiently as the
+                line search problem can be solved analytically
+            
     heat diffusion 
     skel. fitting 
         也是一个最优化问题
