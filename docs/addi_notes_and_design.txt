@@ -1,0 +1,82 @@
+
+    //
+        opti.算法的测试：
+            通过c++写算法和数据，通过py显示！ 
+            写在omi中！
+        看课件
+    opti.
+        line fitting, curve fitting 
+    ik 
+        IK is a ill-posed problem 
+        as in example on  the right
+        unsolvable
+        leading to  oscillations during IK
+        http://www.chrishecker.com/Inverse_kinematics
+        several end  effector constraints
+        how IK on a whole human body is different from IK on a single arm.
+        character animation.
+        comfortable with math
+        foot placement, arm grabbing door
+        configuration space
+        fundamental task of IK is to control degrees of freedom to attain goal
+        CCD only handles serial chains
+        serial chains
+        CCD must start at a fixed root
+        ik with several end  effector
+        non-serial chains 
+    heat diffusion 
+    skel. fitting 
+        也是一个最优化问题
+        网上有很多最优化问题的c++实现，但是py对于可视化很方便
+        用c++计算，而后写入文件，通过py渲染
+    CMU Graphics Lab Motion Capture Database
+    Acclaim ASF/AMC
+        https://research.cs.wisc.edu/graphics/Courses/cs-838-1999/Jeff/ASF-AMC.html
+            The Acclaim format is made up of two files, a skeleton file and a motion file
+            ASF file (Acclaim Skeleton File)
+            AMC file (Acclaim Motion Capture data).
+            Each segment has information regarding the way the segment is to be drawn as well as information that can be 
+                used for physical dynamics programs, inverse kinematic programs or skinning programs.
+            One of the peculiar features of the ASF file is the requirement that there be no gaps in the skeleton. 
+            A limitation of the ASF definition is that only one root exist in the scene
+            this doesn't prevent a file from cleverly containing two skeletons attached to the root but it does make such a construction clumsy.
+            Examine the example file
+            all start with a colon ":".
+            indicate the beginning of a section of data.
+    Documentation Mocap Database HDM05 https://www.researchgate.net/figure/Neutral-poses-of-the-ASF-skeleton-left-and-the-BVH-skeleton-right-The-respective_fig3_231521391
+        Neutral poses of the ASF skeleton (left) and the BVH skeleton (right). 
+        For the BVH skeleton, the local coordinate systems are aligned with the world system
+        The axes are color-coded as red, green, and blue arrows
+        standing for the x , y , and z axis
+        record human motions at high spatial and temporal resolutions.
+        synthesize realistic motion sequences in datadriven computer animation
+        analysis, synthesis and classification of motion capture data
+        evaluation of the achieved research results.
+        well-documented motion  capture data
+        optical marker-based technology, which  yields very clean and detailed motion capture data
+        40–50 retro-reflective markers attached to a suit
+        the system can then  reconstruct the 3D marker positions with high precision
+        Then, the data is cleaned with the aid of semi-automatic gap  filling algorithms exploiting kinematic constraints.
+        exploiting kinematic constraints
+        the resulting 3D trajectory data
+        can introduce significant artifacts
+        First, ASF/AMC data comprises  an explicit skeleton structure, providing information about bones, joints, and the assembly  of these basic elements into a skeleton
+        BVH
+        ASF files are bone-based in contrast to the joint-based  BVH files
+        The Euler conventions for ASF and AMC files  are always based on a right-to-left multiplication order
+        The following excerpt from an ASF file was taken from the CMU database
+	Biovision BVH skeleton https://research.cs.wisc.edu/graphics/Courses/cs-838-1999/Jeff/BVH.html
+        a motion capture services company, as a way to provide motion capture data to their customers. 
+        The name BVH stands for Biovision hierarchical data
+        its only drawback is the lack of a full definition of the basis pose (this format has only translational offsets of children segments from their parent, no rotational offset is defined)
+        The motion section begins with the keyword "MOTION"
+        this is 30 frames a second the usual rate of sampling in a BVH file.
+    cmu graphics course about mocap https://research.cs.wisc.edu/graphics/Courses/cs-838-1999/Jeff/MoCapTOC.html
+    pinnoccio library
+    dof adjestment 
+        render a local frame, adjest to bone direction 
+        adjest dofs, by draging the arrow 
+        fix/define with boxgui button 
+    numerical optimization
+    rotation with quaternion
+    humanoid character animation

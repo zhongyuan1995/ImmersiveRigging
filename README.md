@@ -122,11 +122,12 @@
         report 
     tobetested:
     todo:  
-        define the dofs manually, to test the effect
+        load and test the skel. with dofs 
         (additional)adjest dofs in vr (details designed in private repository)
         (additional)rig half of a mesh and auto-complete. Add a button: skel_auto_complete 
         (additional)cut out part of the mesh with right hand controller 
         (additional)fix the problem in mesh loading 
+        (additional)a posting application  
         (additional)vis bone weights for each components (vertices)
         (additional)enable texturing for the mesh loader
         (additional)fix the dof adjestment in course cg2, implement a numerical            
