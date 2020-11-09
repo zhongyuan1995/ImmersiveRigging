@@ -133,23 +133,25 @@ void vr_test::gui_compute_intersections(const vec3& origin, const vec3& directio
 void vr_test::skel_joint_box_compute_intersections(const vec3& origin, const vec3& direction, int ci, const rgb& color) {
 	// put all boxes into a vector<box3> list, similar to the draw call in skelviewer 
 	// skel_view->get_jointlist();
-	// it was "static" var. getted from skel_view obj. so this will not take too much effort 
-	jointlist = skel_view->get_jointlist();
-	jointlist_colors = skel_view->get_jointlistcolor();
-	for (size_t i = 0; i < jointlist.size(); ++i) {
-		vec3 origin_box_i = origin;
-		//movable_box_rotations[i].inverse_rotate(origin_box_i);
-		vec3 direction_box_i = direction;
-		//movable_box_rotations[i].inverse_rotate(direction_box_i);
-		float t_result;
-		vec3  p_result;
-		vec3  n_result;
-		if (cgv::media::ray_axis_aligned_box_intersection(
-			origin_box_i, direction_box_i,
-			jointlist.at(i),
-			t_result, p_result, n_result, 0.000001f)) {
-			skel_intersection_points.push_back(p_result);
-			skel_intersection_box_indices.push_back((int)i);
+	// it was "static" var. getted from skel_view obj. so this will not take too much effort
+	if (skel_view) { // new added: stack-overflow
+		jointlist = skel_view->get_jointlist();
+		jointlist_colors = skel_view->get_jointlistcolor();
+		for (size_t i = 0; i < jointlist.size(); ++i) {
+			vec3 origin_box_i = origin;
+			//movable_box_rotations[i].inverse_rotate(origin_box_i);
+			vec3 direction_box_i = direction;
+			//movable_box_rotations[i].inverse_rotate(direction_box_i);
+			float t_result;
+			vec3  p_result;
+			vec3  n_result;
+			if (cgv::media::ray_axis_aligned_box_intersection(
+				origin_box_i, direction_box_i,
+				jointlist.at(i),
+				t_result, p_result, n_result, 0.000001f)) {
+				skel_intersection_points.push_back(p_result);
+				skel_intersection_box_indices.push_back((int)i);
+			}
 		}
 	}
 }
@@ -2242,14 +2244,16 @@ bool vr_test::init(cgv::render::context& ctx)
 	tmp_tex.create_from_images(ctx, "../../../plugins/vr_rigging_pub/proj_new/skybox/BluePinkNebular_{xp,xn,yp,yn,zp,zn}.jpg");
 	test_tex.create_from_images(ctx, "../../../plugins/vr_rigging_pub/proj_new/skybox/igen_2/{xp,xn,yp,yn,zp,zn}.jpg");
 
-	pg1->icon_shader_prog.build_program(ctx, "image.glpr");
+	if(pg1)
+		pg1->icon_shader_prog.build_program(ctx, "image.glpr");
 
 	cgv::render::gl::ensure_glew_initialized();
 	mmesh = std::make_shared<SkinningMesh>();
-	mmesh->init_shaders(ctx);
-	mmesh->set_rotation_translation(cgv::math::rotate3<double>(0, vec3(0, 1, 0)), vec3(1.2, 0, -2.8));
-	mmesh->set_mesh_scale(mesh_scale);
-
+	if (mmesh) {
+		mmesh->init_shaders(ctx);
+		mmesh->set_rotation_translation(cgv::math::rotate3<double>(0, vec3(0, 1, 0)), vec3(1.2, 0, -2.8));
+		mmesh->set_mesh_scale(mesh_scale);
+	}
 	cgv::render::ref_box_renderer(ctx, 1);
 	cgv::render::ref_sphere_renderer(ctx, 1);
 	cgv::render::ref_rounded_cone_renderer(ctx, 1);
