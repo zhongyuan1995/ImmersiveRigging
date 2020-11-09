@@ -121,6 +121,9 @@
             modify the calculate_matrix function
         report 
     tobetested:
+        posing function, grip left button to start. have to select left hand ee first!
+        local frames, just aligned to world coordi. now 
+        build_bone
     todo:  
         load and test the skel. with dofs 
         (additional)adjest dofs in vr (details designed in private repository)

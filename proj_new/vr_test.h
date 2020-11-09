@@ -237,6 +237,8 @@ protected:
 	bool teleport = false;
 	bool object_teleport = false;
 	bool drawingbone = false;
+	bool toggle_posing = false;
+	bool toggle_local_dofs_def = false;
 
 
 	boxgui_page* pg1 = new boxgui_page();
@@ -312,6 +314,13 @@ protected:
 
 	bool from_jump_asf = true;
 
+	float cur_local_frame_rot_rel_XYZ[3] = { 0, 0, 0 };
+	int shuffle_local_frame_dir_num = 0;
+	int num_of_all_choices = 3; 
+	vec3 roll_yaw_pitch_vec;
+	mat3 cur_rot_mat;
+	mat3 temp_rot;
+
 public:
 	void init_cameras(vr::vr_kit* kit_ptr);
 
@@ -335,7 +344,32 @@ public:
 	void construct_movable_boxes(float tw, float td, float th, float tW, size_t nr);
 	/// construct a scene with a table
 	void build_scene(float w, float d, float h, float W, float tw, float td, float th, float tW);
-
+	///
+	mat3 from_roll_yaw_pitch_vec_to_matrix(float deg_x, float deg_y, float deg_z) {
+		vec3 tmp_roll_yaw_pitch_vec = vec3(
+			cur_local_frame_rot_rel_XYZ[0],
+			cur_local_frame_rot_rel_XYZ[1],
+			cur_local_frame_rot_rel_XYZ[2]
+		);
+		return rotate3(tmp_roll_yaw_pitch_vec);
+	}
+	mat3 compute_matrix_from_two_dirs(vec3 a, vec3 b) {
+		a.normalize();
+		b.normalize();
+		vec3 rot_axis = cross(a, b);
+		rot_axis.normalize();
+		float rot_degree = acos(dot(a, b)) * 180 / PI;
+		return rotate3(rot_degree, rot_axis);
+	}
+	void from_matrix_to_euler_angle_as_global_var(mat3 rot_mat) {
+		// from http://planning.cs.uiuc.edu/node103.html
+		float yaw = atan2(rot_mat(1, 0), rot_mat(0, 0));
+		float pitch = atan2(-rot_mat(2, 0), sqrt(pow(rot_mat(2, 1), 2) + pow(rot_mat(2, 2), 2)));
+		float roll = atan2(rot_mat(2, 1), rot_mat(2, 2));
+		cur_local_frame_rot_rel_XYZ[0] = roll * 180 / PI;
+		cur_local_frame_rot_rel_XYZ[1] = pitch * 180 / PI;
+		cur_local_frame_rot_rel_XYZ[2] = yaw * 180 / PI;
+	}
 	void construct_left_hand_box(); 
 	void gui_compute_intersections(const vec3& origin, const vec3& direction, int ci, const rgb& color);
 	void skel_joint_box_compute_intersections(const vec3& origin, const vec3& direction, int ci, const rgb& color);
@@ -588,6 +622,29 @@ public:
 		ds->set_mesh(mmesh);
 		label_content = "[INFO] mesh loaded!\n" + label_content;
 		label_outofdate = true;
+		post_redraw();
+	}
+	void shuffle_frame() {
+		//cur_local_frame_rot_rel_XYZ
+		vec3 bonedir_inworldspace = vec3(1, 1, 1);
+		vec3 x_asix_dir = vec3(1, 0, 0);
+		bonedir_inworldspace.normalize();
+		x_asix_dir.normalize();
+		vec3 rot_axis = cross(x_asix_dir, bonedir_inworldspace);
+		rot_axis.normalize();
+		float rot_degree = acos(dot(bonedir_inworldspace, x_asix_dir)) * 180 / PI;
+		mat3 rot_mat = rotate3( rot_degree, rot_axis);
+		// from http://planning.cs.uiuc.edu/node103.html
+		float yaw = atan2(rot_mat(1, 0), rot_mat(0, 0));
+		float pitch = atan2(-rot_mat(2, 0), sqrt(pow(rot_mat(2, 1), 2) + pow(rot_mat(2, 2), 2)));
+		float roll = atan2(rot_mat(2, 1), rot_mat(2, 2));
+		cur_local_frame_rot_rel_XYZ[0] = roll * 180 / PI;
+		cur_local_frame_rot_rel_XYZ[1] = pitch * 180 / PI;
+		cur_local_frame_rot_rel_XYZ[2] = yaw * 180 / PI;
+
+		/*cur_local_frame_rot_rel_XYZ[0] = 90;
+		cur_local_frame_rot_rel_XYZ[1] = 0;
+		cur_local_frame_rot_rel_XYZ[2] = 0;*/
 		post_redraw();
 	}
 	void remove_pg1() {

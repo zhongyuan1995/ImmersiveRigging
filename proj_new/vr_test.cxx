@@ -545,8 +545,10 @@ void vr_test::construct_boxgui() {
 		"walk around", smallbox_font_size, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);*/
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.0f + 0.5f - 0.5, -1.75f + 0.25f * 3), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-		"build_skel", smallbox_font_size, "D:/icon_res/default.png", true);
-	// maybe do not have to click it explicitly 
+		"build_bone", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.0f + 0.5f - 0.5, -1.75f + 0.25f * 4), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"shuffle_\nlocal_frame", smallbox_font_size, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);
 	/*first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.0f+ 0.5f, -1.75f + 0.25f * 2), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
 		"s_anim3", smallbox_font_size, "D:/icon_res/default.png", true);
@@ -736,7 +738,7 @@ void vr_test::construct_boxgui() {
 	first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 1, 2.5 - 0.25 * 1, 0.5f));
 	pg1->elements.push_back(first_btn);
 	first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-		"ik1", smallbox_font_size, "D:/icon_res/default.png", true);
+		"posing", smallbox_font_size, "D:/icon_res/default.png", true);
 	first_btn.do_transform = true;
 	first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
 	first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 2, 2.5 - 0.25 * 1, 0.5f));
@@ -960,8 +962,39 @@ bool vr_test::handle(cgv::gui::event& e)
 			switch (vrke.get_key()) {
 			case vr::VR_GRIP:
 				std::cout << "grip button " << (vrke.get_controller_index() == 0 ? "left":"right") << " controller pressed" << std::endl;
-				if(vrke.get_controller_index() == 0)
-					teleport = true;
+				if (vrke.get_controller_index() == 0) {
+					if (toggle_posing) {
+						if (left_ee) {
+							vec3 origin, direction;
+							// ccd calcu. skel. based on LEFT hand  
+							ds->set_endeffector(left_ee, 0);
+							vrke.get_state().controller[0].put_ray(&origin(0), &direction(0));
+
+							ik_view->set_target_position_vr(
+								Vec4(
+									origin.x(),
+									origin.y(),
+									origin.z()));
+							//ik_view->set_max_iter(30);
+							ik_view->optimize(0);
+						}
+						else {
+							std::cout << "setup left_ee first!" << std::endl;
+						}
+					}
+					else {
+						toggle_local_dofs_def = !toggle_local_dofs_def;
+						if (toggle_local_dofs_def) {
+							cur_rot_mat = from_roll_yaw_pitch_vec_to_matrix(
+								cur_local_frame_rot_rel_XYZ[0],
+								cur_local_frame_rot_rel_XYZ[1],
+								cur_local_frame_rot_rel_XYZ[2]
+							);
+						}
+						std::cout << "toggle_local_dofs_def: " << toggle_local_dofs_def  << std::endl;
+					}
+					//teleport = true;
+				}
 				else 
 					btn_keydown_boxgui = true;
 				return true;
@@ -1105,6 +1138,13 @@ bool vr_test::handle(cgv::gui::event& e)
 				vr_view_ptr->set_tracking_origin(Vec3(posi.x(), vr_view_ptr->get_tracking_origin().y(), posi.z()));
 
 				teleport = false;
+			}
+
+			if (toggle_local_dofs_def) {
+				vec3 origin, direction;
+				vrpe.get_state().controller[0].put_ray(&origin(0), &direction(0));
+
+				cur_rot_mat = compute_matrix_from_two_dirs(-direction,vec3(1,0,0));
 			}
 
 			if (object_teleport) { // tobetested 
@@ -1293,71 +1333,17 @@ bool vr_test::handle(cgv::gui::event& e)
 							// compute cur. bone ref. here 
 							bone_tobeaddednext_idx = skel_intersection_box_indices.front();// the same order as jointist, and, bone list!
 							drawingbone = true;
+
+							// reset rotations 
+							cur_local_frame_rot_rel_XYZ[0] = 0;
+							cur_local_frame_rot_rel_XYZ[1] = 0;
+							cur_local_frame_rot_rel_XYZ[2] = 0;
 						}
 					}
 					else if (drawingbone) { // is even point and are drawing bones, has intersection before 
 						end_point_list.push_back(cur_left_hand_posi + vec3(cur_left_hand_dir * 0.2f)); // tobetested
 						//end_point_size_list.push_back(tmpboxsize);
 
-						// add bone here. addchild method will be called, ref. to the bone reading process 
-						Bone* parent_bone = ds->get_skeleton()->find_bone_in_a_list_by_id(bone_tobeaddednext_idx);
-						std::cout << parent_bone->get_name() << std::endl;
-						Bone* current_node = new Bone();
-						current_node->set_name("new_bone_" + to_string(newbone_idx++)); // "new_bone_0, new_bone_1..."
-						ds->get_skeleton()->add_new_bone_to_map("new_bone_" + to_string(newbone_idx++), current_node);
-
-						// adjest bone para. that we have drawn 
-						Vec3 bonedir_inworldspace = end_point_list.at(end_point_list.size() - 1)
-							- start_point_list.at(start_point_list.size() - 1);
-						current_node->set_direction_in_world_space(bonedir_inworldspace); // length already included 
-						current_node->set_length(1);
-
-						// local coordi. the same as global one 
-						/*axis 0 0 -20   XYZ*/
-						float a[3] = { 0, 0, 0 };// will be adjested later. todo
-						std::string order = "XYZ";
-						for (int i = 0; i < 3; ++i)
-						{
-							AtomicRotationTransform* t;
-							if (order.at(i) == 'X')
-								t = new AtomicXRotationTransform();
-							else if (order.at(i) == 'Y')
-								t = new AtomicYRotationTransform();
-							else if (order.at(i) == 'Z')
-								t = new AtomicZRotationTransform();
-							t->set_value(a[i]);
-							current_node->add_axis_rotation(t);
-						}
-
-						// apply full dof currently 
-						/*dof rx ry rz*/
-						int n_dofs = 3; // to be adjested in vr
-						AtomicTransform* dof;
-						dof = new AtomicXRotationTransform();
-						current_node->add_dof(dof);
-						dof = new AtomicYRotationTransform();
-						current_node->add_dof(dof);
-						dof = new AtomicZRotationTransform();
-						current_node->add_dof(dof);
-
-						/*limits(-160.0 20.0)
-							(-70.0 70.0)
-							(-70.0 60.0)*/
-						for (int i = 0; i < n_dofs; ++i)
-							current_node->get_dof(n_dofs - i - 1)->set_limits(-180.0, 180.0);
-
-						current_node->jointsize_stored_as_bone_parameter = tmpboxsize;
-
-						// pf 1h
-						// this will be calcu. in the post process step
-						//current_node->calculate_matrices();
-
-						parent_bone->add_child(current_node);
-						// perform post process, bounding box will be re-calculated! we need it to write pinocchio file 
-						ds->get_skeleton()->postprocess(ds->get_skeleton()->get_root(), Vec3(0, 0, 0));
-						// std::cout << skel_view->get_jointlist().size();
-						// update skel. the tree view will be updated at the sametime 
-						skel_view->skeleton_changed(ds->get_skeleton()); // jointlist updated inside 
 						drawingbone = false;
 					}
 					post_redraw();
@@ -1580,8 +1566,9 @@ bool vr_test::handle(cgv::gui::event& e)
 						vr_view_ptr->set_tracking_origin(Vec3(1.5f, vr_view_ptr->get_tracking_origin().y(), -1.0f));
 
 					}
-					if (pg1->elements.at(cur_btn_idx).label._Equal("ik1")) {
-						label_content = "[INFO] button clicked!\n" + label_content;
+					if (pg1->elements.at(cur_btn_idx).label._Equal("posing")) {
+						toggle_posing = !toggle_posing;
+						label_content = "[INFO] posing!\n" + label_content;
 						label_outofdate = true;
 					}
 					if (pg1->elements.at(cur_btn_idx).label._Equal("s_base")) {
@@ -1711,6 +1698,101 @@ bool vr_test::handle(cgv::gui::event& e)
 
 					if (pg1->elements.at(cur_btn_idx).label._Equal("l_scene1")) {
 						label_content = "[INFO] button clicked!\n" + label_content;
+						label_outofdate = true;
+					}
+					
+					if (pg1->elements.at(cur_btn_idx).label._Equal("shuffle_\nlocal_frame")) {
+						// compute cur_local_frame_rot_rel_XYZ in degrees
+						vec3 bonedir_inworldspace = end_point_list.at(end_point_list.size() - 1)
+							- start_point_list.at(start_point_list.size() - 1);
+						vec3 asix_dir = vec3(1, 0, 0);
+						shuffle_local_frame_dir_num++;
+						if (shuffle_local_frame_dir_num > num_of_all_choices - 1) {
+							shuffle_local_frame_dir_num = 0;
+						}
+						if (shuffle_local_frame_dir_num == 0) {
+							asix_dir = vec3(1, 0, 0);
+						}
+						else if (shuffle_local_frame_dir_num == 1) {
+							asix_dir = vec3(0, 1, 0);
+						}
+						else if (shuffle_local_frame_dir_num == 2) {
+							asix_dir = vec3(0, 0, 1);
+						}
+
+						mat3 rot_mat = compute_matrix_from_two_dirs(bonedir_inworldspace, asix_dir);
+						from_matrix_to_euler_angle_as_global_var(rot_mat);
+						cur_rot_mat = from_roll_yaw_pitch_vec_to_matrix(
+								cur_local_frame_rot_rel_XYZ[0],
+								cur_local_frame_rot_rel_XYZ[1],
+								cur_local_frame_rot_rel_XYZ[2]
+							);
+
+						post_redraw();
+					}
+					
+					if (pg1->elements.at(cur_btn_idx).label._Equal("build_bone")) {
+						// add bone here. addchild method will be called, ref. to the bone reading process 
+						Bone* parent_bone = ds->get_skeleton()->find_bone_in_a_list_by_id(bone_tobeaddednext_idx);
+						std::cout << parent_bone->get_name() << std::endl;
+						Bone* current_node = new Bone();
+						current_node->set_name("new_bone_" + to_string(newbone_idx++)); // "new_bone_0, new_bone_1..."
+						ds->get_skeleton()->add_new_bone_to_map("new_bone_" + to_string(newbone_idx++), current_node);
+
+						// adjest bone para. that we have drawn 
+						Vec3 bonedir_inworldspace = end_point_list.at(end_point_list.size() - 1)
+							- start_point_list.at(start_point_list.size() - 1);
+						current_node->set_direction_in_world_space(bonedir_inworldspace); // length already included 
+						current_node->set_length(1);
+
+						// local coordi. the same as global one 
+						/*axis 0 0 -20   XYZ*/
+						//float a[3] = { 0, 0, 0 };// will be adjested later. todo
+						std::string order = "XYZ";
+						for (int i = 0; i < 3; ++i)
+						{
+							AtomicRotationTransform* t;
+							if (order.at(i) == 'X')
+								t = new AtomicXRotationTransform();
+							else if (order.at(i) == 'Y')
+								t = new AtomicYRotationTransform();
+							else if (order.at(i) == 'Z')
+								t = new AtomicZRotationTransform();
+							t->set_value(cur_local_frame_rot_rel_XYZ[i]);
+							current_node->add_axis_rotation(t);
+						}
+
+						// apply full dof currently 
+						/*dof rx ry rz*/
+						int n_dofs = 3; // to be adjested in vr
+						AtomicTransform* dof;
+						dof = new AtomicXRotationTransform();
+						current_node->add_dof(dof);
+						dof = new AtomicYRotationTransform();
+						current_node->add_dof(dof);
+						dof = new AtomicZRotationTransform();
+						current_node->add_dof(dof);
+
+						/*limits(-160.0 20.0)
+							(-70.0 70.0)
+							(-70.0 60.0)*/
+						for (int i = 0; i < n_dofs; ++i)
+							current_node->get_dof(n_dofs - i - 1)->set_limits(-180.0, 180.0);
+
+						current_node->jointsize_stored_as_bone_parameter = tmpboxsize;
+
+						// pf 1h
+						// this will be calcu. in the post process step
+						//current_node->calculate_matrices();
+
+						parent_bone->add_child(current_node);
+						// perform post process, bounding box will be re-calculated! we need it to write pinocchio file 
+						ds->get_skeleton()->postprocess(ds->get_skeleton()->get_root(), Vec3(0, 0, 0));
+						// std::cout << skel_view->get_jointlist().size();
+						// update skel. the tree view will be updated at the sametime 
+						skel_view->skeleton_changed(ds->get_skeleton()); // jointlist updated inside 
+
+						label_content = "[INFO] a new bone has been built!\n" + label_content;
 						label_outofdate = true;
 					}
 
@@ -2026,6 +2108,8 @@ bool vr_test::init(cgv::render::context& ctx)
 	cgv::render::ref_rounded_cone_renderer(ctx, 1);
 
 	toggle_usage_description = true;
+	cur_rot_mat.identity();
+	temp_rot.identity();
 
 	return true;
 }
@@ -2672,20 +2756,97 @@ void vr_test::draw(cgv::render::context& ctx)
 				renderer.disable(ctx);
 			}
 		}
+	// draw demo axis 
+		if (false) {
+			std::vector<vec3> vertex_array_in_point_list;
+			std::vector<rgb> colorarray;
+
+			vec3 roll_yaw_pitch_vec = vec3(
+				cur_local_frame_rot_rel_XYZ[0],
+				cur_local_frame_rot_rel_XYZ[1],
+				cur_local_frame_rot_rel_XYZ[2]
+			);
+			mat3 cur_rot_mat = rotate3(roll_yaw_pitch_vec);
+
+			vec3 cur_posi = vec3(0, 1, 0);
+			vertex_array_in_point_list.push_back(cur_posi);
+			vertex_array_in_point_list.push_back(cur_posi + cur_rot_mat * vec3(0.2, 0, 0));
+			colorarray.push_back(rgb(1, 0, 0));
+			colorarray.push_back(rgb(1, 0, 0));
+
+			vertex_array_in_point_list.push_back(cur_posi);
+			vertex_array_in_point_list.push_back(cur_posi + cur_rot_mat * vec3(0, 0.2, 0));
+			colorarray.push_back(rgb(0, 1, 0));
+			colorarray.push_back(rgb(0, 1, 0));
+
+			vertex_array_in_point_list.push_back(cur_posi);
+			vertex_array_in_point_list.push_back(cur_posi + cur_rot_mat * vec3(0, 0, 0.2));
+			colorarray.push_back(rgb(0, 0, 1));
+			colorarray.push_back(rgb(0, 0, 1));
+
+			vec3 target_dir = vec3(1, 1, 1);
+			target_dir.normalize();
+			vertex_array_in_point_list.push_back(cur_posi);
+			vertex_array_in_point_list.push_back(cur_posi + target_dir * 0.2);
+			colorarray.push_back(rgb(0, 0, 0));
+			colorarray.push_back(rgb(0, 0, 0));
+
+			cgv::render::shader_program& prog = ctx.ref_default_shader_program();
+			int pi = prog.get_position_index();
+			int ci = prog.get_color_index();
+			cgv::render::attribute_array_binding::set_global_attribute_array(ctx, pi, vertex_array_in_point_list);
+			cgv::render::attribute_array_binding::enable_global_array(ctx, pi);
+			cgv::render::attribute_array_binding::set_global_attribute_array(ctx, ci, colorarray);
+			cgv::render::attribute_array_binding::enable_global_array(ctx, ci);
+			glLineWidth(3);
+			prog.enable(ctx);
+			glDrawArrays(GL_LINES, 0, (GLsizei)vertex_array_in_point_list.size());
+			prog.disable(ctx);
+			cgv::render::attribute_array_binding::disable_global_array(ctx, pi);
+			cgv::render::attribute_array_binding::disable_global_array(ctx, ci);
+			glLineWidth(1);
+		}
+
 	// draw skel 
 		if (!skel_view->playing) {
 			// render lines
 			std::vector<vec3> vertex_array_in_point_list;
 			std::vector<rgb> colorarray;
-			if (end_point_list.size() > 0)
+			if (start_point_list.size() > 0) {
+				/*vec3 roll_yaw_pitch_vec = vec3(
+					cur_local_frame_rot_rel_XYZ[0],
+					cur_local_frame_rot_rel_XYZ[1],
+					cur_local_frame_rot_rel_XYZ[2]
+				);
+				mat3 cur_rot_mat = rotate3(roll_yaw_pitch_vec);*/
+
+				// render a local frame, according to cur_local_frame_rot_rel_XYZ
+				vec3 last_point_posi = start_point_list.at(start_point_list.size() - 1);
+				vertex_array_in_point_list.push_back(last_point_posi);
+				vertex_array_in_point_list.push_back(last_point_posi + cur_rot_mat * vec3(0.2, 0, 0));
+				colorarray.push_back(rgb(1, 0, 0));
+				colorarray.push_back(rgb(1, 0, 0));
+
+				vertex_array_in_point_list.push_back(last_point_posi);
+				vertex_array_in_point_list.push_back(last_point_posi + cur_rot_mat * vec3(0, 0.2, 0));
+				colorarray.push_back(rgb(0, 1, 0));
+				colorarray.push_back(rgb(0, 1, 0));
+
+				vertex_array_in_point_list.push_back(last_point_posi);
+				vertex_array_in_point_list.push_back(last_point_posi + cur_rot_mat * vec3(0, 0, 0.2));
+				colorarray.push_back(rgb(0, 0, 1));
+				colorarray.push_back(rgb(0, 0, 1));
+			}
+			if (end_point_list.size() > 0) {
 				for (int i = 0; i < start_point_list.size() - 1; i++) {
 					vertex_array_in_point_list.push_back(start_point_list.at(i));
 					vertex_array_in_point_list.push_back(end_point_list.at(i));
 					colorarray.push_back(rgb(0, 0, 0));
 					colorarray.push_back(rgb(0, 0, 0));
 				}
-			// spec. care needed
-			if (start_point_list.size() > 0)
+			}
+			// special care 
+			if (start_point_list.size() > 0) {
 				if (is_even_point && drawingbone) {
 					vertex_array_in_point_list.push_back(start_point_list.at(start_point_list.size() - 1));
 					vertex_array_in_point_list.push_back(
@@ -2701,6 +2862,7 @@ void vr_test::draw(cgv::render::context& ctx)
 					colorarray.push_back(rgb(0, 0, 0));
 					colorarray.push_back(rgb(0, 0, 0));
 				}
+			}
 			if (vertex_array_in_point_list.size() > 0) {
 				cgv::render::shader_program& prog = ctx.ref_default_shader_program();
 				int pi = prog.get_position_index();
@@ -2785,6 +2947,7 @@ void vr_test::create_gui() {
 	connect_copy(add_button("load_skel_with_dofs")->click, cgv::signal::rebind(this, &vr_test::load_skel_with_dofs));
 	connect_copy(add_button("adjest_mesh")->click, cgv::signal::rebind(this, &vr_test::adjest_mesh));
 	connect_copy(add_button("remove_pg1")->click, cgv::signal::rebind(this, &vr_test::remove_pg1));
+	connect_copy(add_button("shuffle_frame")->click, cgv::signal::rebind(this, &vr_test::shuffle_frame));
 	// 
 
 
