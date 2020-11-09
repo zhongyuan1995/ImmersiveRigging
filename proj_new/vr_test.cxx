@@ -921,10 +921,11 @@ vr_test::vr_test()
 		if (cgv::utils::to_lower(fn) == "calibri") {
 			label_font_face = cgv::media::font::find_font(fn)->get_font_face(label_face_type);
 			//label_font_idx = i;
-			for (int i = 0; i < pg1->elements.size(); i++) {
-				if (pg1->elements.at(i).flag_use_label)
-					pg1->elements.at(i).gui_label_texture->label_font_idx = i;
-			}
+			if(pg1)
+				for (int i = 0; i < pg1->elements.size(); i++) {
+					if (pg1->elements.at(i).flag_use_label)
+						pg1->elements.at(i).gui_label_texture->label_font_idx = i;
+				}
 		}
 		font_enum_decl += std::string(fn);
 	}
