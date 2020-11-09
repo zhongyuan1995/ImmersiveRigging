@@ -985,11 +985,7 @@ bool vr_test::handle(cgv::gui::event& e)
 					else {
 						toggle_local_dofs_def = !toggle_local_dofs_def;
 						if (toggle_local_dofs_def) {
-							cur_rot_mat = from_roll_yaw_pitch_vec_to_matrix(
-								cur_local_frame_rot_rel_XYZ[0],
-								cur_local_frame_rot_rel_XYZ[1],
-								cur_local_frame_rot_rel_XYZ[2]
-							);
+							cur_rot_mat = from_global_roll_yaw_pitch_vec_to_matrix();
 						}
 						std::cout << "toggle_local_dofs_def: " << toggle_local_dofs_def  << std::endl;
 					}
@@ -1143,8 +1139,7 @@ bool vr_test::handle(cgv::gui::event& e)
 			if (toggle_local_dofs_def) {
 				vec3 origin, direction;
 				vrpe.get_state().controller[0].put_ray(&origin(0), &direction(0));
-
-				cur_rot_mat = compute_matrix_from_two_dirs(-direction,vec3(1,0,0));
+				cur_rot_mat = compute_matrix_from_two_dirs(vec3(1, 0, 0), -direction);
 			}
 
 			if (object_teleport) { // tobetested 
@@ -1720,13 +1715,10 @@ bool vr_test::handle(cgv::gui::event& e)
 							asix_dir = vec3(0, 0, 1);
 						}
 
-						mat3 rot_mat = compute_matrix_from_two_dirs(bonedir_inworldspace, asix_dir);
+						mat3 rot_mat = compute_matrix_from_two_dirs(asix_dir, bonedir_inworldspace);
 						from_matrix_to_euler_angle_as_global_var(rot_mat);
-						cur_rot_mat = from_roll_yaw_pitch_vec_to_matrix(
-								cur_local_frame_rot_rel_XYZ[0],
-								cur_local_frame_rot_rel_XYZ[1],
-								cur_local_frame_rot_rel_XYZ[2]
-							);
+						cur_rot_mat = rot_mat;
+							//from_global_roll_yaw_pitch_vec_to_matrix();
 
 						post_redraw();
 					}
@@ -2813,13 +2805,6 @@ void vr_test::draw(cgv::render::context& ctx)
 			std::vector<vec3> vertex_array_in_point_list;
 			std::vector<rgb> colorarray;
 			if (start_point_list.size() > 0) {
-				/*vec3 roll_yaw_pitch_vec = vec3(
-					cur_local_frame_rot_rel_XYZ[0],
-					cur_local_frame_rot_rel_XYZ[1],
-					cur_local_frame_rot_rel_XYZ[2]
-				);
-				mat3 cur_rot_mat = rotate3(roll_yaw_pitch_vec);*/
-
 				// render a local frame, according to cur_local_frame_rot_rel_XYZ
 				vec3 last_point_posi = start_point_list.at(start_point_list.size() - 1);
 				vertex_array_in_point_list.push_back(last_point_posi);

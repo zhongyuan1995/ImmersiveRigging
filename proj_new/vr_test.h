@@ -345,7 +345,7 @@ public:
 	/// construct a scene with a table
 	void build_scene(float w, float d, float h, float W, float tw, float td, float th, float tW);
 	///
-	mat3 from_roll_yaw_pitch_vec_to_matrix(float deg_x, float deg_y, float deg_z) {
+	mat3 from_global_roll_yaw_pitch_vec_to_matrix() {
 		vec3 tmp_roll_yaw_pitch_vec = vec3(
 			cur_local_frame_rot_rel_XYZ[0],
 			cur_local_frame_rot_rel_XYZ[1],
