@@ -549,6 +549,18 @@ void vr_test::construct_boxgui() {
 	pg1->elements.push_back(first_btn);
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.0f + 0.5f - 0.5, -1.75f + 0.25f * 4), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
 		"shuffle_\nlocal_frame", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn); 
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.0f + 0.5f - 0.5, -1.75f + 0.25f * 5), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"def_local\n_frame", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.0f + 0.5f - 0.5, -1.75f + 0.25f * 6), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"def_min\n_dof", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.0f + 0.5f - 0.5, -1.75f + 0.25f * 7), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"def_max\n_dof", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.0f + 0.5f - 0.5, -1.75f + 0.25f * 8), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"shuffle_dof\n_def", smallbox_font_size, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);
 	/*first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.0f+ 0.5f, -1.75f + 0.25f * 2), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
 		"s_anim3", smallbox_font_size, "D:/icon_res/default.png", true);
@@ -983,11 +995,6 @@ bool vr_test::handle(cgv::gui::event& e)
 						}
 					}
 					else {
-						toggle_local_dofs_def = !toggle_local_dofs_def;
-						if (toggle_local_dofs_def) {
-							cur_rot_mat = from_global_roll_yaw_pitch_vec_to_matrix();
-						}
-						std::cout << "toggle_local_dofs_def: " << toggle_local_dofs_def  << std::endl;
 					}
 					//teleport = true;
 				}
@@ -1016,7 +1023,37 @@ bool vr_test::handle(cgv::gui::event& e)
 			if (vrse.get_controller_index() == 0) {// left hand touch to perform actions  
 				std::cout << vrse.get_state().controller[0].button_flags << std::endl;
 				std::cout << vrse.get_state().controller[1].button_flags << std::endl;
-				
+				if (lefthandmode._Equal("def_max_dof")) {
+					toggle_def_max_dof = !toggle_def_max_dof;
+					if (toggle_def_max_dof) {
+						//cur_rot_mat = from_global_roll_yaw_pitch_vec_to_matrix();
+						temp_rot = cur_rot_mat; // cur_rot_mat should be a fixed frame
+					}
+					else {
+						from_matrix_to_euler_angle_as_global_var(temp_rot);
+					}
+				}
+				if (lefthandmode._Equal("def_min_dof")) {
+					toggle_def_min_dof = !toggle_def_min_dof;
+					if (toggle_def_min_dof) {
+						//cur_rot_mat = from_global_roll_yaw_pitch_vec_to_matrix();
+						temp_rot = cur_rot_mat;
+					}
+					else {
+						from_matrix_to_euler_angle_as_global_var(temp_rot);
+					}
+				}
+				if (lefthandmode._Equal("def local frame")) {
+					toggle_local_dofs_def = !toggle_local_dofs_def;
+					if (toggle_local_dofs_def) {
+						//cur_rot_mat = from_global_roll_yaw_pitch_vec_to_matrix();
+						temp_rot = cur_rot_mat;
+					}
+					else {
+						from_matrix_to_euler_angle_as_global_var(temp_rot);
+					}
+					std::cout << "toggle_local_dofs_def: " << toggle_local_dofs_def << std::endl;
+				}
 				if (lefthandmode._Equal("add bone")) {
 					keydown = true;
 					is_even_point = !is_even_point;
@@ -1136,10 +1173,107 @@ bool vr_test::handle(cgv::gui::event& e)
 				teleport = false;
 			}
 
+			if (toggle_def_min_dof) {
+				if (ci == 0) {
+					//mat3 t = vrpe.get_orientation();
+						//float angle = acos((t(0,0) + t(1,1) + t(2,2) - 1) / 2) * 180 / PI;
+					vec3 p = vrpe.get_position();
+					/*vec3 last_p = vrpe.get_last_position();
+					float diff_p = (p - last_p).length();
+					float projected_angle = asin(diff_p) * 180 / PI;*/
+					float projected_angle = 360 * (p.y() - 1) - 180;
+					if (projected_angle < -180)
+						projected_angle = -180;
+					if (projected_angle > 180)
+						projected_angle = 180;
+					vec3 asix_dir;
+					if (shuffle_dof_def_xyz == 0) {
+						def_dof_x_min = projected_angle;
+						asix_dir = vec3(1, 0, 0);
+					}
+					else if (shuffle_dof_def_xyz == 1) {
+						def_dof_y_min = projected_angle;
+						asix_dir = vec3(0, 1, 0);
+					}
+					else if (shuffle_dof_def_xyz == 2) {
+						def_dof_z_min = projected_angle;
+						asix_dir = vec3(0, 0, 1);
+					}
+					vec3 cur_asix_dir = temp_rot * asix_dir;
+					if (true) {
+						mat3 rot_with_fixed_asix = rotate3(projected_angle, cur_asix_dir);
+						cur_min_rot_mat = rot_with_fixed_asix * temp_rot;
+					}
+				}
+			}
+
+			if (toggle_def_max_dof) {
+				if (ci == 0) {
+					//mat3 t = vrpe.get_orientation();
+						//float angle = acos((t(0,0) + t(1,1) + t(2,2) - 1) / 2) * 180 / PI;
+					vec3 p = vrpe.get_position();
+					/*vec3 last_p = vrpe.get_last_position();
+					float diff_p = (p - last_p).length();
+					float projected_angle = asin(diff_p) * 180 / PI;*/
+					float projected_angle = 360 * (p.y() - 1) - 180;
+					if (projected_angle < -180)
+						projected_angle = -180;
+					if (projected_angle > 180)
+						projected_angle = 180;
+					vec3 asix_dir;
+					if (shuffle_dof_def_xyz == 0) {
+						def_dof_x_max = projected_angle;
+						asix_dir = vec3(1, 0, 0);
+					}
+					else if (shuffle_dof_def_xyz == 1) {
+						def_dof_y_max = projected_angle;
+						asix_dir = vec3(0, 1, 0);
+					}
+					else if (shuffle_dof_def_xyz == 2) {
+						def_dof_z_max = projected_angle;
+						asix_dir = vec3(0, 0, 1);
+					}
+					vec3 cur_asix_dir = temp_rot * asix_dir;
+					if (true) {
+						mat3 rot_with_fixed_asix = rotate3(projected_angle, cur_asix_dir);
+						cur_max_rot_mat = rot_with_fixed_asix * temp_rot;
+					}
+				}
+			}
+
 			if (toggle_local_dofs_def) {
-				vec3 origin, direction;
+				/*vec3 origin, direction;
 				vrpe.get_state().controller[0].put_ray(&origin(0), &direction(0));
-				cur_rot_mat = compute_matrix_from_two_dirs(vec3(1, 0, 0), -direction);
+				cur_rot_mat = compute_matrix_from_two_dirs(vec3(1, 0, 0), -direction);*/
+
+				if (ci == 0) {
+					//mat3 t = vrpe.get_orientation();
+					//float angle = acos((t(0,0) + t(1,1) + t(2,2) - 1) / 2) * 180 / PI;
+					vec3 p = vrpe.get_position();
+					/*vec3 last_p = vrpe.get_last_position();
+					float diff_p = (p - last_p).length();
+					float projected_angle = asin(diff_p) * 180 / PI;*/
+					float projected_angle = 360 * (p.y() - 1) - 180;
+					if (projected_angle < -180)
+						projected_angle = -180;
+					if (projected_angle > 180)
+						projected_angle = 180;
+					vec3 asix_dir;
+					if (shuffle_local_frame_dir_num == 0) {
+						asix_dir = vec3(1, 0, 0);
+					}
+					else if (shuffle_local_frame_dir_num == 1) {
+						asix_dir = vec3(0, 1, 0);
+					}
+					else if (shuffle_local_frame_dir_num == 2) {
+						asix_dir = vec3(0, 0, 1);
+					}
+					vec3 cur_asix_dir = temp_rot * asix_dir;
+					if (true) {
+						mat3 rot_with_fixed_asix = rotate3(projected_angle, cur_asix_dir);
+						cur_rot_mat = rot_with_fixed_asix * temp_rot;
+					}
+				}
 			}
 
 			if (object_teleport) { // tobetested 
@@ -1695,7 +1829,25 @@ bool vr_test::handle(cgv::gui::event& e)
 						label_content = "[INFO] button clicked!\n" + label_content;
 						label_outofdate = true;
 					}
-					
+
+					if (pg1->elements.at(cur_btn_idx).label._Equal("def_min\n_dof")) {
+						lefthandmode = "def_min_dof";
+					}
+
+					if (pg1->elements.at(cur_btn_idx).label._Equal("def_max\n_dof")) {
+						lefthandmode = "def_max_dof";
+					}
+
+					if (pg1->elements.at(cur_btn_idx).label._Equal("def_local\n_frame")) {
+						lefthandmode = "def local frame";
+					}
+
+					if (pg1->elements.at(cur_btn_idx).label._Equal("shuffle_dof\n_def")) {
+						shuffle_dof_def_xyz++;
+						if (shuffle_dof_def_xyz > 2) // only xyz three objs
+							num_of_all_choices = 0;
+					}
+
 					if (pg1->elements.at(cur_btn_idx).label._Equal("shuffle_\nlocal_frame")) {
 						// compute cur_local_frame_rot_rel_XYZ in degrees
 						vec3 bonedir_inworldspace = end_point_list.at(end_point_list.size() - 1)
@@ -1768,8 +1920,11 @@ bool vr_test::handle(cgv::gui::event& e)
 						/*limits(-160.0 20.0)
 							(-70.0 70.0)
 							(-70.0 60.0)*/
-						for (int i = 0; i < n_dofs; ++i)
-							current_node->get_dof(n_dofs - i - 1)->set_limits(-180.0, 180.0);
+						/*for (int i = 0; i < n_dofs; ++i)
+							current_node->get_dof(n_dofs - i - 1)->set_limits(-180.0, 180.0);*/
+						current_node->get_dof(2)->set_limits(def_dof_x_min, def_dof_x_max);
+						current_node->get_dof(1)->set_limits(def_dof_y_min, def_dof_y_max);
+						current_node->get_dof(0)->set_limits(def_dof_z_min, def_dof_z_max);
 
 						current_node->jointsize_stored_as_bone_parameter = tmpboxsize;
 
@@ -2102,6 +2257,8 @@ bool vr_test::init(cgv::render::context& ctx)
 	toggle_usage_description = true;
 	cur_rot_mat.identity();
 	temp_rot.identity();
+	cur_min_rot_mat.identity();
+	cur_max_rot_mat.identity();
 
 	return true;
 }
@@ -2750,7 +2907,7 @@ void vr_test::draw(cgv::render::context& ctx)
 		}
 	// draw demo axis 
 		if (false) {
-			std::vector<vec3> vertex_array_in_point_list;
+			/*std::vector<vec3> vertex_array_in_point_list;
 			std::vector<rgb> colorarray;
 
 			vec3 roll_yaw_pitch_vec = vec3(
@@ -2796,7 +2953,7 @@ void vr_test::draw(cgv::render::context& ctx)
 			prog.disable(ctx);
 			cgv::render::attribute_array_binding::disable_global_array(ctx, pi);
 			cgv::render::attribute_array_binding::disable_global_array(ctx, ci);
-			glLineWidth(1);
+			glLineWidth(1);*/
 		}
 
 	// draw skel 
@@ -2821,6 +2978,44 @@ void vr_test::draw(cgv::render::context& ctx)
 				vertex_array_in_point_list.push_back(last_point_posi + cur_rot_mat * vec3(0, 0, 0.2));
 				colorarray.push_back(rgb(0, 0, 1));
 				colorarray.push_back(rgb(0, 0, 1));
+
+				if (cur_min_rot_mat(0, 0) != 1) {
+					// render an other frame to def. min vals
+					vec3 last_point_posi = start_point_list.at(start_point_list.size() - 1);
+					vertex_array_in_point_list.push_back(last_point_posi);
+					vertex_array_in_point_list.push_back(last_point_posi + cur_min_rot_mat * vec3(0.2, 0, 0));
+					colorarray.push_back(rgb(1, 0, 0));
+					colorarray.push_back(rgb(0, 0, 0));
+
+					vertex_array_in_point_list.push_back(last_point_posi);
+					vertex_array_in_point_list.push_back(last_point_posi + cur_min_rot_mat * vec3(0, 0.2, 0));
+					colorarray.push_back(rgb(0, 1, 0));
+					colorarray.push_back(rgb(0, 0, 0));
+
+					vertex_array_in_point_list.push_back(last_point_posi);
+					vertex_array_in_point_list.push_back(last_point_posi + cur_min_rot_mat * vec3(0, 0, 0.2));
+					colorarray.push_back(rgb(0, 0, 1));
+					colorarray.push_back(rgb(0, 0, 0));
+				}
+
+				if (cur_max_rot_mat(0, 0) != 1) {
+					// render an other frame to def. min vals
+					vec3 last_point_posi = start_point_list.at(start_point_list.size() - 1);
+					vertex_array_in_point_list.push_back(last_point_posi);
+					vertex_array_in_point_list.push_back(last_point_posi + cur_max_rot_mat * vec3(0.2, 0, 0));
+					colorarray.push_back(rgb(0, 0, 0));
+					colorarray.push_back(rgb(1, 0, 0));
+
+					vertex_array_in_point_list.push_back(last_point_posi);
+					vertex_array_in_point_list.push_back(last_point_posi + cur_max_rot_mat * vec3(0, 0.2, 0));
+					colorarray.push_back(rgb(0, 0, 0));
+					colorarray.push_back(rgb(0, 1, 0));
+
+					vertex_array_in_point_list.push_back(last_point_posi);
+					vertex_array_in_point_list.push_back(last_point_posi + cur_max_rot_mat * vec3(0, 0, 0.2));
+					colorarray.push_back(rgb(0, 0, 0));
+					colorarray.push_back(rgb(0, 0, 1));
+				}
 			}
 			if (end_point_list.size() > 0) {
 				for (int i = 0; i < start_point_list.size() - 1; i++) {
