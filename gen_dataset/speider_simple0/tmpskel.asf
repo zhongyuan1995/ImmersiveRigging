@@ -13,9 +13,9 @@
 :bonedata
  begin
 	id 1
-	name new_bone_0
-	direction  -0.000125 0.191021 -0.011348
-	length 16.666668
+	name lhipjoint
+	direction  0.566809 -0.746272 0.349008
+	length 2.404790
 	axis 0 0 0  XYZ
 	dof rx ry rz
 	limits (-180.0 180.0)
@@ -24,9 +24,9 @@
  end
  begin
 	id 2
-	name new_bone_2
-	direction  -0.009156 0.168769 -0.060753
-	length 16.666668
+	name lfemur
+	direction  0.342020 -0.939693 0.000000
+	length 7.157800
 	axis 0 0 0  XYZ
 	dof rx ry rz
 	limits (-180.0 180.0)
@@ -35,9 +35,9 @@
  end
  begin
 	id 3
-	name new_bone_4
-	direction  -0.123764 -0.022736 0.007720
-	length 16.666668
+	name ltibia
+	direction  0.342020 -0.939693 0.000000
+	length 7.491370
 	axis 0 0 0  XYZ
 	dof rx ry rz
 	limits (-180.0 180.0)
@@ -46,9 +46,9 @@
  end
  begin
 	id 4
-	name new_bone_12
-	direction  -0.188439 -0.195044 -0.007492
-	length 16.666668
+	name lfoot
+	direction  0.066575 -0.182912 0.980873
+	length 2.367840
 	axis 0 0 0  XYZ
 	dof rx ry rz
 	limits (-180.0 180.0)
@@ -57,9 +57,9 @@
  end
  begin
 	id 5
-	name new_bone_14
-	direction  -0.179474 -0.172157 0.063821
-	length 16.666668
+	name ltoes
+	direction  0.000000 -0.000000 1.000000
+	length 1.189660
 	axis 0 0 0  XYZ
 	dof rx ry rz
 	limits (-180.0 180.0)
@@ -68,9 +68,9 @@
  end
  begin
 	id 6
-	name new_bone_20
-	direction  -0.037144 -0.043408 0.057199
-	length 16.666668
+	name rhipjoint
+	direction  -0.550236 -0.756381 0.353735
+	length 2.372650
 	axis 0 0 0  XYZ
 	dof rx ry rz
 	limits (-180.0 180.0)
@@ -79,9 +79,9 @@
  end
  begin
 	id 7
-	name new_bone_6
-	direction  0.014623 0.113651 0.009731
-	length 16.666668
+	name rfemur
+	direction  -0.342020 -0.939693 0.000000
+	length 7.433860
 	axis 0 0 0  XYZ
 	dof rx ry rz
 	limits (-180.0 180.0)
@@ -90,9 +90,9 @@
  end
  begin
 	id 8
-	name new_bone_8
-	direction  0.004933 0.140274 0.064740
-	length 16.666668
+	name rtibia
+	direction  -0.342020 -0.939693 0.000000
+	length 7.509080
 	axis 0 0 0  XYZ
 	dof rx ry rz
 	limits (-180.0 180.0)
@@ -101,9 +101,9 @@
  end
  begin
 	id 9
-	name new_bone_10
-	direction  0.175128 -0.032152 0.003256
-	length 16.666668
+	name rfoot
+	direction  -0.068303 -0.187661 0.979856
+	length 2.411730
 	axis 0 0 0  XYZ
 	dof rx ry rz
 	limits (-180.0 180.0)
@@ -112,9 +112,9 @@
  end
  begin
 	id 10
-	name new_bone_16
-	direction  0.181709 -0.190408 -0.004280
-	length 16.666668
+	name rtoes
+	direction  -0.000000 -0.000000 1.000000
+	length 1.210820
 	axis 0 0 0  XYZ
 	dof rx ry rz
 	limits (-180.0 180.0)
@@ -123,9 +123,9 @@
  end
  begin
 	id 11
-	name new_bone_18
-	direction  0.172012 -0.173236 0.075339
-	length 16.666668
+	name lowerback
+	direction  0.013823 0.995423 -0.094563
+	length 2.044950
 	axis 0 0 0  XYZ
 	dof rx ry rz
 	limits (-180.0 180.0)
@@ -134,9 +134,9 @@
  end
  begin
 	id 12
-	name new_bone_22
-	direction  0.035896 -0.049023 0.036620
-	length 16.666668
+	name upperback
+	direction  0.027666 0.999400 -0.020853
+	length 2.050080
 	axis 0 0 0  XYZ
 	dof rx ry rz
 	limits (-180.0 180.0)
@@ -145,9 +145,9 @@
  end
  begin
 	id 13
-	name new_bone_24
-	direction  -0.082337 -0.128108 0.000866
-	length 16.666668
+	name thorax
+	direction  0.019782 0.999531 0.023383
+	length 2.064880
 	axis 0 0 0  XYZ
 	dof rx ry rz
 	limits (-180.0 180.0)
@@ -156,9 +156,9 @@
  end
  begin
 	id 14
-	name new_bone_28
-	direction  -0.023059 -0.401105 -0.017004
-	length 16.666668
+	name lowerneck
+	direction  -0.030854 0.994709 0.097987
+	length 1.755530
 	axis 0 0 0  XYZ
 	dof rx ry rz
 	limits (-180.0 180.0)
@@ -167,9 +167,9 @@
  end
  begin
 	id 15
-	name new_bone_30
-	direction  -0.003495 -0.449827 -0.043493
-	length 16.666668
+	name upperneck
+	direction  0.058840 0.995804 -0.070090
+	length 1.768780
 	axis 0 0 0  XYZ
 	dof rx ry rz
 	limits (-180.0 180.0)
@@ -178,9 +178,9 @@
  end
  begin
 	id 16
-	name new_bone_32
-	direction  -0.012682 -0.059396 0.166783
-	length 16.666668
+	name head
+	direction  0.020997 0.999159 -0.035223
+	length 1.771930
 	axis 0 0 0  XYZ
 	dof rx ry rz
 	limits (-180.0 180.0)
@@ -189,9 +189,9 @@
  end
  begin
 	id 17
-	name new_bone_26
-	direction  0.080412 -0.112376 0.006582
-	length 16.666668
+	name lclavicle
+	direction  0.938182 0.335073 -0.086834
+	length 3.583960
 	axis 0 0 0  XYZ
 	dof rx ry rz
 	limits (-180.0 180.0)
@@ -200,9 +200,9 @@
  end
  begin
 	id 18
-	name new_bone_34
-	direction  0.035808 -0.409021 -0.031242
-	length 16.666668
+	name lhumerus
+	direction  1.000000 -0.000000 -0.000000
+	length 4.983000
 	axis 0 0 0  XYZ
 	dof rx ry rz
 	limits (-180.0 180.0)
@@ -211,9 +211,9 @@
  end
  begin
 	id 19
-	name new_bone_36
-	direction  0.014744 -0.456143 -0.032210
-	length 16.666668
+	name lradius
+	direction  1.000000 -0.000000 -0.000000
+	length 3.483560
 	axis 0 0 0  XYZ
 	dof rx ry rz
 	limits (-180.0 180.0)
@@ -222,9 +222,119 @@
  end
  begin
 	id 20
-	name new_bone_38
-	direction  0.001479 -0.050105 0.156382
-	length 16.666668
+	name lwrist
+	direction  1.000000 -0.000000 -0.000000
+	length 1.741780
+	axis 0 0 0  XYZ
+	dof rx ry rz
+	limits (-180.0 180.0)
+	(-180.0 180.0)
+	(-180.0 180.0)
+ end
+ begin
+	id 21
+	name lhand
+	direction  1.000000 -0.000000 -0.000000
+	length 0.715259
+	axis 0 0 0  XYZ
+	dof rx ry rz
+	limits (-180.0 180.0)
+	(-180.0 180.0)
+	(-180.0 180.0)
+ end
+ begin
+	id 22
+	name lfingers
+	direction  1.000000 -0.000000 -0.000000
+	length 0.576661
+	axis 0 0 0  XYZ
+	dof rx ry rz
+	limits (-180.0 180.0)
+	(-180.0 180.0)
+	(-180.0 180.0)
+ end
+ begin
+	id 23
+	name lthumb
+	direction  0.707107 -0.000000 0.707107
+	length 0.827973
+	axis 0 0 0  XYZ
+	dof rx ry rz
+	limits (-180.0 180.0)
+	(-180.0 180.0)
+	(-180.0 180.0)
+ end
+ begin
+	id 24
+	name rclavicle
+	direction  -0.909637 0.398485 -0.117350
+	length 3.448190
+	axis 0 0 0  XYZ
+	dof rx ry rz
+	limits (-180.0 180.0)
+	(-180.0 180.0)
+	(-180.0 180.0)
+ end
+ begin
+	id 25
+	name rhumerus
+	direction  -1.000000 -0.000000 -0.000000
+	length 5.241900
+	axis 0 0 0  XYZ
+	dof rx ry rz
+	limits (-180.0 180.0)
+	(-180.0 180.0)
+	(-180.0 180.0)
+ end
+ begin
+	id 26
+	name rradius
+	direction  -1.000000 -0.000000 -0.000000
+	length 3.444170
+	axis 0 0 0  XYZ
+	dof rx ry rz
+	limits (-180.0 180.0)
+	(-180.0 180.0)
+	(-180.0 180.0)
+ end
+ begin
+	id 27
+	name rwrist
+	direction  -1.000000 -0.000000 -0.000000
+	length 1.722090
+	axis 0 0 0  XYZ
+	dof rx ry rz
+	limits (-180.0 180.0)
+	(-180.0 180.0)
+	(-180.0 180.0)
+ end
+ begin
+	id 28
+	name rhand
+	direction  -1.000000 -0.000000 -0.000000
+	length 0.622529
+	axis 0 0 0  XYZ
+	dof rx ry rz
+	limits (-180.0 180.0)
+	(-180.0 180.0)
+	(-180.0 180.0)
+ end
+ begin
+	id 29
+	name rfingers
+	direction  -1.000000 -0.000000 -0.000000
+	length 0.501899
+	axis 0 0 0  XYZ
+	dof rx ry rz
+	limits (-180.0 180.0)
+	(-180.0 180.0)
+	(-180.0 180.0)
+ end
+ begin
+	id 30
+	name rthumb
+	direction  -0.707107 -0.000000 0.707107
+	length 0.720629
 	axis 0 0 0  XYZ
 	dof rx ry rz
 	limits (-180.0 180.0)
@@ -233,20 +343,28 @@
  end
 :hierarchy
  begin
-	root new_bone_0 new_bone_24 new_bone_26 
-	new_bone_0 new_bone_2 
-	new_bone_2 new_bone_4 new_bone_6 new_bone_10 
-	new_bone_4 new_bone_12 
-	new_bone_12 new_bone_14 
-	new_bone_14 new_bone_20 
-	new_bone_6 new_bone_8 
-	new_bone_10 new_bone_16 
-	new_bone_16 new_bone_18 
-	new_bone_18 new_bone_22 
-	new_bone_24 new_bone_28 
-	new_bone_28 new_bone_30 
-	new_bone_30 new_bone_32 
-	new_bone_26 new_bone_34 
-	new_bone_34 new_bone_36 
-	new_bone_36 new_bone_38 
+	root lhipjoint rhipjoint lowerback 
+	lhipjoint lfemur 
+	lfemur ltibia 
+	ltibia lfoot 
+	lfoot ltoes 
+	rhipjoint rfemur 
+	rfemur rtibia 
+	rtibia rfoot 
+	rfoot rtoes 
+	lowerback upperback 
+	upperback thorax 
+	thorax lowerneck lclavicle rclavicle 
+	lowerneck upperneck 
+	upperneck head 
+	lclavicle lhumerus 
+	lhumerus lradius 
+	lradius lwrist 
+	lwrist lhand lthumb 
+	lhand lfingers 
+	rclavicle rhumerus 
+	rhumerus rradius 
+	rradius rwrist 
+	rwrist rhand rthumb 
+	rhand rfingers 
  end

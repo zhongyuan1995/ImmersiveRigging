@@ -210,7 +210,7 @@
      length 1.74178   
      axis 9.0955e-015 90 90   XYZ
     dof ry
-    limits (-180.0 0.0)
+    limits (0.0 0.0)
  end
   begin
      id 21 
@@ -278,7 +278,7 @@
      length 1.72209   
      axis 9.0955e-015 -90 -90   XYZ
     dof ry
-    limits (-180.0 0.0)
+    limits (0.0 0.0)
   end
   begin
      id 28
