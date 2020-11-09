@@ -37,11 +37,10 @@ private:
 	bool modifying; //Specifies if the user is currently modifying the IK target position	
 
 	Vec4 target_position;
+	Bone* common_ancestor; //lowest common ancestor of base and endeffector
+
 	Mat4 current_endeffector_matrix; //transform from base to endeffector
 	Mat4 current_base_matrix; //transform from global origin to base
-
-	
-	Bone* common_ancestor; //lowest common ancestor of base and endeffector
 	Mat4 current_ancestor_matrix; //transform from root to common_ancestor
 
 	unsigned int max_iterations;

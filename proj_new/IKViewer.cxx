@@ -56,7 +56,7 @@ void IKViewer::calculate_kinematic_chain(Bone* base, Bone* endeffector, int whic
 				transform_root_to_base = b->get_dof(i)->calculate_matrix() * transform_root_to_base;
 			transform_root_to_base = b->get_orientation_transform_prev_joint_to_current() * transform_root_to_base;
 			base_path_to_root.insert(b);
-			b = b->get_parent();
+			b = b->get_parent(); // the parent of root is nullptr
 		}
 		current_base_matrix = data->get_skeleton()->get_origin() * transform_root_to_base;
 	}
@@ -75,13 +75,15 @@ void IKViewer::calculate_kinematic_chain(Bone* base, Bone* endeffector, int whic
 	b = endeffector;
 	while (b)
 	{
+		auto bb = base_path_to_root.find(b);
+		auto tt = base_path_to_root.end();
 		if (base_path_to_root.find(b) != base_path_to_root.end())
 		{
 			common_ancestor = b;
 			break;
 		}
 		if (b->childCount() > 0)
-		t = b->get_translation_transform_current_joint_to_next();
+			t = b->get_translation_transform_current_joint_to_next();
 		if (which == 0)
 			kinematic_chain.push_front(std::make_shared<StaticTransform>(t));
 		else if (which == 1)
@@ -178,7 +180,7 @@ void IKViewer::optimize(int which)
 		after_dof.identity();
 		Mat4 before_dof = current_endeffector_matrix;
 		Vec4 target_base_local = cgv::math::inv(current_base_matrix) * target_position;
-		//std::cout << "posi: "<<target_position << std::endl;
+		//std::cout << "posi: "<< target_position << std::endl;
 		//start from the last bone, yzy, traversal along the chain from beginning to the end 
 		//and modify the dofs at the same time. 
 		if (which == 0)
@@ -187,6 +189,7 @@ void IKViewer::optimize(int which)
 				auto t = *it;
 				before_dof = before_dof * inv(t->calculate_matrix());
 				Vec4 target_dof_local = inv(before_dof) * target_base_local;
+				//Vec3 tmp = Vec3(3, &target_dof_local(0));
 				t->optimize_value(Vec3(after_dof(0, 3), after_dof(1, 3), after_dof(2, 3)), Vec3(3, &target_dof_local(0)));
 				after_dof = t->calculate_matrix() * after_dof;
 			}
@@ -208,7 +211,7 @@ void IKViewer::optimize(int which)
 				t->optimize_value(Vec3(after_dof(0, 3), after_dof(1, 3), after_dof(2, 3)), Vec3(3, &target_dof_local(0)));
 				after_dof = t->calculate_matrix() * after_dof;
 			}
-		current_endeffector_matrix = before_dof * after_dof;
+		current_endeffector_matrix = before_dof * after_dof; // move ee to a new place 
 		float error = Vec3(current_endeffector_matrix(0, 3) - target_base_local.x(),
 			current_endeffector_matrix(1, 3) - target_base_local.y(),
 			current_endeffector_matrix(2, 3) - target_base_local.z()).length();
