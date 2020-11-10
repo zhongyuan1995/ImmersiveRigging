@@ -42,6 +42,11 @@ public:
 	//(independent of the hierarchy)
 	const Vec3& get_direction_in_world_space() const;
 
+	//
+	std::deque<AtomicTransform*> get_asix_as_orientation_list() {
+		return orientation;
+	}
+
 	//Sets the bone's geometric length
 	void set_length(float length);
 
@@ -118,6 +123,7 @@ public:
 	//Returns the system transform that transforms positions from the global coordinate system to the bone's local coordinate system.
 	//Available after implementing task 4.6.
 	const Mat4& get_binding_pose_matrix() const;
+
 
 	float jointsize_stored_as_bone_parameter = 0;
 

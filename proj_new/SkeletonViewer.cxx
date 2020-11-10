@@ -16,6 +16,8 @@
 #include <cgv\math\ftransform.h>
 #include <cgv\media\illum\surface_material.cxx>
 
+#include <cgv/render/attribute_array_binding.h>
+
 using namespace cgv::utils;
 
 cgv::render::shader_program SkinningMesh::prog;
@@ -161,7 +163,7 @@ void SkeletonViewer::draw_skeleton_subtree(Bone* node, const Mat4& global_to_par
 		glDepthMask(true);
 	}
 	// draw local axis 
-	if (render_axis_arrow && false) {
+	if (render_axis_arrow && true) {
 		dvec3 axis_root_vec3(my_root_position.x(), my_root_position.y(), my_root_position.z());
 		vec4 local_axis_arrow_x = vec4(0.06, 0, 0, 1);
 		vec4 local_axis_arrow_y = vec4(0, 0.06, 0, 1);
@@ -180,18 +182,51 @@ void SkeletonViewer::draw_skeleton_subtree(Bone* node, const Mat4& global_to_par
 		dvec3 translated_local_axis_y = vec3(local_axis_arrow_y.x(), local_axis_arrow_y.y(), local_axis_arrow_y.z());
 		dvec3 translated_local_axis_z = vec3(local_axis_arrow_z.x(), local_axis_arrow_z.y(), local_axis_arrow_z.z());
 
-		ctx.ref_surface_shader_program().enable(ctx);
-		//ctx.ref_surface_shader_program().set_uniform(ctx, "map_color_to_material", 3);
-		ctx.set_material(material_x);
-		//ctx.set_color(rgb(1, 0, 0));
-		ctx.tesselate_arrow(axis_root_vec3, axis_root_vec3 + translated_local_axis_x, 0.1, 2.0, 0.5);
-		ctx.set_material(material_y);
-		//ctx.set_color(rgb(0, 1, 0));
-		ctx.tesselate_arrow(axis_root_vec3, axis_root_vec3 + translated_local_axis_y, 0.1, 2.0, 0.5);
-		ctx.set_material(material_z);
-		//ctx.set_color(rgb(0, 0, 1));
-		ctx.tesselate_arrow(axis_root_vec3, axis_root_vec3 + translated_local_axis_z, 0.1, 2.0, 0.5);
-		ctx.ref_surface_shader_program().disable(ctx);
+		//ctx.ref_surface_shader_program().enable(ctx);
+		////ctx.ref_surface_shader_program().set_uniform(ctx, "map_color_to_material", 3);
+		//ctx.set_material(material_x);
+		////ctx.set_color(rgb(1, 0, 0));
+		//ctx.tesselate_arrow(axis_root_vec3, axis_root_vec3 + translated_local_axis_x, 0.1, 2.0, 0.5);
+		//ctx.set_material(material_y);
+		////ctx.set_color(rgb(0, 1, 0));
+		//ctx.tesselate_arrow(axis_root_vec3, axis_root_vec3 + translated_local_axis_y, 0.1, 2.0, 0.5);
+		//ctx.set_material(material_z);
+		////ctx.set_color(rgb(0, 0, 1));
+		//ctx.tesselate_arrow(axis_root_vec3, axis_root_vec3 + translated_local_axis_z, 0.1, 2.0, 0.5);
+		//ctx.ref_surface_shader_program().disable(ctx);
+		std::vector<vec3> p_list;
+		std::vector<rgb> color_list;
+		p_list.push_back(axis_root_vec3);
+		p_list.push_back(axis_root_vec3 + translated_local_axis_x);
+		color_list.push_back(rgb(1, 0, 0));
+		color_list.push_back(rgb(1, 0, 0));
+
+		p_list.push_back(axis_root_vec3);
+		p_list.push_back(axis_root_vec3 + translated_local_axis_y);
+		color_list.push_back(rgb(0, 1, 0));
+		color_list.push_back(rgb(0, 1, 0));
+
+		p_list.push_back(axis_root_vec3);
+		p_list.push_back(axis_root_vec3 + translated_local_axis_z);
+		color_list.push_back(rgb(0, 0, 1));
+		color_list.push_back(rgb(0, 0, 1));
+
+		if (p_list.size()) {
+			cgv::render::shader_program& prog = ctx.ref_default_shader_program();
+			int pi = prog.get_position_index();
+			int ci = prog.get_color_index();
+			cgv::render::attribute_array_binding::set_global_attribute_array(ctx, pi, p_list);
+			cgv::render::attribute_array_binding::enable_global_array(ctx, pi);
+			cgv::render::attribute_array_binding::set_global_attribute_array(ctx, ci, color_list);
+			cgv::render::attribute_array_binding::enable_global_array(ctx, ci);
+			glLineWidth(4);
+			prog.enable(ctx);
+			glDrawArrays(GL_LINES, 0, (GLsizei)p_list.size());
+			prog.disable(ctx);
+			cgv::render::attribute_array_binding::disable_global_array(ctx, pi);
+			cgv::render::attribute_array_binding::disable_global_array(ctx, ci);
+			glLineWidth(1);
+		}
 		
 		//glDepthMask(true);
 	}

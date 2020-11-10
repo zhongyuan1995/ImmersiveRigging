@@ -1271,6 +1271,15 @@ bool vr_test::handle(cgv::gui::event& e)
 					else if (shuffle_local_frame_dir_num == 2) {
 						asix_dir = vec3(0, 0, 1);
 					}
+					else if (shuffle_local_frame_dir_num == 3) {
+						asix_dir = vec3(-1, 0, 0);
+					}
+					else if (shuffle_local_frame_dir_num == 4) {
+						asix_dir = vec3(0, -1, 0);
+					}
+					else if (shuffle_local_frame_dir_num == 5) {
+						asix_dir = vec3(0, 0, -1);
+					}
 					vec3 cur_asix_dir = temp_rot * asix_dir;
 					if (true) {
 						mat3 rot_with_fixed_asix = rotate3(projected_angle, cur_asix_dir);
@@ -1860,6 +1869,7 @@ bool vr_test::handle(cgv::gui::event& e)
 						if (shuffle_local_frame_dir_num > num_of_all_choices - 1) {
 							shuffle_local_frame_dir_num = 0;
 						}
+						///
 						if (shuffle_local_frame_dir_num == 0) {
 							asix_dir = vec3(1, 0, 0);
 						}
@@ -1868,6 +1878,15 @@ bool vr_test::handle(cgv::gui::event& e)
 						}
 						else if (shuffle_local_frame_dir_num == 2) {
 							asix_dir = vec3(0, 0, 1);
+						}
+						else if (shuffle_local_frame_dir_num == 3) {
+							asix_dir = vec3(-1, 0, 0);
+						}
+						else if (shuffle_local_frame_dir_num == 4) {
+							asix_dir = vec3(0, -1, 0);
+						}
+						else if (shuffle_local_frame_dir_num == 5) {
+							asix_dir = vec3(0, 0, -1);
 						}
 
 						mat3 rot_mat = compute_matrix_from_two_dirs(asix_dir, bonedir_inworldspace);
@@ -2837,7 +2856,7 @@ void vr_test::draw(cgv::render::context& ctx)
 		}
 
 	// render editable skel. dynamically 
-		if (ds->get_skeleton() != nullptr)
+		if ((ds->get_skeleton() != nullptr) && skel_view)
 		{
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -2846,6 +2865,9 @@ void vr_test::draw(cgv::render::context& ctx)
 				ds->get_skeleton()->get_origin(), ctx, 0, true, true);
 			glDisable(GL_CULL_FACE);
 			glDisable(GL_BLEND);
+		}
+		if (skel_view) {
+			skel_view->render_axis_arrow = toggle_render_local_frame;
 		}
 	// imitating only when dofs are changed 
 		if (b_toggle_imitating && skel_view->should_apply_dofs_to_others_for_imitating) {
@@ -3126,13 +3148,15 @@ void vr_test::create_gui() {
 	add_member_control(this, "ray_length", ray_length, "value_slider", "min=0.1;max=10;log=true;ticks=true");
 	add_member_control(this, "show_seethrough", show_seethrough, "check");
 	add_member_control(this, "toggle_usage_description", toggle_usage_description, "check");
+	add_member_control(this, "toggle_render_local_frame", toggle_render_local_frame, "check");
+	//render_axis_arrow
 
 	//connect_copy(add_button("load_mesh")->click, cgv::signal::rebind(this, &vr_test::load_mesh));
 	connect_copy(add_button("load_mesh_with_gui")->click, cgv::signal::rebind(this, &vr_test::load_mesh_with_gui));
 	connect_copy(add_button("load_skel_with_dofs")->click, cgv::signal::rebind(this, &vr_test::load_skel_with_dofs));
-	connect_copy(add_button("adjest_mesh")->click, cgv::signal::rebind(this, &vr_test::adjest_mesh));
-	connect_copy(add_button("remove_pg1")->click, cgv::signal::rebind(this, &vr_test::remove_pg1));
-	connect_copy(add_button("shuffle_frame")->click, cgv::signal::rebind(this, &vr_test::shuffle_frame));
+	//connect_copy(add_button("adjest_mesh")->click, cgv::signal::rebind(this, &vr_test::adjest_mesh));
+	//connect_copy(add_button("remove_pg1")->click, cgv::signal::rebind(this, &vr_test::remove_pg1));
+	//connect_copy(add_button("shuffle_frame")->click, cgv::signal::rebind(this, &vr_test::shuffle_frame));
 	// 
 
 

@@ -241,6 +241,7 @@ protected:
 	bool toggle_local_dofs_def = false;
 	bool toggle_def_min_dof = false;
 	bool toggle_def_max_dof = false;
+	bool toggle_render_local_frame = false;
 
 	float def_dof_x_min = -180;
 	float def_dof_x_max = 180;
@@ -326,7 +327,7 @@ protected:
 	float cur_local_frame_rot_rel_XYZ[3] = { 0, 0, 0 };
 	int shuffle_local_frame_dir_num = 0;
 	int shuffle_dof_def_xyz = 0;
-	int num_of_all_choices = 3; 
+	int num_of_all_choices = 6; 
 	vec3 roll_yaw_pitch_vec;
 	mat3 cur_rot_mat;
 	mat3 temp_rot;
