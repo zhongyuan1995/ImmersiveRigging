@@ -508,7 +508,8 @@ public:
 			ds->get_skeleton()->write_pinocchio_file(working_dir + "speider_simple0/tmpskel.txt");
 			//ds->get_skeleton()->set_origin_rotation();
 			// problem occour when rigging with pinocchio, write pinocchio with an other coordi.
-			ds->get_skeleton()->writeASFFile(working_dir + "speider_simple0/tmpskel.asf");
+			if(!from_jump_asf)
+				ds->get_skeleton()->writeASFFile(working_dir + "speider_simple0/tmpskel.asf");
 		}
 		label_content = "[INFO] created skel. has been saved \nto tmp. file as 'tmpskel.asf'\n" + label_content;
 		label_outofdate = true;

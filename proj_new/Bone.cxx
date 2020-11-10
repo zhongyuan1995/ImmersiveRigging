@@ -105,7 +105,12 @@ void Bone::set_parent(Bone* parent)
 Bone* Bone::get_parent() const { return parent; }
 
 int Bone::dof_count() const { return dofs.size(); }
-std::shared_ptr<AtomicTransform> Bone::get_dof(int dofIndex) const { return dofs[dofIndex]; }
+std::shared_ptr<AtomicTransform> Bone::get_dof(int dofIndex) const { 
+	if (dofIndex < dof_count())
+		return dofs[dofIndex];
+	else
+		return nullptr;
+}
  
 const Mat4& Bone::get_binding_pose_matrix() const
 {
