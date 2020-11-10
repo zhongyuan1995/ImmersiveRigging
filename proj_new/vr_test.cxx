@@ -564,6 +564,10 @@ void vr_test::construct_boxgui() {
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.0f + 0.5f - 0.5, -1.75f + 0.25f * 8), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
 		"shuffle_dof\n_def", smallbox_font_size, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);
+	//adjest_bone\n_exist
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.0f + 0.5f - 0.5, -1.75f + 0.25f * 9), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+		"adjest_bone\n_exist", smallbox_font_size, "D:/icon_res/default.png", true);
+	pg1->elements.push_back(first_btn);
 	/*first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.0f+ 0.5f, -1.75f + 0.25f * 2), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
 		"s_anim3", smallbox_font_size, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);*/
@@ -1026,6 +1030,9 @@ bool vr_test::handle(cgv::gui::event& e)
 			if (vrse.get_controller_index() == 0) {// left hand touch to perform actions  
 				std::cout << vrse.get_state().controller[0].button_flags << std::endl;
 				std::cout << vrse.get_state().controller[1].button_flags << std::endl;
+				if (lefthandmode._Equal("adjest_bone_exist")) {
+					keydown_adjest_bone_exist = !keydown_adjest_bone_exist;
+				}
 				if (lefthandmode._Equal("def_max_dof")) {
 					toggle_def_max_dof = !toggle_def_max_dof;
 					if (toggle_def_max_dof) {
@@ -1053,7 +1060,21 @@ bool vr_test::handle(cgv::gui::event& e)
 						temp_rot = cur_rot_mat;
 					}
 					else {
-						from_matrix_to_euler_angle_as_global_var(temp_rot);
+						if (bone_tobeadjested_idx != -1) {
+							Bone* cur_bone_to_be_adjested =
+								ds->get_skeleton()->find_bone_in_a_list_by_id(bone_tobeadjested_idx);
+							from_matrix_to_euler_angle_as_global_var(cur_rot_mat);
+							cur_bone_to_be_adjested->get_asix_as_orientation_list().at(2)->set_value(cur_local_frame_rot_rel_XYZ[0]);
+							cur_bone_to_be_adjested->get_asix_as_orientation_list().at(1)->set_value(cur_local_frame_rot_rel_XYZ[1]);
+							cur_bone_to_be_adjested->get_asix_as_orientation_list().at(0)->set_value(cur_local_frame_rot_rel_XYZ[2]);
+
+							// perform post process, bounding box will be re-calculated! we need it to write pinocchio file 
+							ds->get_skeleton()->postprocess(ds->get_skeleton()->get_root(), Vec3(0, 0, 0));
+							// std::cout << skel_view->get_jointlist().size();
+							// update skel. the tree view will be updated at the sametime 
+							skel_view->skeleton_changed(ds->get_skeleton());
+						}
+						//from_matrix_to_euler_angle_as_global_var(temp_rot);
 					}
 					std::cout << "toggle_local_dofs_def: " << toggle_local_dofs_def << std::endl;
 				}
@@ -1281,10 +1302,8 @@ bool vr_test::handle(cgv::gui::event& e)
 						asix_dir = vec3(0, 0, -1);
 					}
 					vec3 cur_asix_dir = temp_rot * asix_dir;
-					if (true) {
-						mat3 rot_with_fixed_asix = rotate3(projected_angle, cur_asix_dir);
-						cur_rot_mat = rot_with_fixed_asix * temp_rot;
-					}
+					mat3 rot_with_fixed_asix = rotate3(projected_angle, cur_asix_dir);
+					cur_rot_mat = rot_with_fixed_asix * temp_rot;
 				}
 			}
 
@@ -1456,6 +1475,22 @@ bool vr_test::handle(cgv::gui::event& e)
 				del_keydown = false;
 			}
 
+			if (keydown_adjest_bone_exist) {
+				if (!skel_view->playing && ci == 0) {
+					vec3 origin, direction;
+					vrpe.get_state().controller[0].put_ray(&origin(0), &direction(0));
+					skel_intersection_points.clear();
+					skel_intersection_box_indices.clear();
+					//for (auto jc : jointlist_colors) { jc = rgb(1, 1, 1); }
+					skel_joint_box_compute_intersections(origin, direction, 1, ci == 0 ? rgb(1, 0, 0) : rgb(0, 0, 1));
+					// has intersec. with skel. joint box 
+					if (skel_intersection_points.size() > 0) {
+						bone_tobeadjested_idx = skel_intersection_box_indices.front();
+						jointlist_colors.at(skel_intersection_box_indices.front()) = rgb(1, 1, 102.0f / 255.0f);
+					}
+				}
+			}
+
 			if (keydown) {
 				if (!skel_view->playing) {
 					vec3 origin, direction;
@@ -1464,7 +1499,7 @@ bool vr_test::handle(cgv::gui::event& e)
 						// clear skel. intersection list, tmp usage
 						skel_intersection_points.clear();
 						skel_intersection_box_indices.clear();
-						for (auto jc : jointlist_colors) { jc = rgb(1, 1, 1); }
+						//for (auto jc : jointlist_colors) { jc = rgb(1, 1, 1); }
 						skel_joint_box_compute_intersections(origin, direction, 1, ci == 0 ? rgb(1, 0, 0) : rgb(0, 0, 1));
 						// has intersec. with skel. joint box 
 						if (skel_intersection_points.size() > 0) {
@@ -1613,6 +1648,9 @@ bool vr_test::handle(cgv::gui::event& e)
 					if (pg1->elements.at(cur_btn_idx).label._Equal("l_skel1")) {
 						from_jump_asf = false;
 						left_ee = right_ee = hmd_ee = nullptr;
+						start_point_list.clear();
+						end_point_list.clear();
+
 						skel_view->load_skeleton_given_name(working_dir + "speider_simple0/tmpskel_1.asf");
 						skel_view->set_skel_origin_ori_translation(Vec3(0, 1, 0), 0, Vec3(1.2, 1, -2.8));
 						load_addi_two_guys(working_dir + "speider_simple0/tmpskel_1.asf");
@@ -1624,6 +1662,7 @@ bool vr_test::handle(cgv::gui::event& e)
 					if (pg1->elements.at(cur_btn_idx).label._Equal("l_skel2")) {
 						from_jump_asf = false;
 						left_ee = right_ee = hmd_ee = nullptr;
+
 						skel_view->load_skeleton_given_name(working_dir + "speider_simple0/tmpskel_2.asf");
 						skel_view->set_skel_origin_ori_translation(Vec3(0, 1, 0), 0, Vec3(1.2, 1, -2.8));
 						load_addi_two_guys(working_dir + "speider_simple0/tmpskel_2.asf");
@@ -1653,22 +1692,22 @@ bool vr_test::handle(cgv::gui::event& e)
 						render_confirm_panel();  */
 						//if (confirmed) {
 						//	confirmed = false;
-							ds->get_skeleton()->write_pinocchio_file("tmpskel_1.txt");
-							ds->get_skeleton()->writeASFFile("tmpskel_1.asf");
+							ds->get_skeleton()->write_pinocchio_file(working_dir + "speider_simple0/tmpskel_1.txt");
+							ds->get_skeleton()->writeASFFile(working_dir + "speider_simple0/tmpskel_1.asf");
 							label_content = "[INFO] skel. saved!\n" + label_content;
 							label_outofdate = true;
 						//}
 							//remove_pg1();
 					}
 					if (pg1->elements.at(cur_btn_idx).label._Equal("s_skel2")) {
-						ds->get_skeleton()->write_pinocchio_file("tmpskel_2.txt");
-						ds->get_skeleton()->writeASFFile("tmpskel_2.asf");
+						ds->get_skeleton()->write_pinocchio_file(working_dir + "speider_simple0/tmpskel_2.txt");
+						ds->get_skeleton()->writeASFFile(working_dir + "speider_simple0/tmpskel_2.asf");
 						label_content = "[INFO] skel. saved!\n" + label_content;
 						label_outofdate = true;
 					}
 					if (pg1->elements.at(cur_btn_idx).label._Equal("s_skel3")) {
-						ds->get_skeleton()->write_pinocchio_file("tmpskel_3.txt");
-						ds->get_skeleton()->writeASFFile("tmpskel_3.asf");
+						ds->get_skeleton()->write_pinocchio_file(working_dir + "speider_simple0/tmpskel_3.txt");
+						ds->get_skeleton()->writeASFFile(working_dir + "speider_simple0/tmpskel_3.asf");
 						label_content = "[INFO] skel. saved!\n" + label_content;
 						label_outofdate = true;
 					}
@@ -1854,6 +1893,21 @@ bool vr_test::handle(cgv::gui::event& e)
 						lefthandmode = "def local frame";
 					}
 
+					// click twice 
+					if (pg1->elements.at(cur_btn_idx).label._Equal("adjest_bone\n_exist")) {
+						lefthandmode = "adjest_bone_exist";
+						if (bone_tobeadjested_idx != -1) { // already selected a bone
+							Bone* cur_bone_to_be_adjested = 
+								ds->get_skeleton()->find_bone_in_a_list_by_id(bone_tobeadjested_idx);
+							cur_local_frame_rot_rel_XYZ[0] = cur_bone_to_be_adjested->get_dof(2)->get_value();
+							cur_local_frame_rot_rel_XYZ[1] = cur_bone_to_be_adjested->get_dof(1)->get_value();
+							cur_local_frame_rot_rel_XYZ[2] = cur_bone_to_be_adjested->get_dof(0)->get_value();
+							cur_rot_mat = from_global_roll_yaw_pitch_vec_to_matrix();
+							label_content = "cur_rot_mat computed acc. bone!\n" + label_content;
+							label_outofdate = true;
+						}
+					}
+
 					if (pg1->elements.at(cur_btn_idx).label._Equal("shuffle_dof\n_def")) {
 						shuffle_dof_def_xyz++;
 						if (shuffle_dof_def_xyz > 2) // only xyz three objs
@@ -1862,8 +1916,6 @@ bool vr_test::handle(cgv::gui::event& e)
 
 					if (pg1->elements.at(cur_btn_idx).label._Equal("shuffle_\nlocal_frame")) {
 						// compute cur_local_frame_rot_rel_XYZ in degrees
-						vec3 bonedir_inworldspace = end_point_list.at(end_point_list.size() - 1)
-							- start_point_list.at(start_point_list.size() - 1);
 						vec3 asix_dir = vec3(1, 0, 0);
 						shuffle_local_frame_dir_num++;
 						if (shuffle_local_frame_dir_num > num_of_all_choices - 1) {
@@ -1889,11 +1941,30 @@ bool vr_test::handle(cgv::gui::event& e)
 							asix_dir = vec3(0, 0, -1);
 						}
 
-						mat3 rot_mat = compute_matrix_from_two_dirs(asix_dir, bonedir_inworldspace);
-						from_matrix_to_euler_angle_as_global_var(rot_mat);
-						cur_rot_mat = rot_mat;
-							//from_global_roll_yaw_pitch_vec_to_matrix();
+						if (lefthandmode == "adjest_bone_exist" && bone_tobeadjested_idx != -1) {
+							Bone* cur_bone_to_be_adjested =
+								ds->get_skeleton()->find_bone_in_a_list_by_id(bone_tobeadjested_idx);
+							vec3 bonedir_inworldspace = cur_bone_to_be_adjested->get_direction_in_world_space();
+							mat3 rot_mat = compute_matrix_from_two_dirs(asix_dir, bonedir_inworldspace);
+							from_matrix_to_euler_angle_as_global_var(rot_mat);
+							cur_rot_mat = rot_mat;
+							cur_bone_to_be_adjested->get_asix_as_orientation_list().at(2)->set_value(cur_local_frame_rot_rel_XYZ[0]);
+							cur_bone_to_be_adjested->get_asix_as_orientation_list().at(1)->set_value(cur_local_frame_rot_rel_XYZ[1]);
+							cur_bone_to_be_adjested->get_asix_as_orientation_list().at(0)->set_value(cur_local_frame_rot_rel_XYZ[2]);
 
+							// perform post process, bounding box will be re-calculated! we need it to write pinocchio file 
+							ds->get_skeleton()->postprocess(ds->get_skeleton()->get_root(), Vec3(0, 0, 0));
+							// std::cout << skel_view->get_jointlist().size();
+							// update skel. the tree view will be updated at the sametime 
+							skel_view->skeleton_changed(ds->get_skeleton());
+						}else if (end_point_list.size()) {
+							vec3 bonedir_inworldspace = end_point_list.at(end_point_list.size() - 1)
+								- start_point_list.at(start_point_list.size() - 1);
+							mat3 rot_mat = compute_matrix_from_two_dirs(asix_dir, bonedir_inworldspace);
+							from_matrix_to_euler_angle_as_global_var(rot_mat);
+							cur_rot_mat = rot_mat;
+								//from_global_roll_yaw_pitch_vec_to_matrix();
+						}
 						post_redraw();
 					}
 					
@@ -2981,6 +3052,46 @@ void vr_test::draw(cgv::render::context& ctx)
 			cgv::render::attribute_array_binding::disable_global_array(ctx, pi);
 			cgv::render::attribute_array_binding::disable_global_array(ctx, ci);
 			glLineWidth(1);*/
+		}
+	// 
+		if (lefthandmode == "def local frame" && bone_tobeadjested_idx > 0) { // if already selected a bone
+			std::vector<vec3> p_list;
+			std::vector<rgb> color_list;
+			/*Bone* cur_bone_to_be_adjested =
+				ds->get_skeleton()->find_bone_in_a_list_by_id(bone_tobeadjested_idx);*/
+			vec3 cur_posi_vec3 = jointlist.at(bone_tobeadjested_idx-1).get_center();
+
+			p_list.push_back(cur_posi_vec3);
+			p_list.push_back(cur_posi_vec3 + cur_rot_mat * vec3(0.2, 0, 0));
+			color_list.push_back(rgb(1, 0, 0));
+			color_list.push_back(rgb(1, 1, 1));
+
+			p_list.push_back(cur_posi_vec3);
+			p_list.push_back(cur_posi_vec3 + cur_rot_mat * vec3(0, 0.2, 0));
+			color_list.push_back(rgb(0, 1, 0));
+			color_list.push_back(rgb(1, 1, 1));
+
+			p_list.push_back(cur_posi_vec3);
+			p_list.push_back(cur_posi_vec3 + cur_rot_mat * vec3(0, 0, 0.2));
+			color_list.push_back(rgb(0, 0, 1));
+			color_list.push_back(rgb(1, 1, 1));
+
+			if (p_list.size() > 0) {
+				cgv::render::shader_program& prog = ctx.ref_default_shader_program();
+				int pi = prog.get_position_index();
+				int ci = prog.get_color_index();
+				cgv::render::attribute_array_binding::set_global_attribute_array(ctx, pi, p_list);
+				cgv::render::attribute_array_binding::enable_global_array(ctx, pi);
+				cgv::render::attribute_array_binding::set_global_attribute_array(ctx, ci, color_list);
+				cgv::render::attribute_array_binding::enable_global_array(ctx, ci);
+				glLineWidth(3);
+				prog.enable(ctx);
+				glDrawArrays(GL_LINES, 0, (GLsizei)p_list.size());
+				prog.disable(ctx);
+				cgv::render::attribute_array_binding::disable_global_array(ctx, pi);
+				cgv::render::attribute_array_binding::disable_global_array(ctx, ci);
+				glLineWidth(1);
+			}
 		}
 
 	// draw skel 

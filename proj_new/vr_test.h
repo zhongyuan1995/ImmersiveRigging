@@ -241,7 +241,8 @@ protected:
 	bool toggle_local_dofs_def = false;
 	bool toggle_def_min_dof = false;
 	bool toggle_def_max_dof = false;
-	bool toggle_render_local_frame = false;
+	bool toggle_render_local_frame = true;
+	bool keydown_adjest_bone_exist = false;
 
 	float def_dof_x_min = -180;
 	float def_dof_x_max = 180;
@@ -313,6 +314,7 @@ protected:
 	std::vector<vec3> fast_bone_posi_vec_as_chain;
 
 	int bone_tobeaddednext_idx = -1;
+	int bone_tobeadjested_idx = -1;
 	int newbone_idx = 0;
 	std::string lefthandmode;
 

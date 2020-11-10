@@ -141,7 +141,8 @@ void SkeletonViewer::draw_skeleton_subtree(Bone* node, const Mat4& global_to_par
 		ctx.ref_surface_shader_program().disable(ctx);
 	}
 	Mat4 dof_matrix = global_to_parent_local * node->calculate_transform_prev_to_current_without_dofs();
-	float indicatorSize = (data->get_skeleton()->getMax()-data->get_skeleton()->getMin()).length() * 0.03125f;
+	float indicatorSize = 0.1f;
+		//(data->get_skeleton()->getMax()-data->get_skeleton()->getMin()).length() * 0.03125f;
 	//draw indicators for dofs
 	if (indicators)
 	{

@@ -126,6 +126,7 @@ public:
 
 
 	float jointsize_stored_as_bone_parameter = 0;
+	Mat4 transformLocalToGlobal;//Combined rotation and translation that transforms from the bone's local coordinate system to the global system. Task 4.6
 
 private:
 	//The following attributes are read from the ASF file
@@ -152,8 +153,7 @@ private:
 	//for skinning:
 	Mat4 translationTransformGlobalToLocal; //Translation matrix that transforms from the global coordinate system to the bone's local system. Task 4.6
 	Mat4 transformGlobalToLocal; //Combined rotation and translation that transforms from the global coordinate system to the bone's local system. Task 4.6
-	Mat4 transformLocalToGlobal;//Combined rotation and translation that transforms from the bone's local coordinate system to the global system. Task 4.6
-
+	
 	int translationTransforms; //The number of translation transforms that have been added as dof
 };
 
