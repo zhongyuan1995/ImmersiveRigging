@@ -62,8 +62,8 @@ void SkinningSkeleton::writeASFstring_recur(Bone* node, int number_of_level, std
 			(-90.0 90.0)
 			(-90.0 90.0)*/
 		fout << "\t" << "dof rx ry rz\n";
-		fout << "\t" << "limits \n";
-		fout << "\t" << "(" << node->get_dof(2)->get_lower_limit() << " " << node->get_dof(2)->get_upper_limit()  <<")\n";
+		fout << "\t" << "limits "
+					 << "(" << node->get_dof(2)->get_lower_limit() << " " << node->get_dof(2)->get_upper_limit()  <<")\n";
 		fout << "\t" << "(" << node->get_dof(1)->get_lower_limit() << " " << node->get_dof(1)->get_upper_limit() << ")\n";
 		fout << "\t" << "(" << node->get_dof(0)->get_lower_limit() << " " << node->get_dof(0)->get_upper_limit() << ")\n";
 		fout << " " << "end\n";

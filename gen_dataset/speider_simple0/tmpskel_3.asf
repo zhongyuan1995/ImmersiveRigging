@@ -14,9 +14,9 @@
  begin
 	id 1
 	name new_bone_0
-	direction  0.118660 0.246201 0.113775
+	direction  0.149727 0.218718 0.244174
 	length 16.666668
-	axis -35.296577 22.601654 -115.732376   XYZ
+	axis -23.264980 -42.651604 55.605892   XYZ
 	dof rx ry rz
 	limits (-180 180)
 	(-180 180)
@@ -25,9 +25,9 @@
  begin
 	id 2
 	name new_bone_2
-	direction  -0.156196 0.317661 -0.083610
+	direction  -0.098871 0.052569 0.449761
 	length 16.666668
-	axis 8.297338 -13.289433 -63.816330   XYZ
+	axis -81.779427 11.347789 -171.712280   XYZ
 	dof rx ry rz
 	limits (-180 180)
 	(-180 180)
@@ -36,20 +36,9 @@
  begin
 	id 3
 	name new_bone_4
-	direction  0.201707 0.393368 0.398010
+	direction  -0.091131 -0.083333 0.218166
 	length 16.666668
-	axis -64.272888 41.997868 -117.147308   XYZ
-	dof rx ry rz
-	limits (-180 180)
-	(-180 180)
-	(-180 180)
- end
- begin
-	id 4
-	name new_bone_8
-	direction  -0.307954 -0.512219 0.225619
-	length 16.666668
-	axis 11.784479 20.681559 58.985100   XYZ
+	axis 54.403366 -60.488968 -137.559326   XYZ
 	dof rx ry rz
 	limits (-180 180)
 	(-180 180)
@@ -60,5 +49,4 @@
 	root new_bone_0 
 	new_bone_0 new_bone_2 
 	new_bone_2 new_bone_4 
-	new_bone_4 new_bone_8 
  end
