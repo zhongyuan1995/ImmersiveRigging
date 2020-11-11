@@ -1926,6 +1926,7 @@ bool vr_test::handle(cgv::gui::event& e)
 					}
 
 					if (pg1->elements.at(cur_btn_idx).label._Equal("shuffle_\nlocal_frame")) {
+						lefthandmode = "def local frame";
 						// compute cur_local_frame_rot_rel_XYZ in degrees
 						vec3 asix_dir = vec3(1, 0, 0);
 						shuffle_local_frame_dir_num++;
@@ -3114,7 +3115,7 @@ void vr_test::draw(cgv::render::context& ctx)
 			// render lines
 			std::vector<vec3> vertex_array_in_point_list;
 			std::vector<rgb> colorarray;
-			if (lefthandmode == "def local frame" && start_point_list.size() > 0) {
+			if ((lefthandmode == "def local frame" || lefthandmode == "add bone") && start_point_list.size() > 0) {
 				// render a local frame, according to cur_local_frame_rot_rel_XYZ
 				vec3 last_point_posi = start_point_list.at(start_point_list.size() - 1);
 				vertex_array_in_point_list.push_back(last_point_posi);
