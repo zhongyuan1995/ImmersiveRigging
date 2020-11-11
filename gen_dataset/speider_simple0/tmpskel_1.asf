@@ -99,28 +99,6 @@
  end
  begin
 	id 9
-	name new_new_bone_0
-	direction  -0.043904 0.080083 0.021007
-	length 16.666668
-	axis -21.704561 -12.953681 118.732925   XYZ
-	dof rx ry rz 
-	limits (-180 180)
-	(-180 180)
-	(-180 180)
- end
- begin
-	id 10
-	name new_new_bone_4
-	direction  0.020185 0.085901 0.024514
-	length 16.666668
-	axis -12.328605 -15.525929 76.776741   XYZ
-	dof rx ry rz 
-	limits (-180 180)
-	(-180 180)
-	(-180 180)
- end
- begin
-	id 11
 	name new_bone_10
 	direction  0.175128 -0.032152 0.003256
 	length 16.666668
@@ -131,7 +109,7 @@
 	(-30 30)
  end
  begin
-	id 12
+	id 10
 	name new_bone_16
 	direction  0.181709 -0.190408 -0.004280
 	length 16.666668
@@ -142,7 +120,7 @@
 	(-30 30)
  end
  begin
-	id 13
+	id 11
 	name new_bone_18
 	direction  0.172012 -0.173236 0.075339
 	length 16.666668
@@ -151,7 +129,7 @@
 	limits 	(-180 0)
  end
  begin
-	id 14
+	id 12
 	name new_bone_22
 	direction  0.035896 -0.049023 0.036620
 	length 16.666668
@@ -162,7 +140,18 @@
 	(-10 10)
  end
  begin
-	id 15
+	id 13
+	name new_new_bone_0
+	direction  -0.078162 -0.013566 0.120562
+	length 16.666668
+	axis 74.622421 -29.958151 38.690044   XYZ
+	dof rx ry rz 
+	limits (-180 180)
+	(-180 180)
+	(-180 180)
+ end
+ begin
+	id 14
 	name new_bone_24
 	direction  -0.082337 -0.128108 0.000866
 	length 16.666668
@@ -172,7 +161,7 @@
 	(-30 30)
  end
  begin
-	id 16
+	id 15
 	name new_bone_28
 	direction  -0.023059 -0.401105 -0.017004
 	length 16.666668
@@ -183,7 +172,7 @@
 	(-70 70)
  end
  begin
-	id 17
+	id 16
 	name new_bone_30
 	direction  -0.003495 -0.449827 -0.043493
 	length 16.666668
@@ -192,7 +181,7 @@
 	limits 	(0 90)
  end
  begin
-	id 18
+	id 17
 	name new_bone_32
 	direction  -0.012682 -0.059396 0.166783
 	length 16.666668
@@ -203,7 +192,7 @@
 	(-30 30)
  end
  begin
-	id 19
+	id 18
 	name new_bone_26
 	direction  0.080412 -0.112376 0.006582
 	length 16.666668
@@ -213,7 +202,7 @@
 	(-30 30)
  end
  begin
-	id 20
+	id 19
 	name new_bone_34
 	direction  0.035808 -0.409021 -0.031242
 	length 16.666668
@@ -224,7 +213,7 @@
 	(-70 70)
  end
  begin
-	id 21
+	id 20
 	name new_bone_36
 	direction  0.014744 -0.456143 -0.032210
 	length 16.666668
@@ -233,7 +222,7 @@
 	limits 	(0 90)
  end
  begin
-	id 22
+	id 21
 	name new_bone_38
 	direction  0.001479 -0.050105 0.156382
 	length 16.666668
@@ -247,12 +236,11 @@
  begin
 	root new_bone_0 new_bone_24 new_bone_26 
 	new_bone_0 new_bone_2 
-	new_bone_2 new_bone_4 new_bone_6 new_bone_10 
+	new_bone_2 new_bone_4 new_bone_6 new_bone_10 new_new_bone_0 
 	new_bone_4 new_bone_12 
 	new_bone_12 new_bone_14 
 	new_bone_14 new_bone_20 
 	new_bone_6 new_bone_8 
-	new_bone_8 new_new_bone_0 new_new_bone_4 
 	new_bone_10 new_bone_16 
 	new_bone_16 new_bone_18 
 	new_bone_18 new_bone_22 
