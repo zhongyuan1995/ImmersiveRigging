@@ -470,6 +470,48 @@ public:
 		label_content = "[INFO] demo skel. loaded\n" + label_content;
 		label_outofdate = true;
 	}
+	void load_demo_skel1() {
+		from_jump_asf = false;
+		left_ee = right_ee = hmd_ee = nullptr;
+		start_point_list.clear();
+		end_point_list.clear();
+
+		skel_view->load_skeleton_given_name(working_dir + "speider_simple0/tmpskel_1.asf");
+		skel_view->set_skel_origin_ori_translation(Vec3(0, 1, 0), 0, Vec3(1.2, 1, -2.8));
+		load_addi_two_guys(working_dir + "speider_simple0/tmpskel_1.asf");
+		post_redraw();
+
+		label_content = "[INFO] button clicked!\n" + label_content;
+		label_outofdate = true;
+	}
+	void load_demo_skel2() {
+		from_jump_asf = false;
+		left_ee = right_ee = hmd_ee = nullptr;
+		start_point_list.clear();
+		end_point_list.clear();
+
+		skel_view->load_skeleton_given_name(working_dir + "speider_simple0/tmpskel_2.asf");
+		skel_view->set_skel_origin_ori_translation(Vec3(0, 1, 0), 0, Vec3(1.2, 1, -2.8));
+		load_addi_two_guys(working_dir + "speider_simple0/tmpskel_2.asf");
+		post_redraw();
+
+		label_content = "[INFO] button clicked!\n" + label_content;
+		label_outofdate = true;
+	}
+	void load_demo_skel3() {
+		from_jump_asf = false;
+		left_ee = right_ee = hmd_ee = nullptr;
+		start_point_list.clear();
+		end_point_list.clear();
+
+		skel_view->load_skeleton_given_name(working_dir + "speider_simple0/tmpskel_3.asf");
+		skel_view->set_skel_origin_ori_translation(Vec3(0, 1, 0), 0, Vec3(1.2, 1, -2.8));
+		load_addi_two_guys(working_dir + "speider_simple0/tmpskel_3.asf");
+		post_redraw();
+
+		label_content = "[INFO] button clicked!\n" + label_content;
+		label_outofdate = true;
+	}
 	void take_screen_capture() {
 		context* ctx = get_context();
 		if (ctx == 0)

@@ -51,21 +51,40 @@ void SkinningSkeleton::writeASFstring_recur(Bone* node, int number_of_level, std
 			+ std::to_string(node->get_direction_in_world_space().y()) + " "
 			+ std::to_string(node->get_direction_in_world_space().z()) + "\n";
 		fout << "\t" << "length " + std::to_string(node->get_length() / scalefactor) + "\n";
-		fout << "\t" << "axis " 
-			<< std::to_string(node->get_asix_as_orientation_list().at(2)->get_value()) << " "
-			<< std::to_string(node->get_asix_as_orientation_list().at(1)->get_value()) << " "
-			<< std::to_string(node->get_asix_as_orientation_list().at(0)->get_value()) << " "
-			<< "  XYZ\n";// fixed now, can be modified later 
+		fout << "\t" << "axis ";
+		if (node->get_asix_as_orientation_list().size() == 3) {
+			fout << std::to_string(node->get_asix_as_orientation_list().at(2)->get_value()) << " "
+				<< std::to_string(node->get_asix_as_orientation_list().at(1)->get_value()) << " "
+				<< std::to_string(node->get_asix_as_orientation_list().at(0)->get_value()) << " ";
+		}
+		else if (node->get_asix_as_orientation_list().size() == 2) {
+			fout << std::to_string(node->get_asix_as_orientation_list().at(1)->get_value()) << " "
+				<< std::to_string(node->get_asix_as_orientation_list().at(0)->get_value()) << " ";
+		}
+		else if (node->get_asix_as_orientation_list().size() == 1) {
+			fout << std::to_string(node->get_asix_as_orientation_list().at(0)->get_value()) << " ";
+		}
+		fout << "  XYZ\n";// fixed now, can be modified later 
 		//node->get_dof()
 		/*dof rx ry rz
 			limits (-60.0 90.0)
 			(-90.0 90.0)
 			(-90.0 90.0)*/
-		fout << "\t" << "dof rx ry rz\n";
-		fout << "\t" << "limits "
-					 << "(" << node->get_dof(2)->get_lower_limit() << " " << node->get_dof(2)->get_upper_limit()  <<")\n";
-		fout << "\t" << "(" << node->get_dof(1)->get_lower_limit() << " " << node->get_dof(1)->get_upper_limit() << ")\n";
-		fout << "\t" << "(" << node->get_dof(0)->get_lower_limit() << " " << node->get_dof(0)->get_upper_limit() << ")\n";
+		fout << "\t" << "dof ";
+		if (node->get_dof(2))
+			fout << "rx ";
+		if (node->get_dof(0))
+			fout << "ry ";
+		if (node->get_dof(1))
+			fout << "rz ";
+		fout << "\n";
+		fout << "\t" << "limits ";
+		if(node->get_dof(2))
+			fout << "(" << node->get_dof(2)->get_lower_limit() << " " << node->get_dof(2)->get_upper_limit()  <<")\n";
+		if (node->get_dof(1))
+			fout << "\t" << "(" << node->get_dof(1)->get_lower_limit() << " " << node->get_dof(1)->get_upper_limit() << ")\n";
+		if (node->get_dof(0))
+			fout << "\t" << "(" << node->get_dof(0)->get_lower_limit() << " " << node->get_dof(0)->get_upper_limit() << ")\n";
 		fout << " " << "end\n";
 	}
 	

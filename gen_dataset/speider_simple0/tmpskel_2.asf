@@ -18,9 +18,9 @@
 	length 16.666668
 	axis 0.000000 0.000000 0.000000   XYZ
 	dof rx ry rz
-	limits (-180 180)
-	(-180 180)
-	(-180 180)
+	limits (-30 30)
+	(-30 30)
+	(-30 30)
  end
  begin
 	id 2
@@ -29,9 +29,9 @@
 	length 16.666668
 	axis -0.864355 19.770906 93.105354   XYZ
 	dof rx ry rz
-	limits (-180 180)
-	(-180 180)
-	(-180 180)
+	limits (-30 30)
+	(-30 30)
+	(-30 30)
  end
  begin
 	id 3
@@ -40,9 +40,9 @@
 	length 16.666668
 	axis 2.850513 -3.510703 -169.590576   XYZ
 	dof rx ry rz
-	limits (-180 180)
-	(-180 180)
-	(-180 180)
+	limits (-30 30)
+	(-30 30)
+	(-30 30)
  end
  begin
 	id 4
@@ -51,9 +51,9 @@
 	length 16.666668
 	axis -2.471062 1.582393 -134.013260   XYZ
 	dof rx ry rz
-	limits (-180 180)
-	(-180 180)
-	(-180 180)
+	limits (-30 30)
+	(-30 30)
+	(-30 30)
  end
  begin
 	id 5
@@ -61,10 +61,8 @@
 	direction  -0.179474 -0.172157 0.063821
 	length 16.666668
 	axis 7.445285 -14.392896 -136.192078   XYZ
-	dof rx ry rz
-	limits (-180 180)
-	(-180 180)
-	(-180 180)
+	dof ry
+	limits (-180 0)
  end
  begin
 	id 6
@@ -73,9 +71,9 @@
 	length 16.666668
 	axis 4.969547 -45.034164 -130.553452   XYZ
 	dof rx ry rz
-	limits (-180 180)
-	(-180 180)
-	(-180 180)
+	limits (-30 30)
+	(-30 0)
+	(-10 10)
  end
  begin
 	id 7
@@ -84,9 +82,9 @@
 	length 16.666668
 	axis -0.218670 -4.854009 82.668282   XYZ
 	dof rx ry rz
-	limits (-180 180)
-	(-180 180)
-	(-180 180)
+	limits (-30 30)
+	(-30 30)
+	(-30 30)
  end
  begin
 	id 8
@@ -95,9 +93,9 @@
 	length 16.666668
 	axis 4.414873 -24.761051 87.985916   XYZ
 	dof rx ry rz
-	limits (-180 180)
-	(-180 180)
-	(-180 180)
+	limits (-30 30)
+	(-30 30)
+	(-30 30)
  end
  begin
 	id 9
@@ -106,9 +104,9 @@
 	length 16.666668
 	axis 0.095373 -1.047621 -10.403153   XYZ
 	dof rx ry rz
-	limits (-180 180)
-	(-180 180)
-	(-180 180)
+	limits (-30 30)
+	(-30 30)
+	(-30 30)
  end
  begin
 	id 10
@@ -117,9 +115,9 @@
 	length 16.666668
 	axis -0.398721 0.931633 -46.339176   XYZ
 	dof rx ry rz
-	limits (-180 180)
-	(-180 180)
-	(-180 180)
+	limits (-30 30)
+	(-30 30)
+	(-30 30)
  end
  begin
 	id 11
@@ -127,10 +125,8 @@
 	direction  0.172012 -0.173236 0.075339
 	length 16.666668
 	axis -4.675204 -17.150415 -45.203133   XYZ
-	dof rx ry rz
-	limits (-180 180)
-	(-180 180)
-	(-180 180)
+	dof ry
+	limits (-180 0)
  end
  begin
 	id 12
@@ -139,9 +135,9 @@
 	length 16.666668
 	axis 3.220881 -31.077335 -53.787373   XYZ
 	dof rx ry rz
-	limits (-180 180)
-	(-180 180)
-	(-180 180)
+	limits (-30 30)
+	(-30 0)
+	(-10 10)
  end
  begin
 	id 13
@@ -149,10 +145,9 @@
 	direction  -0.082337 -0.128108 0.000866
 	length 16.666668
 	axis 0.000000 0.000000 0.000000   XYZ
-	dof rx ry rz
-	limits (-180 180)
-	(-180 180)
-	(-180 180)
+	dof ry rz
+	limits (-30 30)
+	(-30 30)
  end
  begin
 	id 14
@@ -161,9 +156,9 @@
 	length 16.666668
 	axis 2.551098 2.423484 -93.290245   XYZ
 	dof rx ry rz
-	limits (-180 180)
-	(-180 180)
-	(-180 180)
+	limits (-70 70)
+	(-70 70)
+	(-70 70)
  end
  begin
 	id 15
@@ -171,10 +166,8 @@
 	direction  -0.003495 -0.449827 -0.043493
 	length 16.666668
 	axis 3.818070 5.522497 -90.445160   XYZ
-	dof rx ry rz
-	limits (-180 180)
-	(-180 180)
-	(-180 180)
+	dof ry
+	limits (0 90)
  end
  begin
 	id 16
@@ -183,9 +176,9 @@
 	length 16.666668
 	axis 103.194565 -69.990669 -102.052582   XYZ
 	dof rx ry rz
-	limits (-180 180)
-	(-180 180)
-	(-180 180)
+	limits (-30 30)
+	(-30 30)
+	(-30 30)
  end
  begin
 	id 17
@@ -193,10 +186,9 @@
 	direction  0.080412 -0.112376 0.006582
 	length 16.666668
 	axis 0.000000 0.000000 0.000000   XYZ
-	dof rx ry rz
-	limits (-180 180)
-	(-180 180)
-	(-180 180)
+	dof ry rz
+	limits (-30 30)
+	(-30 30)
  end
  begin
 	id 18
@@ -205,9 +197,9 @@
 	length 16.666668
 	axis 3.763821 4.351328 -84.996765   XYZ
 	dof rx ry rz
-	limits (-180 180)
-	(-180 180)
-	(-180 180)
+	limits (-70 70)
+	(-70 70)
+	(-70 70)
  end
  begin
 	id 19
@@ -215,10 +207,8 @@
 	direction  0.014744 -0.456143 -0.032210
 	length 16.666668
 	axis 1.946027 4.037068 -88.148666   XYZ
-	dof rx ry rz
-	limits (-180 180)
-	(-180 180)
-	(-180 180)
+	dof ry
+	limits (0 90)
  end
  begin
 	id 20
@@ -227,9 +217,9 @@
 	length 16.666668
 	axis 90.879646 -72.227219 -88.309250   XYZ
 	dof rx ry rz
-	limits (-180 180)
-	(-180 180)
-	(-180 180)
+	limits (-30 30)
+	(-30 30)
+	(-30 30)
  end
 :hierarchy
  begin

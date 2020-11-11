@@ -123,8 +123,8 @@
         posing function, grip left button to start. have to select left hand ee first!
         local frames, just aligned to world coordi. now 
         build_bone
-    tobetested:
         adjest bone local frames, two ways.
+    tobetested:
     todo:  
         load and test the skel. with dofs 
         (additional)adjest dofs in vr (details designed in private repository)

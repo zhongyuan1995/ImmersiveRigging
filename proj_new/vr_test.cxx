@@ -1589,6 +1589,8 @@ bool vr_test::handle(cgv::gui::event& e)
 					if (pg1->elements.at(cur_btn_idx).label._Equal("l_demo1")) {
 						mesh_dir = working_dir + "speider_simple0/spiderman.obj";
 						mmesh->read_obj(mesh_dir.c_str());
+						start_point_list.clear();
+						end_point_list.clear();
 						//mmesh->read_obj(g_mesh_filename.c_str());
 						ds->set_mesh(mmesh);
 						label_content = "[INFO] mesh loaded!\n" + label_content;
@@ -1598,6 +1600,8 @@ bool vr_test::handle(cgv::gui::event& e)
 					if (pg1->elements.at(cur_btn_idx).label._Equal("l_demo2")) {
 						mesh_dir = working_dir + "horse_simple0/horse.obj";
 						mmesh->read_obj(mesh_dir.c_str());
+						start_point_list.clear();
+						end_point_list.clear();
 						//mmesh->read_obj(g_mesh_filename.c_str());
 						ds->set_mesh(mmesh);
 						label_content = "[INFO] mesh loaded!\n" + label_content;
@@ -1607,6 +1611,8 @@ bool vr_test::handle(cgv::gui::event& e)
 					if (pg1->elements.at(cur_btn_idx).label._Equal("l_demo3")) {
 						mesh_dir = working_dir + "pinocchio_model1_0/Model1.obj";
 						mmesh->read_obj(mesh_dir.c_str());
+						start_point_list.clear();
+						end_point_list.clear();
 						//mmesh->read_obj(g_mesh_filename.c_str());
 						ds->set_mesh(mmesh);
 						label_content = "[INFO] mesh loaded!\n" + label_content;
@@ -1616,6 +1622,8 @@ bool vr_test::handle(cgv::gui::event& e)
 					if (pg1->elements.at(cur_btn_idx).label._Equal("l_demo4")) {
 						mesh_dir = working_dir + "pinocchio_model6_0/Model6.obj";
 						mmesh->read_obj(mesh_dir.c_str());
+						start_point_list.clear();
+						end_point_list.clear();
 						//mmesh->read_obj(g_mesh_filename.c_str());
 						ds->set_mesh(mmesh);
 						label_content = "[INFO] mesh loaded!\n" + label_content;
@@ -1625,6 +1633,8 @@ bool vr_test::handle(cgv::gui::event& e)
 					if (pg1->elements.at(cur_btn_idx).label._Equal("l_demo5")) {
 						mesh_dir = working_dir + "robot_0/Robot Kyle.obj";
 						mmesh->read_obj(mesh_dir.c_str());
+						start_point_list.clear();
+						end_point_list.clear();
 						//mmesh->read_obj(g_mesh_filename.c_str());
 						ds->set_mesh(mmesh);
 						label_content = "[INFO] mesh loaded!\n" + label_content;
@@ -1635,6 +1645,9 @@ bool vr_test::handle(cgv::gui::event& e)
 					if (pg1->elements.at(cur_btn_idx).label._Equal("demoskel")) {
 						label_content = "[INFO] button clicked!\n" + label_content;
 						label_outofdate = true;
+						start_point_list.clear();
+						end_point_list.clear();
+
 						//skel_view->load_skeleton_given_name("FFA_REGULAR/zrdevpacks/zract_easyRigging/data_attached/_workdemo1_spiderman/jump.asf");
 						//skel_view->set_skel_origin_ori_translation(Vec3(0, 1, 0), 0, Vec3(1.25, 1, -2.8));
 						from_jump_asf = true;
@@ -1665,6 +1678,8 @@ bool vr_test::handle(cgv::gui::event& e)
 					if (pg1->elements.at(cur_btn_idx).label._Equal("l_skel2")) {
 						from_jump_asf = false;
 						left_ee = right_ee = hmd_ee = nullptr;
+						start_point_list.clear();
+						end_point_list.clear();
 
 						skel_view->load_skeleton_given_name(working_dir + "speider_simple0/tmpskel_2.asf");
 						skel_view->set_skel_origin_ori_translation(Vec3(0, 1, 0), 0, Vec3(1.2, 1, -2.8));
@@ -1677,6 +1692,9 @@ bool vr_test::handle(cgv::gui::event& e)
 					if (pg1->elements.at(cur_btn_idx).label._Equal("l_skel3")) {
 						from_jump_asf = false;
 						left_ee = right_ee = hmd_ee = nullptr;
+						start_point_list.clear();
+						end_point_list.clear();
+
 						skel_view->load_skeleton_given_name(working_dir + "speider_simple0/tmpskel_3.asf");
 						skel_view->set_skel_origin_ori_translation(Vec3(0, 1, 0), 0, Vec3(1.2, 1, -2.8));
 						load_addi_two_guys(working_dir + "speider_simple0/tmpskel_3.asf");
@@ -1966,8 +1984,12 @@ bool vr_test::handle(cgv::gui::event& e)
 						Bone* parent_bone = ds->get_skeleton()->find_bone_in_a_list_by_id(bone_tobeaddednext_idx);
 						std::cout << parent_bone->get_name() << std::endl;
 						Bone* current_node = new Bone();
-						current_node->set_name("new_bone_" + to_string(newbone_idx++)); // "new_bone_0, new_bone_1..."
-						ds->get_skeleton()->add_new_bone_to_map("new_bone_" + to_string(newbone_idx++), current_node);
+						string addi_str = "";
+						if (ds->get_skeleton())
+							if (ds->get_skeleton()->get_size_bone_list() > 0)
+								addi_str = "new_";
+						current_node->set_name(addi_str + "new_bone_" + to_string(newbone_idx++)); // "new_bone_0, new_bone_1..."
+						ds->get_skeleton()->add_new_bone_to_map(addi_str + "new_bone_" + to_string(newbone_idx++), current_node);
 
 						// adjest bone para. that we have drawn 
 						Vec3 bonedir_inworldspace = end_point_list.at(end_point_list.size() - 1)
@@ -2342,7 +2364,7 @@ bool vr_test::init(cgv::render::context& ctx)
 	cgv::render::ref_sphere_renderer(ctx, 1);
 	cgv::render::ref_rounded_cone_renderer(ctx, 1);
 
-	toggle_usage_description = true;
+	toggle_usage_description = false;
 	cur_rot_mat.identity();
 	temp_rot.identity();
 	cur_min_rot_mat.identity();
@@ -3092,7 +3114,7 @@ void vr_test::draw(cgv::render::context& ctx)
 			// render lines
 			std::vector<vec3> vertex_array_in_point_list;
 			std::vector<rgb> colorarray;
-			if (start_point_list.size() > 0) {
+			if (lefthandmode == "def local frame" && start_point_list.size() > 0) {
 				// render a local frame, according to cur_local_frame_rot_rel_XYZ
 				vec3 last_point_posi = start_point_list.at(start_point_list.size() - 1);
 				vertex_array_in_point_list.push_back(last_point_posi);
@@ -3259,6 +3281,11 @@ void vr_test::create_gui() {
 	//connect_copy(add_button("load_mesh")->click, cgv::signal::rebind(this, &vr_test::load_mesh));
 	connect_copy(add_button("load_mesh_with_gui")->click, cgv::signal::rebind(this, &vr_test::load_mesh_with_gui));
 	connect_copy(add_button("load_skel_with_dofs")->click, cgv::signal::rebind(this, &vr_test::load_skel_with_dofs));
+	connect_copy(add_button("load_demo_skel1")->click, cgv::signal::rebind(this, &vr_test::load_demo_skel1));
+	connect_copy(add_button("load_demo_skel2")->click, cgv::signal::rebind(this, &vr_test::load_demo_skel2));
+	connect_copy(add_button("load_demo_skel3")->click, cgv::signal::rebind(this, &vr_test::load_demo_skel3));
+
+	//load_demo_skel1
 	//connect_copy(add_button("adjest_mesh")->click, cgv::signal::rebind(this, &vr_test::adjest_mesh));
 	//connect_copy(add_button("remove_pg1")->click, cgv::signal::rebind(this, &vr_test::remove_pg1));
 	//connect_copy(add_button("shuffle_frame")->click, cgv::signal::rebind(this, &vr_test::shuffle_frame));

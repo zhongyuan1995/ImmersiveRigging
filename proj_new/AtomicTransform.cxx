@@ -52,6 +52,7 @@ void AtomicRotationTransform::drawIndicator(float size)
 		t.identity();
 	else
 		t = rotate(rot_axis, angle * 180.0f / 3.1415926f);
+	glDisable(GL_CULL_FACE);
 	glBegin(GL_TRIANGLE_FAN);
 	glVertex3f(0, 0, 0);
 	for (float v = (float)lower_limit; v <= upper_limit; v += 5)
