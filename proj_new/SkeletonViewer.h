@@ -110,7 +110,7 @@ public:
 	std::vector<rgb> get_jointlistcolor() { return jointlist_color; }
 	std::string get_parent_type() const;
 
-	float cubesize = 0.05;
+	float cubesize = 0.03f;
 	bool playing = false;
 	bool recording = false;
 	bool render_axis_arrow = false;

@@ -55,9 +55,9 @@ void SkeletonViewer::compute_posi_jointlist_recur(Bone* node, const Mat4& global
 		aRoot(my_root_position.x(), my_root_position.y(), my_root_position.z()),
 		aTip(my_tip_position.x(), my_tip_position.y(), my_tip_position.z());
 
-	// use new size for added bones // tobetested 
-	if (node->jointsize_stored_as_bone_parameter > 0)
-		cubesize = node->jointsize_stored_as_bone_parameter;
+	//// use new size for added bones // tobetested 
+	//if (node->jointsize_stored_as_bone_parameter > 0)
+	//	cubesize = node->jointsize_stored_as_bone_parameter;
 	if (node->get_name()._Equal("root")) {
 		jointlist.push_back(box3(vec3(aRoot.x() - cubesize / 2, aRoot.y() - cubesize / 2, aRoot.z() - cubesize / 2),
 			vec3(aRoot.x() + cubesize / 2, aRoot.y() + cubesize / 2, aRoot.z() + cubesize / 2)));
@@ -69,7 +69,6 @@ void SkeletonViewer::compute_posi_jointlist_recur(Bone* node, const Mat4& global
 			vec3(aTip.x() + cubesize / 2, aTip.y() + cubesize / 2, aTip.z() + cubesize / 2)));
 		jointlist_color.push_back(colors[level % 7]);
 	}
-	cubesize = 0.05f; // reset the cubesize value
 
 	data->get_skeleton()->push_back_to_bone_list(node);// bone list will be updated, can be used to "look up" bones and add child
 	
@@ -112,8 +111,8 @@ void SkeletonViewer::draw_skeleton_subtree(Bone* node, const Mat4& global_to_par
 			aTip(my_tip_position.x(), my_tip_position.y(), my_tip_position.z());
 
 		if (playing)
-		if (node->jointsize_stored_as_bone_parameter > 0)
-			cubesize = node->jointsize_stored_as_bone_parameter;
+		/*if (node->jointsize_stored_as_bone_parameter > 0)
+			cubesize = node->jointsize_stored_as_bone_parameter;*/
 		if (node->get_name()._Equal("root")) {
 			ctx.tesselate_box(box3(vec3(aRoot.x() - cubesize / 2, aRoot.y() - cubesize / 2, aRoot.z() - cubesize / 2),
 				vec3(aRoot.x() + cubesize / 2, aRoot.y() + cubesize / 2, aRoot.z() + cubesize / 2)), false, false);
@@ -136,7 +135,6 @@ void SkeletonViewer::draw_skeleton_subtree(Bone* node, const Mat4& global_to_par
 						vec3(aTip.x() + cubesize / 2, aTip.y() + cubesize / 2, aTip.z() + cubesize / 2)), false, false);
 				
 			}
-		cubesize = 0.05f; // reset the cubesize value 
 		//ctx.tesselate_arrow(aRoot, aTip, 0.1, 2.0, 0.5);
 		ctx.ref_surface_shader_program().disable(ctx);
 	}

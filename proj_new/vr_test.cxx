@@ -1002,8 +1002,13 @@ bool vr_test::handle(cgv::gui::event& e)
 						}
 					}
 					else {
+						vec3 origin, direction;
+						vrke.get_state().controller[0].put_ray(&origin(0), &direction(0)); // attention! [0/1]
+						// compute intersection point 
+						vec3 posi = compute_ray_plane_intersection_point(origin, direction);
+						// set the point 
+						vr_view_ptr->set_tracking_origin(Vec3(posi.x(), vr_view_ptr->get_tracking_origin().y(), posi.z()));
 					}
-					//teleport = true;
 				}
 				else 
 					btn_keydown_boxgui = true;
@@ -1122,7 +1127,8 @@ bool vr_test::handle(cgv::gui::event& e)
 			if (state[vrse.get_controller_index()] == IS_GRAB)
 				state[vrse.get_controller_index()] = IS_OVER;
 			break;
-		case cgv::gui::SA_PRESS: // press at y dir on left controller to start ccd 
+		case cgv::gui::SA_PRESS: 
+			// press at y dir on left controller to start ccd 
 			if (vrse.get_controller_index() == 0 && (vrse.get_y() > 0.9)) {
 				toggle_ccd = !toggle_ccd;
 				// set to the desired position in front of mirror 
@@ -1140,7 +1146,6 @@ bool vr_test::handle(cgv::gui::event& e)
 					label_content = "[INFO] ccd off!\n" + label_content;
 				label_outofdate = true;
 			}
-
 			break;
 		case cgv::gui::SA_UNPRESS:
 			std::cout << "stick " << vrse.get_stick_index()
@@ -1185,18 +1190,6 @@ bool vr_test::handle(cgv::gui::event& e)
 		// check for controller pose events
 		int ci = vrpe.get_trackable_index();
 		if (ci != -1) {
-			// teleport 
-			if (teleport) {
-				vec3 origin, direction;
-				vrpe.get_state().controller[0].put_ray(&origin(0), &direction(0)); // attention! [0/1]
-				// compute intersection point 
-				vec3 posi = compute_ray_plane_intersection_point(origin, direction);
-				// set the point 
-				vr_view_ptr->set_tracking_origin(Vec3(posi.x(), vr_view_ptr->get_tracking_origin().y(), posi.z()));
-
-				teleport = false;
-			}
-
 			if (toggle_def_min_dof) {
 				if (ci == 0) {
 					//mat3 t = vrpe.get_orientation();
@@ -1487,8 +1480,18 @@ bool vr_test::handle(cgv::gui::event& e)
 					if (skel_intersection_points.size() > 0) {
 						bone_tobeadjested_idx = skel_intersection_box_indices.front();
 						jointlist_colors.at(skel_intersection_box_indices.front()) = rgb(1, 1, 102.0f / 255.0f);
+						// update global vars
+						Bone* cur_bone_to_be_adjested =
+							ds->get_skeleton()->find_bone_in_a_list_by_id(bone_tobeadjested_idx);
+						cur_local_frame_rot_rel_XYZ[0] = cur_bone_to_be_adjested->get_dof(2)->get_value();
+						cur_local_frame_rot_rel_XYZ[1] = cur_bone_to_be_adjested->get_dof(1)->get_value();
+						cur_local_frame_rot_rel_XYZ[2] = cur_bone_to_be_adjested->get_dof(0)->get_value();
+						cur_rot_mat = from_global_roll_yaw_pitch_vec_to_matrix();
+						label_content = "cur_rot_mat computed acc. bone!\n" + label_content;
+						label_outofdate = true;
 					}
 				}
+				keydown_adjest_bone_exist = false;
 			}
 
 			if (keydown) {
@@ -1896,16 +1899,6 @@ bool vr_test::handle(cgv::gui::event& e)
 					// click twice 
 					if (pg1->elements.at(cur_btn_idx).label._Equal("adjest_bone\n_exist")) {
 						lefthandmode = "adjest_bone_exist";
-						if (bone_tobeadjested_idx != -1) { // already selected a bone
-							Bone* cur_bone_to_be_adjested = 
-								ds->get_skeleton()->find_bone_in_a_list_by_id(bone_tobeadjested_idx);
-							cur_local_frame_rot_rel_XYZ[0] = cur_bone_to_be_adjested->get_dof(2)->get_value();
-							cur_local_frame_rot_rel_XYZ[1] = cur_bone_to_be_adjested->get_dof(1)->get_value();
-							cur_local_frame_rot_rel_XYZ[2] = cur_bone_to_be_adjested->get_dof(0)->get_value();
-							cur_rot_mat = from_global_roll_yaw_pitch_vec_to_matrix();
-							label_content = "cur_rot_mat computed acc. bone!\n" + label_content;
-							label_outofdate = true;
-						}
 					}
 
 					if (pg1->elements.at(cur_btn_idx).label._Equal("shuffle_dof\n_def")) {
@@ -3260,6 +3253,7 @@ void vr_test::create_gui() {
 	add_member_control(this, "show_seethrough", show_seethrough, "check");
 	add_member_control(this, "toggle_usage_description", toggle_usage_description, "check");
 	add_member_control(this, "toggle_render_local_frame", toggle_render_local_frame, "check");
+	add_member_control(this, "joint_box_size", skel_view->cubesize, "value_slider", "min=0.001;max=0.1;log=true;ticks=true");
 	//render_axis_arrow
 
 	//connect_copy(add_button("load_mesh")->click, cgv::signal::rebind(this, &vr_test::load_mesh));
