@@ -199,7 +199,7 @@ protected:
 	std::string projdir;
 	int which_skybox = 1; 
 
-	float tmpboxsize = 0.05f;
+	float tmpboxsize = 0.03f;
 	vec3 cur_left_hand_posi;
 	vec3 cur_left_hand_dir;
 	mat3 cur_left_hand_rot;
@@ -335,6 +335,9 @@ protected:
 	mat3 temp_rot;
 	mat3 cur_min_rot_mat;
 	mat3 cur_max_rot_mat;
+	vec3 left_hand_target_posi;
+	vec3 right_hand_target_posi;
+	vec3 head_target_posi;
 
 public:
 	void init_cameras(vr::vr_kit* kit_ptr);

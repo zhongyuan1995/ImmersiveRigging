@@ -328,7 +328,7 @@ void IKViewer::draw(cgv::render::context& ctx)
 
 	glBegin(GL_LINES);
 
-	if (data->get_endeffector())
+	/*if (data->get_endeffector())
 	{
 		glColor3f(1, 1, 1);
 
@@ -340,7 +340,7 @@ void IKViewer::draw(cgv::render::context& ctx)
 
 		glVertex3f(target_position.x(), target_position.y(), target_position.z() - scale);
 		glVertex3f(target_position.x(), target_position.y(), target_position.z() + scale);
-	}
+	}*/
 
 	if (data->get_base())
 	{

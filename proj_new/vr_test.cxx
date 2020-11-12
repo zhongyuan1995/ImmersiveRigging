@@ -1129,7 +1129,7 @@ bool vr_test::handle(cgv::gui::event& e)
 			break;
 		case cgv::gui::SA_PRESS: 
 			// press at y dir on left controller to start ccd 
-			if (vrse.get_controller_index() == 0 && (vrse.get_y() > 0.9)) {
+			if (vrse.get_controller_index() == 0) { //&& (vrse.get_y() > 0.9)
 				toggle_ccd = !toggle_ccd;
 				// set to the desired position in front of mirror 
 				// pp x component of the position can not be setted correctly, due to calibration?
@@ -1399,11 +1399,13 @@ bool vr_test::handle(cgv::gui::event& e)
 						// ccd calcu. skel. based on LEFT hand  
 						ds->set_endeffector(left_ee, 0);
 						vrpe.get_state().controller[0].put_ray(&origin(0), &direction(0));
+						left_hand_target_posi = vec3(origin.x(), origin.y(), 2 * mirror_plane_z - origin.z());
 						ik_view->set_target_position_vr(
 							Vec4(
-								origin.x(),
-								origin.y(),
-								2 * mirror_plane_z - origin.z(), 1));
+								left_hand_target_posi.x(),
+								left_hand_target_posi.y(),
+								left_hand_target_posi.z(), 1));
+						
 						//ik_view->set_max_iter(30);
 						ik_view->optimize(0);
 					}
@@ -1412,6 +1414,7 @@ bool vr_test::handle(cgv::gui::event& e)
 						// ccd calcu. skel. based on RIGHT hand
 						ds->set_endeffector(right_ee, 0);
 						vrpe.get_state().controller[1].put_ray(&origin(0), &direction(0));
+						right_hand_target_posi = vec3(origin.x(), origin.y(), 2 * mirror_plane_z - origin.z());
 						ik_view->set_target_position_vr(
 							Vec4(
 								origin.x(),
@@ -1427,6 +1430,10 @@ bool vr_test::handle(cgv::gui::event& e)
 						hmd_origin.x() = vrpe.get_state().hmd.pose[9];
 						hmd_origin.y() = vrpe.get_state().hmd.pose[10];
 						hmd_origin.z() = vrpe.get_state().hmd.pose[11];
+						head_target_posi = vec3(
+							hmd_origin.x(),
+							hmd_origin.y(),
+							2 * mirror_plane_z - hmd_origin.z());
 						ik_view->set_target_position_vr(
 							Vec4(
 								hmd_origin.x(),
@@ -3216,20 +3223,91 @@ void vr_test::draw(cgv::render::context& ctx)
 		}
 	
 	//render demo box 
-		vec3 boxcenter = cur_left_hand_posi + vec3(cur_left_hand_dir * 0.2f);
-		box3 demobox = box3(vec3(boxcenter - tmpboxsize / 2.0f),
-			vec3(boxcenter + tmpboxsize / 2.0f));
-		vector<box3> boxarray; vector<rgb> boxcolorarray;
-		boxarray.push_back(demobox);
-		boxcolorarray.push_back(rgb(1, 1, 0));
+		if (lefthandmode == "fast_add_root") {
+			vec3 boxcenter = cur_left_hand_posi + vec3(cur_left_hand_dir * 0.2f);
+			box3 demobox = box3(vec3(boxcenter - tmpboxsize / 2.0f),
+				vec3(boxcenter + tmpboxsize / 2.0f));
+			vector<box3> boxarray; 
+			vector<rgb> boxcolorarray;
+			boxarray.push_back(demobox);
+			boxcolorarray.push_back(rgb(1, 1, 0)); 
 
-		renderer.set_render_style(movable_style);
-		renderer.set_box_array(ctx, boxarray);
-		renderer.set_color_array(ctx, boxcolorarray);
-		if (renderer.validate_and_enable(ctx)) {
-			glDrawArrays(GL_POINTS, 0, (GLsizei)boxarray.size());
+			renderer.set_render_style(movable_style);
+			renderer.set_box_array(ctx, boxarray);
+			renderer.set_color_array(ctx, boxcolorarray);
+			if (renderer.validate_and_enable(ctx)) {
+				glDrawArrays(GL_POINTS, 0, (GLsizei)boxarray.size());
+			}
+			renderer.disable(ctx);
 		}
-		renderer.disable(ctx);
+	// render target position 
+		if (toggle_ccd) {
+			std::vector<vec3> vertex_array_in_point_list;
+			std::vector<rgb> colorarray;
+			if (left_ee) {
+				vec3 cur_posi = left_hand_target_posi;
+				vertex_array_in_point_list.push_back(cur_posi - vec3(0.5, 0, 0));
+				vertex_array_in_point_list.push_back(cur_posi + vec3(0.5, 0, 0));
+				colorarray.push_back(rgb(0, 0, 0));
+				colorarray.push_back(rgb(0, 0, 0));
+			}
+			if (right_ee) {
+				vec3 cur_posi = right_hand_target_posi;
+				vertex_array_in_point_list.push_back(cur_posi - vec3(0.5, 0, 0));
+				vertex_array_in_point_list.push_back(cur_posi + vec3(0.5, 0, 0));
+				colorarray.push_back(rgb(0, 0, 0));
+				colorarray.push_back(rgb(0, 0, 0));
+			}
+			if (hmd_ee) {
+				vec3 cur_posi = head_target_posi;
+				vertex_array_in_point_list.push_back(cur_posi - vec3(0.5, 0, 0));
+				vertex_array_in_point_list.push_back(cur_posi + vec3(0.5, 0, 0));
+				colorarray.push_back(rgb(0, 0, 0));
+				colorarray.push_back(rgb(0, 0, 0));
+			}
+
+			cgv::render::shader_program& prog = ctx.ref_default_shader_program();
+			int pi = prog.get_position_index();
+			int ci = prog.get_color_index();
+			cgv::render::attribute_array_binding::set_global_attribute_array(ctx, pi, vertex_array_in_point_list);
+			cgv::render::attribute_array_binding::enable_global_array(ctx, pi);
+			cgv::render::attribute_array_binding::set_global_attribute_array(ctx, ci, colorarray);
+			cgv::render::attribute_array_binding::enable_global_array(ctx, ci);
+			glLineWidth(3);
+			prog.enable(ctx);
+			glDrawArrays(GL_LINES, 0, (GLsizei)vertex_array_in_point_list.size());
+			prog.disable(ctx);
+			cgv::render::attribute_array_binding::disable_global_array(ctx, pi);
+			cgv::render::attribute_array_binding::disable_global_array(ctx, ci);
+			glLineWidth(1);
+			/*vector<box3> boxarray;
+			vector<rgb> boxcolorarray;
+			vec3 boxcenter;
+			box3 demobox;
+			if (left_ee) {
+				boxcenter = left_hand_target_posi;
+				demobox = box3(vec3(boxcenter - tmpboxsize / 2.0f),
+					vec3(boxcenter + tmpboxsize / 2.0f));
+				boxarray.push_back(demobox);
+				boxcolorarray.push_back(rgb(1, 1, 0));
+			}
+			if (right_ee) {
+				boxarray.push_back(demobox);
+				boxcolorarray.push_back(rgb(1, 1, 0));
+			}
+			if (hmd_ee) {
+				boxarray.push_back(demobox);
+				boxcolorarray.push_back(rgb(1, 1, 0));
+			}
+
+			renderer.set_render_style(movable_style);
+			renderer.set_box_array(ctx, boxarray);
+			renderer.set_color_array(ctx, boxcolorarray);
+			if (renderer.validate_and_enable(ctx)) {
+				glDrawArrays(GL_POINTS, 0, (GLsizei)boxarray.size());
+			}
+			renderer.disable(ctx);*/
+		}
 }
 
 void vr_test::finish_draw(cgv::render::context& ctx)
