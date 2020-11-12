@@ -129,6 +129,8 @@
         gelb box 
         draw target position 
     todo:  
+        defense 
+        code cleaning 
         load and test the skel. with dofs 
         (additional)adjest dofs in vr (details designed in private repository)
         (additional)rig half of a mesh and auto-complete. Add a button: skel_auto_complete 
