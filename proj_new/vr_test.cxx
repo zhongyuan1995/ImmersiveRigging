@@ -1408,6 +1408,11 @@ bool vr_test::handle(cgv::gui::event& e)
 						
 						//ik_view->set_max_iter(30);
 						ik_view->optimize(0);
+
+						// orientation correction 
+						//mat3 ori_mat = compute_matrix_from_two_dirs(vec3(0, -1, 0), direction);
+						vec3 mirror_direction = vec3(direction.x(), direction.y(), -direction.z());
+						left_ee->set_direction_in_world_space(mirror_direction);
 					}
 
 					if (right_ee) {
@@ -1422,6 +1427,9 @@ bool vr_test::handle(cgv::gui::event& e)
 								2 * mirror_plane_z - origin.z(), 1));
 						//ik_view->set_max_iter(30);
 						ik_view->optimize(0);
+
+						vec3 mirror_direction = vec3(direction.x(), direction.y(), -direction.z());
+						left_ee->set_direction_in_world_space(mirror_direction);
 					}
 
 					if (hmd_ee) {

@@ -125,6 +125,9 @@
         build_bone
         adjest bone local frames, two ways.
     tobetested:
+        take use of the ori of the controllers 
+        gelb box 
+        draw target position 
     todo:  
         load and test the skel. with dofs 
         (additional)adjest dofs in vr (details designed in private repository)
