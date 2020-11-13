@@ -44,11 +44,11 @@ void SkinnedMeshViewer::mesh_changed(std::shared_ptr<SkinningMesh> m)
 
 void SkinnedMeshViewer::create_gui()
 {
-	connect_copy(add_button("Load OBJ mesh", "", "\n")->click,
+	/*connect_copy(add_button("Load OBJ mesh", "", "\n")->click,
 		rebind(this, &SkinnedMeshViewer::load_mesh));
 
 	connect_copy(add_button("Load Pinocchio attachment", "", "\n")->click,
-		rebind(this, &SkinnedMeshViewer::load_attachment));
+		rebind(this, &SkinnedMeshViewer::load_attachment));*/
 }
 
 void SkinnedMeshViewer::load_mesh()

@@ -73,10 +73,10 @@ struct Initializer
 		ik_view = new IKViewer(ds);
 		//mesh_view = new SkinnedMeshViewer(ds);
 
-		/*register_object(base_ptr(skel_view), "");
+		register_object(base_ptr(skel_view), "");
 		register_object(base_ptr(tmpskel_view_1), "");
 		register_object(base_ptr(tmpskel_view_2), "");
-		register_object(base_ptr(ik_view), "");*/
+		register_object(base_ptr(ik_view), "");
 		//register_object(base_ptr(mesh_view), ""); 
 	}
 

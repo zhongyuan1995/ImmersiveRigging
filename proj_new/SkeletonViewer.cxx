@@ -332,6 +332,7 @@ void SkeletonViewer::dof_changed(double)
 
 void SkeletonViewer::generate_tree_view_nodes()
 {
+	std::cout << "tree_view:" << tree_view << std::endl;
 	if (tree_view) {
 		tree_view->remove_all_children();
 		gui_to_bone.clear();

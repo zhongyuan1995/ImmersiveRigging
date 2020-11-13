@@ -3355,11 +3355,11 @@ void vr_test::finish_draw(cgv::render::context& ctx)
 
 void vr_test::create_gui() {
 	add_decorator("vr_test", "heading", "level=2");
-	add_member_control(this, "mesh_scale", mesh_scale, "value_slider", "min=0.1;max=10;log=true;ticks=true");
+	/*add_member_control(this, "mesh_scale", mesh_scale, "value_slider", "min=0.1;max=10;log=true;ticks=true");
 	add_gui("mesh_location", mesh_location, "vector", "options='min=-3;max=3;ticks=true");
 	add_gui("mesh_orientation", static_cast<dvec4&>(mesh_orientation), "direction", "options='min=-1;max=1;ticks=true");
 	add_member_control(this, "ray_length", ray_length, "value_slider", "min=0.1;max=10;log=true;ticks=true");
-	add_member_control(this, "show_seethrough", show_seethrough, "check");
+	add_member_control(this, "show_seethrough", show_seethrough, "check");*/
 	add_member_control(this, "toggle_usage_description", toggle_usage_description, "check");
 	add_member_control(this, "toggle_render_local_frame", toggle_render_local_frame, "check");
 	//add_member_control(this, "joint_box_size", skel_view->cubesize, "value_slider", "min=0.001;max=0.1;log=true;ticks=true");
@@ -3379,93 +3379,93 @@ void vr_test::create_gui() {
 	// 
 
 
-	if(last_kit_handle) {
-		add_decorator("cameras", "heading", "level=3");
-		add_view("nr", nr_cameras);
-		if(nr_cameras > 0) {
-			connect_copy(add_button("start")->click, cgv::signal::rebind(this, &vr_test::start_camera));
-			connect_copy(add_button("stop")->click, cgv::signal::rebind(this, &vr_test::stop_camera));
-			add_view("frame_width", frame_width, "", "w=20", "  ");
-			add_view("height", frame_height, "", "w=20", "  ");
-			add_view("split", frame_split, "", "w=50");
-			add_member_control(this, "undistorted", undistorted, "check");
-			add_member_control(this, "shared_texture", shared_texture, "check");
-			add_member_control(this, "max_rectangle", max_rectangle, "check");
-			add_member_control(this, "use_matrix", use_matrix, "check");
-			add_member_control(this, "gamma", seethrough_gamma, "value_slider", "min=0.1;max=10;log=true;ticks=true");
-			add_member_control(this, "extent_x", extent_texcrd[0], "value_slider", "min=0.2;max=2;ticks=true");
-			add_member_control(this, "extent_y", extent_texcrd[1], "value_slider", "min=0.2;max=2;ticks=true");
-			add_member_control(this, "center_left_x", center_left[0], "value_slider", "min=0.2;max=0.8;ticks=true");
-			add_member_control(this, "center_left_y", center_left[1], "value_slider", "min=0.2;max=0.8;ticks=true");
-			add_member_control(this, "center_right_x", center_right[0], "value_slider", "min=0.2;max=0.8;ticks=true");
-			add_member_control(this, "center_right_y", center_right[1], "value_slider", "min=0.2;max=0.8;ticks=true");
-			add_member_control(this, "background_distance", background_distance, "value_slider", "min=0.1;max=10;log=true;ticks=true");
-			add_member_control(this, "background_extent", background_extent, "value_slider", "min=0.01;max=10;log=true;ticks=true");
-		}
-		vr::vr_kit* kit_ptr = vr::get_vr_kit(last_kit_handle);
-		if (kit_ptr) {
-			add_decorator("controller input configs", "heading", "level=3");
-			int ti = 0, si = 0, pi = 0;
-			const auto& CI = kit_ptr->get_device_info().controller[0];
-			for (int ii = 0; ii < (int)left_inp_cfg.size(); ++ii) {
-				std::string prefix;
-				switch (CI.input_type[ii]) {
-				case vr::VRI_TRIGGER: prefix = std::string("trigger[") + cgv::utils::to_string(ti++) + "]"; break;
-				case vr::VRI_PAD:     prefix = std::string("pad[") + cgv::utils::to_string(pi++) + "]"; break;
-				case vr::VRI_STICK:   prefix = std::string("strick[") + cgv::utils::to_string(si++) + "]"; break;
-				default:              prefix = std::string("unknown[") + cgv::utils::to_string(ii) + "]";
-				}
-				add_member_control(this, prefix + ".dead_zone", left_inp_cfg[ii].dead_zone, "value_slider", "min=0;max=1;ticks=true;log=true");
-				add_member_control(this, prefix + ".precision", left_inp_cfg[ii].precision, "value_slider", "min=0;max=1;ticks=true;log=true");
-				add_member_control(this, prefix + ".threshold", left_inp_cfg[ii].threshold, "value_slider", "min=0;max=1;ticks=true");
-			}
-		}
-	}
-	if (begin_tree_node("box style", style)) {
-		align("\a");
-		add_gui("box style", style);
-		align("\b");
-		end_tree_node(style);
-	}
-	if (begin_tree_node("cone style", cone_style)) {
-		align("\a");
-		add_gui("cone style", cone_style);
-		align("\b");
-		end_tree_node(cone_style);
-	}
-	if(begin_tree_node("movable box style", movable_style)) {
-		align("\a");
-		add_gui("movable box style", movable_style);
-		align("\b");
-		end_tree_node(movable_style);
-	}
-	if(begin_tree_node("intersections", srs)) {
-		align("\a");
-		add_gui("sphere style", srs);
-		align("\b");
-		end_tree_node(srs);
-	}
-	if(begin_tree_node("mesh", mesh_scale)) {
-		align("\a");
-		add_member_control(this, "scale", mesh_scale, "value_slider", "min=0.0001;step=0.0000001;max=100;log=true;ticks=true");
-		add_gui("location", mesh_location, "", "main_label='';long_label=true;gui_type='value_slider';options='min=-2;max=2;step=0.001;ticks=true'");
-		add_gui("orientation", static_cast<dvec4&>(mesh_orientation), "direction", "main_label='';long_label=true;gui_type='value_slider';options='min=-1;max=1;step=0.001;ticks=true'");
-		align("\b");
-		end_tree_node(mesh_scale);
-	}
+	//if(last_kit_handle) {
+	//	add_decorator("cameras", "heading", "level=3");
+	//	add_view("nr", nr_cameras);
+	//	if(nr_cameras > 0) {
+	//		connect_copy(add_button("start")->click, cgv::signal::rebind(this, &vr_test::start_camera));
+	//		connect_copy(add_button("stop")->click, cgv::signal::rebind(this, &vr_test::stop_camera));
+	//		add_view("frame_width", frame_width, "", "w=20", "  ");
+	//		add_view("height", frame_height, "", "w=20", "  ");
+	//		add_view("split", frame_split, "", "w=50");
+	//		add_member_control(this, "undistorted", undistorted, "check");
+	//		add_member_control(this, "shared_texture", shared_texture, "check");
+	//		add_member_control(this, "max_rectangle", max_rectangle, "check");
+	//		add_member_control(this, "use_matrix", use_matrix, "check");
+	//		add_member_control(this, "gamma", seethrough_gamma, "value_slider", "min=0.1;max=10;log=true;ticks=true");
+	//		add_member_control(this, "extent_x", extent_texcrd[0], "value_slider", "min=0.2;max=2;ticks=true");
+	//		add_member_control(this, "extent_y", extent_texcrd[1], "value_slider", "min=0.2;max=2;ticks=true");
+	//		add_member_control(this, "center_left_x", center_left[0], "value_slider", "min=0.2;max=0.8;ticks=true");
+	//		add_member_control(this, "center_left_y", center_left[1], "value_slider", "min=0.2;max=0.8;ticks=true");
+	//		add_member_control(this, "center_right_x", center_right[0], "value_slider", "min=0.2;max=0.8;ticks=true");
+	//		add_member_control(this, "center_right_y", center_right[1], "value_slider", "min=0.2;max=0.8;ticks=true");
+	//		add_member_control(this, "background_distance", background_distance, "value_slider", "min=0.1;max=10;log=true;ticks=true");
+	//		add_member_control(this, "background_extent", background_extent, "value_slider", "min=0.01;max=10;log=true;ticks=true");
+	//	}
+	//	vr::vr_kit* kit_ptr = vr::get_vr_kit(last_kit_handle);
+	//	if (kit_ptr) {
+	//		add_decorator("controller input configs", "heading", "level=3");
+	//		int ti = 0, si = 0, pi = 0;
+	//		const auto& CI = kit_ptr->get_device_info().controller[0];
+	//		for (int ii = 0; ii < (int)left_inp_cfg.size(); ++ii) {
+	//			std::string prefix;
+	//			switch (CI.input_type[ii]) {
+	//			case vr::VRI_TRIGGER: prefix = std::string("trigger[") + cgv::utils::to_string(ti++) + "]"; break;
+	//			case vr::VRI_PAD:     prefix = std::string("pad[") + cgv::utils::to_string(pi++) + "]"; break;
+	//			case vr::VRI_STICK:   prefix = std::string("strick[") + cgv::utils::to_string(si++) + "]"; break;
+	//			default:              prefix = std::string("unknown[") + cgv::utils::to_string(ii) + "]";
+	//			}
+	//			add_member_control(this, prefix + ".dead_zone", left_inp_cfg[ii].dead_zone, "value_slider", "min=0;max=1;ticks=true;log=true");
+	//			add_member_control(this, prefix + ".precision", left_inp_cfg[ii].precision, "value_slider", "min=0;max=1;ticks=true;log=true");
+	//			add_member_control(this, prefix + ".threshold", left_inp_cfg[ii].threshold, "value_slider", "min=0;max=1;ticks=true");
+	//		}
+	//	}
+	//}
+	//if (begin_tree_node("box style", style)) {
+	//	align("\a");
+	//	add_gui("box style", style);
+	//	align("\b");
+	//	end_tree_node(style);
+	//}
+	//if (begin_tree_node("cone style", cone_style)) {
+	//	align("\a");
+	//	add_gui("cone style", cone_style);
+	//	align("\b");
+	//	end_tree_node(cone_style);
+	//}
+	//if(begin_tree_node("movable box style", movable_style)) {
+	//	align("\a");
+	//	add_gui("movable box style", movable_style);
+	//	align("\b");
+	//	end_tree_node(movable_style);
+	//}
+	//if(begin_tree_node("intersections", srs)) {
+	//	align("\a");
+	//	add_gui("sphere style", srs);
+	//	align("\b");
+	//	end_tree_node(srs);
+	//}
+	//if(begin_tree_node("mesh", mesh_scale)) {
+	//	align("\a");
+	//	add_member_control(this, "scale", mesh_scale, "value_slider", "min=0.0001;step=0.0000001;max=100;log=true;ticks=true");
+	//	add_gui("location", mesh_location, "", "main_label='';long_label=true;gui_type='value_slider';options='min=-2;max=2;step=0.001;ticks=true'");
+	//	add_gui("orientation", static_cast<dvec4&>(mesh_orientation), "direction", "main_label='';long_label=true;gui_type='value_slider';options='min=-1;max=1;step=0.001;ticks=true'");
+	//	align("\b");
+	//	end_tree_node(mesh_scale);
+	//}
 
-	if(begin_tree_node("label", label_size)) {
-		align("\a");
-		add_member_control(this, "text", label_text);
-		add_member_control(this, "upright", label_upright);
-		add_member_control(this, "font", (cgv::type::DummyEnum&)label_font_idx, "dropdown", font_enum_decl);
-		add_member_control(this, "face", (cgv::type::DummyEnum&)label_face_type, "dropdown", "enums='regular,bold,italics,bold+italics'");
-		add_member_control(this, "size", label_size, "value_slider", "min=8;max=64;ticks=true");
-		add_member_control(this, "color", label_color);
-		add_member_control(this, "resolution", (cgv::type::DummyEnum&)label_resolution, "dropdown", "enums='256=256,512=512,1024=1024,2048=2048'");
-		align("\b");
-		end_tree_node(label_size);
-	}
+	//if(begin_tree_node("label", label_size)) {
+	//	align("\a");
+	//	add_member_control(this, "text", label_text);
+	//	add_member_control(this, "upright", label_upright);
+	//	add_member_control(this, "font", (cgv::type::DummyEnum&)label_font_idx, "dropdown", font_enum_decl);
+	//	add_member_control(this, "face", (cgv::type::DummyEnum&)label_face_type, "dropdown", "enums='regular,bold,italics,bold+italics'");
+	//	add_member_control(this, "size", label_size, "value_slider", "min=8;max=64;ticks=true");
+	//	add_member_control(this, "color", label_color);
+	//	add_member_control(this, "resolution", (cgv::type::DummyEnum&)label_resolution, "dropdown", "enums='256=256,512=512,1024=1024,2048=2048'");
+	//	align("\b");
+	//	end_tree_node(label_size);
+	//}
 }
 
 #include <cgv/base/register.h>
