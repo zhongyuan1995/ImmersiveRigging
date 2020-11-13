@@ -73,10 +73,10 @@ struct Initializer
 		ik_view = new IKViewer(ds);
 		//mesh_view = new SkinnedMeshViewer(ds);
 
-		register_object(base_ptr(skel_view), "");
+		/*register_object(base_ptr(skel_view), "");
 		register_object(base_ptr(tmpskel_view_1), "");
 		register_object(base_ptr(tmpskel_view_2), "");
-		register_object(base_ptr(ik_view), "");
+		register_object(base_ptr(ik_view), "");*/
 		//register_object(base_ptr(mesh_view), ""); 
 	}
 
@@ -465,13 +465,15 @@ public:
 	}
 	void load_skel_with_dofs() { // those three skel. should be added at the same time 
 		// editable one 
-		skel_view->load_skeleton_given_name(working_dir + "speider_simple0/jump.asf");
-		skel_view->set_skel_origin_ori_translation(Vec3(0, 1, 0), 0, Vec3(1.2, 1, -2.8));
-		load_addi_two_guys(working_dir + "speider_simple0/jump.asf");
-		post_redraw();
+		if (skel_view) {
+			skel_view->load_skeleton_given_name(working_dir + "speider_simple0/jump.asf");
+			skel_view->set_skel_origin_ori_translation(Vec3(0, 1, 0), 0, Vec3(1.2, 1, -2.8));
+			load_addi_two_guys(working_dir + "speider_simple0/jump.asf");
+			post_redraw();
 
-		label_content = "[INFO] demo skel. loaded\n" + label_content;
-		label_outofdate = true;
+			label_content = "[INFO] demo skel. loaded\n" + label_content;
+			label_outofdate = true;
+		}
 	}
 	void load_demo_skel1() {
 		from_jump_asf = false;

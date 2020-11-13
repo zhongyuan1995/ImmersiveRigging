@@ -332,12 +332,14 @@ void SkeletonViewer::dof_changed(double)
 
 void SkeletonViewer::generate_tree_view_nodes()
 {
-	tree_view->remove_all_children();
-	gui_to_bone.clear();
+	if (tree_view) {
+		tree_view->remove_all_children();
+		gui_to_bone.clear();
 
-	if (!data->get_skeleton() || !data->get_skeleton()->get_root())
-		return;
-	generate_tree_view_nodes(tree_view, data->get_skeleton()->get_root());
+		if (!data->get_skeleton() || !data->get_skeleton()->get_root())
+			return;
+		generate_tree_view_nodes(tree_view, data->get_skeleton()->get_root());
+	}
 }
 
 void SkeletonViewer::generate_tree_view_nodes(gui_group_ptr parent, Bone* bone)

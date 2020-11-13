@@ -3362,7 +3362,7 @@ void vr_test::create_gui() {
 	add_member_control(this, "show_seethrough", show_seethrough, "check");
 	add_member_control(this, "toggle_usage_description", toggle_usage_description, "check");
 	add_member_control(this, "toggle_render_local_frame", toggle_render_local_frame, "check");
-	add_member_control(this, "joint_box_size", skel_view->cubesize, "value_slider", "min=0.001;max=0.1;log=true;ticks=true");
+	//add_member_control(this, "joint_box_size", skel_view->cubesize, "value_slider", "min=0.001;max=0.1;log=true;ticks=true");
 	//render_axis_arrow
 
 	//connect_copy(add_button("load_mesh")->click, cgv::signal::rebind(this, &vr_test::load_mesh));
