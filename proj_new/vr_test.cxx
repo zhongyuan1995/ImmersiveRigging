@@ -859,10 +859,9 @@ vr_test::vr_test()
 	connect(cgv::gui::ref_vr_server().on_status_change, this, &vr_test::on_status_change);
 
 	mesh_scale = 0.019f;
+	srs.radius = 0.005f;
 	/*mesh_location = dvec3(0, 0.85f, 0);
 	mesh_orientation = dquat(1, 0, 0, 0);*/
-
-	srs.radius = 0.005f;
 
 	label_outofdate = true;
 	label_text = "Info Board"; // change the content with this varible! 

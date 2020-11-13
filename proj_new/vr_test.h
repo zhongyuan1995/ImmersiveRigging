@@ -29,25 +29,28 @@
 #include "../proj_pinocchio/attachment.h"
 #include "../proj_pinocchio/pinocchioApi.h"
 
-struct ArgData
+class ArgData
 {
-ArgData() :
-	stopAtMesh(false), stopAfterCircles(false), skelScale(1.), noFit(false),
-	skeleton(HumanSkeleton())
-{
-}
+public:
+	ArgData()
+	{
+		stopAtMesh = false;
+		stopAfterCircles = false;
+		skelScale = 1.0f;
+		noFit = false;
+		skeleton = HumanSkeleton();
+	}
 
-bool stopAtMesh;
-bool stopAfterCircles;
-string filename;
-string motionname;
-Quaternion<> meshTransform;
-double skelScale;
-bool noFit;
-Skeleton skeleton;
-string skeletonname;
+	bool stopAtMesh;
+	bool stopAfterCircles;
+	string filename;
+	string motionname;
+	Quaternion<> meshTransform;
+	double skelScale;
+	bool noFit;
+	Skeleton skeleton;
+	string skeletonname;
 };
-
 
 using namespace cgv::base;
 
@@ -58,7 +61,6 @@ SkeletonViewer* tmpskel_view_1;
 DataStore* tmpdata_2;
 SkeletonViewer* tmpskel_view_2;
 IKViewer* ik_view;
-
 
 struct Initializer
 {
@@ -71,23 +73,25 @@ struct Initializer
 		tmpskel_view_1 = new SkeletonViewer(tmpdata_1, "newskel_1");
 		tmpskel_view_2 = new SkeletonViewer(tmpdata_2, "newskel_2");
 		ik_view = new IKViewer(ds);
-		//mesh_view = new SkinnedMeshViewer(ds);
 
-		register_object(base_ptr(skel_view), "");
+		/*register_object(base_ptr(skel_view), "");
 		register_object(base_ptr(tmpskel_view_1), "");
 		register_object(base_ptr(tmpskel_view_2), "");
-		register_object(base_ptr(ik_view), "");
-		//register_object(base_ptr(mesh_view), "");
+		register_object(base_ptr(ik_view), "");*/
 	}
 
 	~Initializer()
 	{
-		delete tmpdata_2;
-		delete tmpdata_1;
 		delete ds;
+		delete tmpdata_1;
+		delete tmpdata_2;
+		delete skel_view;
+		delete tmpskel_view_1;
+		delete tmpskel_view_2;
+		delete ik_view;
 	}
 
-} global_initializer;
+};
 ///@ingroup VR
 ///@{
 
@@ -115,7 +119,6 @@ protected:
 		IS_GRAB
 	};
 
-	
 	// store the scene as colored boxes
 	std::vector<box3> boxes;
 	std::vector<rgb> box_colors;
@@ -131,9 +134,6 @@ protected:
 
 	// render information for mesh
 	cgv::render::mesh_render_info MI;
-
-
-private:
 
 protected:
 
@@ -168,17 +168,17 @@ protected:
 	cgv::render::sphere_render_style srs;
 	cgv::render::box_render_style movable_style;
 
+	mat4 camera_to_head_matrix[2];
+	vec2 focal_lengths[4];
+	vec2 camera_centers[4];
+	GLuint camera_tex_id;
+	cgv::math::fmat<float, 4, 4> camera_projection_matrix[4];
+	cgv::render::texture camera_tex;
+	cgv::render::shader_program seethrough;
 	int nr_cameras;
 	int frame_width, frame_height;
 	int frame_split;
 	float seethrough_gamma;
-	mat4 camera_to_head_matrix[2];
-	cgv::math::fmat<float, 4, 4> camera_projection_matrix[4];
-	vec2 focal_lengths[4];
-	vec2 camera_centers[4];
-	cgv::render::texture camera_tex;
-	cgv::render::shader_program seethrough;
-	GLuint camera_tex_id;
 	bool undistorted;
 	bool shared_texture;
 	bool max_rectangle;
@@ -197,9 +197,16 @@ protected:
 	cgv::render::texture tmp_tex;
 	cgv::render::texture test_tex;
 	std::string projdir;
-	int which_skybox = 1; 
 
+	int which_skybox = 1; 
 	float tmpboxsize = 0.03f;
+	float enlargestep = 0.0025f;
+	bool b_render_mesh = true;
+	bool b_toggle_show_imitating_skel = true;
+	bool b_toggle_imitating = true;
+	float mirror_plane_z = -2;
+	float mirror_plane_x = 1.2;
+
 	vec3 cur_left_hand_posi;
 	vec3 cur_left_hand_dir;
 	mat3 cur_left_hand_rot;
@@ -208,13 +215,7 @@ protected:
 	std::vector<box3> fast_jointlist;
 	std::vector<rgb> fast_jointlist_colors;
 	std::shared_ptr<SkinningMesh> mmesh;
-	float enlargestep = 0.0025f;
-	bool b_render_mesh = true;
-	bool b_toggle_show_imitating_skel = true;
-	bool b_toggle_imitating = true;
 	vec3 hmd_origin;
-	float mirror_plane_z = -2;
-	float mirror_plane_x = 1.2;
 	string g_mesh_filename = "";
 	Bone* left_ee;
 	Bone* right_ee;
@@ -250,7 +251,6 @@ protected:
 	float def_dof_y_max = 180;
 	float def_dof_z_min = -180;
 	float def_dof_z_max = 180;
-
 
 	boxgui_page* pg1 = new boxgui_page();
 
