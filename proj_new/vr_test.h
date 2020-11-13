@@ -695,6 +695,7 @@ public:
 		rot_axis.normalize();
 		float rot_degree = acos(dot(bonedir_inworldspace, x_asix_dir)) * 180 / PI;
 		mat3 rot_mat = rotate3( rot_degree, rot_axis);
+
 		// from http://planning.cs.uiuc.edu/node103.html
 		float yaw = atan2(rot_mat(1, 0), rot_mat(0, 0));
 		float pitch = atan2(-rot_mat(2, 0), sqrt(pow(rot_mat(2, 1), 2) + pow(rot_mat(2, 2), 2)));
