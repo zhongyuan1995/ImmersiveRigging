@@ -124,9 +124,9 @@
         local frames, just aligned to world coordi. now 
         build_bone
         adjest bone local frames, two ways.
+        yellow box 
     tobetested:
         take use of the ori of the controllers 
-        gelb box 
         draw target position 
     todo:  
         defense 
