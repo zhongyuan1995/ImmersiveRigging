@@ -31,21 +31,18 @@
 
 struct ArgData
 {
-ArgData() :
-	stopAtMesh(false), stopAfterCircles(false), skelScale(1.), noFit(false),
-	skeleton(HumanSkeleton())
-{
-}
-
-bool stopAtMesh;
-bool stopAfterCircles;
-string filename;
-string motionname;
-Quaternion<> meshTransform;
-double skelScale;
-bool noFit;
-Skeleton skeleton;
-string skeletonname;
+	ArgData() :
+		stopAtMesh(false), stopAfterCircles(false), skelScale(1.), noFit(false),
+		skeleton(HumanSkeleton()){}
+	bool stopAtMesh;
+	bool stopAfterCircles;
+	bool noFit;
+	double skelScale;
+	string filename;
+	string motionname;
+	Quaternion<> meshTransform;
+	Skeleton skeleton;
+	string skeletonname;
 };
 
 
