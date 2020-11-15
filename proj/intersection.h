@@ -1,5 +1,5 @@
 #pragma once
-
+ 
 #include <cgv/media/axis_aligned_box.h>
 #include <limits>
 

@@ -2,7 +2,7 @@
 // chair of the TU Dresden. Do not distribute! 
 // Copyright (C) CGV TU Dresden - All Rights Reserved
 //
-#include "Animation.h"
+#include "animation.h" 
 
 #include <fstream>
 

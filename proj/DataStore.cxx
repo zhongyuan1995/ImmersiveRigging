@@ -3,7 +3,7 @@
 // Copyright (C) CGV TU Dresden - All Rights Reserved
 //
 #include "datastore.h"
-
+ 
 DataStore::DataStore()
 	: skeleton(nullptr), mesh(nullptr), endeffector(nullptr), base(nullptr), dof_changed_by_ik(false)
 { }

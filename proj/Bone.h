@@ -3,7 +3,7 @@
 // Copyright (C) CGV TU Dresden - All Rights Reserved
 //
 #pragma once
-
+ 
 #include "atomic_transform.h"
 
 #include <deque>

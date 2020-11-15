@@ -6,7 +6,7 @@
 
 #include "common.h"
 #include "datastore.h"
-
+ 
 #include <list>
 
 #include <cgv/gui/trigger.h>

@@ -3,7 +3,7 @@
 // Copyright (C) CGV TU Dresden - All Rights Reserved
 //
 #pragma once
-
+ 
 #include "Bone.h"
 
 #include <vector>
