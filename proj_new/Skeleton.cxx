@@ -394,6 +394,19 @@ void SkinningSkeleton::postprocess(Bone* node, const Vec3& global_position)
 	}
 }
 
+
+void SkinningSkeleton::apply_dofs_given_skel_pointer(SkinningSkeleton* master) { // iter. all bones O(bonenumber), apply each timmer event?
+	// apply dofs the same as master skel. 
+	for (int i = 0; i < bone_list.size(); i++) {
+		Bone* cur_bone = bone_list.at(i);
+		Bone* masterbone = master->get_bone_list().at(i);
+		for (int i = 0; i < cur_bone->dof_count(); ++i)
+		{
+			cur_bone->get_dof(i)->set_value(masterbone->get_dof(i)->get_value());
+		}
+	}
+}
+
 void SkinningSkeleton::write_pinocchio_file(const std::string& filename)
 {
 	std::ofstream o;

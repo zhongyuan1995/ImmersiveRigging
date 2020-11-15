@@ -372,18 +372,31 @@ public:
 
 	/// skeleton related operations
 	void load_skel_with_dofs();
+	///
 	void load_demo_skel1();
+	///
 	void load_demo_skel2();
+	///
 	void skel_auto_complete();
+	///
 	void gen_asf_skel_file();
+	///
 	void toggle_imitating();
+	///
 	void del_skel();
+	///
 	void shuffle_frame();
+	///
 	void load_demo_skel3();
+	///
 	void toggle_other_twoskel();
+	///
 	void build_skel();
+	///
 	void apply_rigged_skel();
+	///
 	void apply_dofs();
+	///
 	void save_curskel_to_file();
 
 	/// rigging function 
@@ -391,11 +404,17 @@ public:
 
 	/// animation related functions 
 	void load_demo_animation();
+	///
 	void load_stored_anim1();
+	///
 	void load_stored_anim2();
+	///
 	void load_stored_anim3();
+	///
 	void stop_anim();
+	///
 	void start_record();
+	///
 	void stop_record_and_save();
 
 public:

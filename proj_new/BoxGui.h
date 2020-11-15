@@ -26,6 +26,7 @@
 // these are the vr specific headers
 
 
+/// for storing the labels or images as texture 
 class boxgui_label_texture : public cgv::render::render_types {
 public:
 	std::string label_text;
@@ -55,27 +56,12 @@ public:
 	}
 };
 
-class boxgui_primitive : public cgv::render::render_types {
-	//public:
-	//		box3 button;
-};
+/// shall be extended later 
+class boxgui_primitive : public cgv::render::render_types {};
 
+/// button is a kind of boxgui primitives
 class boxgui_button : public boxgui_primitive, public cgv::render::render_types {
 public:
-	box3 button;
-	// an additional quad will be used as label, attached to this box, which is implicit 
-	vec3 center_of_quad;
-	vec2 ext_of_quad;
-	rgb color;
-	std::string label;
-	bool has_intersec;
-	unsigned int icon_texture;
-	bool flag_use_label;
-	boxgui_label_texture* gui_label_texture;
-	float radio = 19.0f / 4.0f;
-	mat3 rot; 
-	vec3 trans = vec3(0);
-	bool do_transform = false;
 	boxgui_button(vec3 posi, float ext_x, float ext_y, float ext_z, rgb col, std::string l, int l_size, std::string iconpath, bool use_label) {
 		button = box3(posi - vec3(ext_x / 2.0f, ext_y / 2.0f, ext_z / 2.0f),
 			posi + vec3(ext_x / 2.0f, ext_y / 2.0f, ext_z / 2.0f));
@@ -95,33 +81,41 @@ public:
 		radio = (ext_z - 0.04) / (ext_y - 0.04);
 		rot.identity();
 	}
-	box3* get_pointer_to_box() {
-		return &button;
-	}
-	void set_rot(mat3 r) {
-		rot = r;
-	}
-	void set_trans(vec3 t) {
-		trans = t;
-	}
+	box3* get_pointer_to_box() {return &button;}
+	void set_rot(mat3 r) {rot = r;}
+	void set_trans(vec3 t) {trans = t;}
+
+	box3 button;
+	// an additional quad will be used as label
+	vec3 center_of_quad;
+	vec2 ext_of_quad;
+	rgb color;
+	std::string label;
+	bool has_intersec;
+	unsigned int icon_texture;
+	bool flag_use_label;
+	boxgui_label_texture* gui_label_texture;
+	float radio = 19.0f / 4.0f;
+	mat3 rot; 
+	vec3 trans = vec3(0);
+	bool do_transform = false;
 };
 
-
-// classes, boxgui 
+/// a list of boxgui buttons 
 class boxgui_page : public cgv::render::render_types {
 	// can also be modi. in vr scene
 public:
 	cgv::render::shader_program icon_shader_prog;
-	// for rendering 
+	/// for rendering 
 	std::vector<box3> boxvector;
 	std::vector<rgb> colorvector;
-	// for gui logic
+	/// for gui logic
 	std::vector<boxgui_button> elements; // only buttons cur. 
+	///
 	void push_to_render_vector() {
 		boxvector.clear();
 		colorvector.clear();
 		float anim_range = 0.1;
-
 		for (int i = 0; i < elements.size(); i++) {
 			if (elements.at(i).do_transform) {
 				if (elements.at(i).has_intersec) {//
@@ -164,7 +158,6 @@ public:
 						elements.at(i).button.get_center() + vec3(-0.1f / 2.0f - 0.01f, 0, 0);
 				}
 			}
-			
 			colorvector.push_back(elements.at(i).color);
 		}
 	}

@@ -29,21 +29,21 @@ private:
 	DataStore* data;	
 
 protected:
+	///
 	virtual bool init(context&);
-
+	///
 	void mesh_changed(std::shared_ptr<SkinningMesh>);
 
-
-
-public:	
+public:
+	///
 	void load_mesh();
+	///
 	void load_attachment();
-	// The constructor of this class
+	/// The constructor of this class
 	SkinnedMeshViewer(DataStore*);
-
-	// Create the gui elements
+	/// Create the gui elements
 	void create_gui();
-	// Draw the scene
+	/// Draw the scene
 	void draw(context& c);
 };
 

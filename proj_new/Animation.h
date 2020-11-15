@@ -13,17 +13,17 @@
 class Animation
 {
 public:
-	///
+	/// load animation from exteral file 
 	bool read_amc_file(std::string filename, SkinningSkeleton*, bool myanim);
-	///
+	/// add the current frame to an array, which will be written to an external file
 	void saveframe_to_vector(int frame);
-	///
+	/// save current animation 
 	void saveframe_to_file(std::string filename);
 	///
 	bool ready_to_record(SkinningSkeleton* s) { frames_record.clear(); skel = s; last_frame = -1; return true; }
 	///
 	int frame_count() const;
-	///
+	/// apply the dofs to current skeleton, a new pose should be shown after calling this function 
 	void apply_frame(int frame) const;
 
 private:
