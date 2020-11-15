@@ -2,7 +2,7 @@
 // chair of the TU Dresden. Do not distribute! 
 // Copyright (C) CGV TU Dresden - All Rights Reserved
 //
-#include "AtomicTransform.h"
+#include "atomic_transform.h"
 
 #include <cgv/math/transformations.h>
 #include <libs/cgv_gl/gl/gl.h>

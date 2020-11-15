@@ -10,20 +10,21 @@
 #include <cgv/render/shader_program.h>
 #include <cgv_gl/rounded_cone_renderer.h>
 #include <cgv/render/frame_buffer.h>
-
 #include <cgv/render/attribute_array_binding.h>
 #include <cgv_gl/box_renderer.h>
 #include <cgv_gl/sphere_renderer.h>
 #include <cgv/media/mesh/simple_mesh.h>
 #include <cgv_gl/gl/mesh_render_info.h>
-#include <fstream>
 #include <cgv/base/register.h>
-#include "DataStore.h"
-#include "SkeletonViewer.h"
-#include "Mesh.h"
-#include "IKViewer.h"
-#include "SkinnedMeshViewer.h"
-#include "BoxGui.h"
+
+#include <fstream>
+
+#include "datastore.h"
+#include "skeleton_viewer.h"
+#include "mesh.h"
+#include "ik_viewer.h"
+#include "skinned_mesh_viewer.h"
+#include "boxgui.h"
 
 #include "../proj_pinocchio/skeleton.h"
 #include "../proj_pinocchio/attachment.h"
@@ -60,7 +61,7 @@ public:
 #include <vr_render_helpers.h>
 #include <cgv\gui\file_dialog.h>
 
-class vr_test :
+class vr_rigging :
 	public cgv::base::node,
 	public cgv::render::drawable,
 	public cgv::gui::event_handler,
@@ -298,7 +299,7 @@ private:
 	float mirror_plane_x = 1.2;
 
 	// one has to adjest working directory on his computer if not place the whole project in "plugins" dir 
-	std::string working_dir = "../../../plugins/vr_rigging_pub/gen_dataset/";
+	std::string working_dir = "../../../plugins/vr_rigging/gen_dataset/";
 	std::string mesh_dir = "";
 
 public:
@@ -418,9 +419,9 @@ public:
 	void stop_record_and_save();
 
 public:
-	vr_test();
+	vr_rigging();
 	///
-	std::string get_type_name() { return "vr_test"; }
+	std::string get_type_name() { return "vr_rigging"; }
 	///
 	void stream_help(std::ostream& os);
 	///

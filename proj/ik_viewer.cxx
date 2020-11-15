@@ -3,7 +3,7 @@
 // Copyright (C) CGV TU Dresden - All Rights Reserved
 //
 #include <cgv/base/base.h>
-#include "IKViewer.h"
+#include "ik_viewer.h"
 
 #include "math_helper.h"
 

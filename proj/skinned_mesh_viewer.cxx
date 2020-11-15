@@ -3,7 +3,7 @@
 // Copyright (C) CGV TU Dresden - All Rights Reserved
 //
 #include <cgv/base/base.h>
-#include "SkinnedMeshViewer.h"
+#include "skinned_mesh_viewer.h"
 
 #include <cgv/gui/file_dialog.h>
 #include <cgv/gui/dialog.h>

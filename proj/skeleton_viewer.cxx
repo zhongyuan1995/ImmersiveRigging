@@ -2,7 +2,7 @@
 // chair of the TU Dresden. Do not distribute! 
 // Copyright (C) CGV TU Dresden - All Rights Reserved
 //
-#include "SkeletonViewer.h"
+#include "skeleton_viewer.h"
 
 #include <cgv/utils/ostream_printf.h>
 #include <cgv/gui/file_dialog.h>
@@ -332,7 +332,7 @@ void SkeletonViewer::dof_changed(double)
 
 void SkeletonViewer::generate_tree_view_nodes()
 {
-	std::cout << "tree_view:" << tree_view << std::endl;
+	// std::cout << "tree_view:" << tree_view << std::endl;
 	if (tree_view) {
 		tree_view->remove_all_children();
 		gui_to_bone.clear();

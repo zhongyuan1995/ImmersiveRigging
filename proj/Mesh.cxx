@@ -3,7 +3,7 @@
 // Copyright (C) CGV TU Dresden - All Rights Reserved
 //
 #include <cgv/base/base.h>
-#include "Mesh.h"
+#include "mesh.h"
 
 #include <vector>
 #include <fstream>

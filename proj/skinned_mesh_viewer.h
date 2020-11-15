@@ -7,8 +7,8 @@
 #pragma once
 
 #include "common.h"
-#include "DataStore.h"
-#include "Mesh.h"
+#include "datastore.h"
+#include "mesh.h"
 
 #include <cgv/gui/trigger.h>
 #include <cgv/gui/provider.h>

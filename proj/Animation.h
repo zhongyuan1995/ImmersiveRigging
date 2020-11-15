@@ -5,7 +5,7 @@
 #pragma once
 
 #include "common.h"
-#include "AnimationFrameBone.h"
+#include "animation_frame_bone.h"
 #include "Skeleton.h"
 
 #include <string>

@@ -1,6 +1,6 @@
 @=
 projectType="application_plugin";
-projectName="vr_rigging_new";
+projectName="vr_rigging";
 projectGUID="AFD281FB-0E42-4701-BE68-F17B671A62BD";
 addProjectDirs=[INPUT_DIR."/../proj_pinocchio", CGV_DIR."/libs", CGV_DIR."/plugins", CGV_DIR."/3rd", CGV_DIR."/test"];
 addIncDirs=[CGV_DIR."/libs", CGV_BUILD_DIR."/".projectName, INPUT_DIR, CGV_DIR."/test", INPUT_DIR."/../proj_pinocchio"];

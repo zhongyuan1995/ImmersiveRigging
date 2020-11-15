@@ -5,7 +5,7 @@
 #pragma once
 
 #include "Skeleton.h"
-#include "Mesh.h"
+#include "mesh.h"
 #include "Animation.h"
 
 #include <cgv/signal/signal.h>

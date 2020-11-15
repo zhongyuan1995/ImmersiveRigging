@@ -1,4 +1,4 @@
-#include "vr_test.h"
+#include "vr_rigging.h"
 
 #include <cgv/signal/rebind.h>
 #include <cgv/base/register.h>
@@ -17,7 +17,7 @@
 #include <math_helper.h>
 
 ///
-void vr_test::toggle_mesh_render() {
+void vr_rigging::toggle_mesh_render() {
 	b_render_mesh = !b_render_mesh;
 	if (b_render_mesh)
 		label_content = "[INFO] show mesh successfully\n" + label_content;
@@ -27,7 +27,7 @@ void vr_test::toggle_mesh_render() {
 	post_redraw();
 }
 ///
-void vr_test::toggle_mesh_transparent() {
+void vr_rigging::toggle_mesh_transparent() {
 	ds->get_mesh()->b_set_transparent = !ds->get_mesh()->b_set_transparent;
 	if (ds->get_mesh()->b_set_transparent)
 		label_content = "[INFO] transparent on\n" + label_content;
@@ -37,7 +37,7 @@ void vr_test::toggle_mesh_transparent() {
 	post_redraw();
 }
 ///
-void vr_test::toggle_mesh_wireframe() {
+void vr_rigging::toggle_mesh_wireframe() {
 	ds->get_mesh()->b_set_polygonmode = !ds->get_mesh()->b_set_polygonmode;
 	if (ds->get_mesh()->b_set_polygonmode)
 		label_content = "[INFO] wireframe button on!\n" + label_content;
@@ -47,20 +47,20 @@ void vr_test::toggle_mesh_wireframe() {
 	post_redraw();
 }
 ///
-void vr_test::toggle_face_culling() {
+void vr_rigging::toggle_face_culling() {
 	ds->get_mesh()->b_face_culling = !ds->get_mesh()->b_face_culling;
 	post_redraw();
 }
 ///
-void vr_test::toggle_other_twoskel() {
+void vr_rigging::toggle_other_twoskel() {
 	b_toggle_show_imitating_skel = !b_toggle_show_imitating_skel;
 }
 ///
-void vr_test::toggle_imitating() {
+void vr_rigging::toggle_imitating() {
 	b_toggle_imitating = !b_toggle_imitating;
 }
 ///
-void vr_test::del_skel() {
+void vr_rigging::del_skel() {
 	// del. bones 
 	for (auto& b : ds->get_skeleton()->get_bone_list()) {
 		if (!b->get_name()._Equal("root")) { // del all bones except root bone, length 0, degenerated 
@@ -72,7 +72,7 @@ void vr_test::del_skel() {
 	label_outofdate = true;
 }
 ///
-void vr_test::load_skel_with_dofs() { // those three skel. should be added at the same time 
+void vr_rigging::load_skel_with_dofs() { // those three skel. should be added at the same time 
 	// editable one 
 	if (skel_view) {
 		skel_view->load_skeleton_given_name(working_dir + "speider_simple0/jump.asf");
@@ -85,7 +85,7 @@ void vr_test::load_skel_with_dofs() { // those three skel. should be added at th
 	}
 }
 ///
-void vr_test::load_demo_skel1() {
+void vr_rigging::load_demo_skel1() {
 	from_jump_asf = false;
 	left_ee = right_ee = hmd_ee = nullptr;
 	start_point_list.clear();
@@ -100,7 +100,7 @@ void vr_test::load_demo_skel1() {
 	label_outofdate = true;
 }
 ///
-void vr_test::load_demo_skel2() {
+void vr_rigging::load_demo_skel2() {
 	from_jump_asf = false;
 	left_ee = right_ee = hmd_ee = nullptr;
 	start_point_list.clear();
@@ -115,7 +115,7 @@ void vr_test::load_demo_skel2() {
 	label_outofdate = true;
 }
 ///
-void vr_test::load_demo_skel3() {
+void vr_rigging::load_demo_skel3() {
 	from_jump_asf = false;
 	left_ee = right_ee = hmd_ee = nullptr;
 	start_point_list.clear();
@@ -130,34 +130,34 @@ void vr_test::load_demo_skel3() {
 	label_outofdate = true;
 }
 ///
-void vr_test::take_screen_capture() {
+void vr_rigging::take_screen_capture() {
 	context* ctx = get_context();
 	if (ctx == 0)
 		return;
 	ctx->write_frame_buffer_to_image(working_dir + "speider_simple0/screen_capture.png");
 }
 ///
-void vr_test::load_demo_animation() {
+void vr_rigging::load_demo_animation() {
 	skel_view->load_animation_given_name(working_dir + "speider_simple0/jump.amc", false);
 }
 ///
-void vr_test::load_stored_anim1() {
+void vr_rigging::load_stored_anim1() {
 	skel_view->load_animation_given_name(working_dir + "speider_simple0/anim_1.amc", true);
 }
 ///
-void vr_test::load_stored_anim2() {
+void vr_rigging::load_stored_anim2() {
 	skel_view->load_animation_given_name(working_dir + "speider_simple0/anim_2.amc", true);
 }
 ///
-void vr_test::load_stored_anim3() {
+void vr_rigging::load_stored_anim3() {
 	skel_view->load_animation_given_name(working_dir + "speider_simple0/anim_3.amc", true);
 }
 ///
-void vr_test::stop_anim() {
+void vr_rigging::stop_anim() {
 
 }
 ///
-void vr_test::start_record() {
+void vr_rigging::start_record() {
 	skel_view->prepare_record_anim();
 	skel_view->start_record_anim();
 
@@ -165,13 +165,13 @@ void vr_test::start_record() {
 	label_outofdate = true;
 }
 ///
-void vr_test::stop_record_and_save() {
+void vr_rigging::stop_record_and_save() {
 	skel_view->stop_record_anim(working_dir + "speider_simple0/test.amc");
 	label_content = "[INFO] animation has been exported as 'test.amc' \n" + label_content;
 	label_outofdate = true;
 }
 ///
-void vr_test::save_curskel_to_file() {
+void vr_rigging::save_curskel_to_file() {
 	if (ds->get_skeleton()) {
 		ds->get_skeleton()->write_pinocchio_file(working_dir + "speider_simple0/tmpskel.txt");
 		//ds->get_skeleton()->set_origin_rotation();
@@ -183,7 +183,7 @@ void vr_test::save_curskel_to_file() {
 	label_outofdate = true;
 }
 ///
-void vr_test::apply_rigged_skel()
+void vr_rigging::apply_rigged_skel()
 {
 	if (from_jump_asf) { // do not have to adjest skel. in vr 
 		ds->get_skeleton()->read_pinocchio_file(working_dir + "speider_simple0/adjested_skeleton.out");
@@ -195,22 +195,22 @@ void vr_test::apply_rigged_skel()
 	label_outofdate = true;
 }
 ///
-void vr_test::apply_dofs() {
+void vr_rigging::apply_dofs() {
 	if (ds->get_skeleton() && tmpdata_1->get_skeleton() && tmpdata_2->get_skeleton()) {
 		tmpdata_1->get_skeleton()->apply_dofs_given_skel_pointer(ds->get_skeleton().get());
 		tmpdata_2->get_skeleton()->apply_dofs_given_skel_pointer(ds->get_skeleton().get());
 	}
 }
 ///
-void vr_test::build_skel() {
+void vr_rigging::build_skel() {
 	// for the skel. we created
 }
 ///
-void vr_test::gen_asf_skel_file() {
+void vr_rigging::gen_asf_skel_file() {
 	ds->get_skeleton()->writeASFFile(working_dir + "speider_simple0/tmpskel.asf");
 }
 ///
-void vr_test::start_autorigging_pinoccio() {
+void vr_rigging::start_autorigging_pinoccio() {
 	label_content = "[INFO] autorig started! This may take a while...\n" + label_content;
 	label_outofdate = true;
 	int i;
@@ -302,7 +302,7 @@ void vr_test::start_autorigging_pinoccio() {
 	label_outofdate = true;
 }
 ///
-void vr_test::adjest_mesh() {
+void vr_rigging::adjest_mesh() {
 	float new_factor = hmd_origin.y() / (ds->get_mesh()->getMax().y() - ds->get_mesh()->getMin().y());
 	cout << "new_factor: " << new_factor << endl;
 	ds->get_mesh()->set_mesh_scale(mesh_scale * new_factor);
@@ -315,7 +315,7 @@ void vr_test::adjest_mesh() {
 	post_redraw();
 }
 ///
-void vr_test::shuffle_frame() {
+void vr_rigging::shuffle_frame() {
 	//cur_local_frame_rot_rel_XYZ
 	vec3 bonedir_inworldspace = vec3(1, 1, 1);
 	vec3 x_asix_dir = vec3(1, 0, 0);
@@ -339,7 +339,7 @@ void vr_test::shuffle_frame() {
 	post_redraw();
 }
 ///
-void vr_test::remove_pg1() {
+void vr_rigging::remove_pg1() {
 	/*pg1->elements.pop_back();
 	pg1->boxvector.pop_back();
 	pg1->colorvector.pop_back();*/
@@ -349,7 +349,7 @@ void vr_test::remove_pg1() {
 	post_redraw();
 }
 ///
-void vr_test::translate_model_in_y_dir_upwards() {
+void vr_rigging::translate_model_in_y_dir_upwards() {
 	ds->get_mesh()->set_rotation_translation(
 		cgv::math::rotate3<double>(180.0f, vec3(0, 1, 0)),
 		vec3(1.5, (ds->get_mesh()->getMax().y() - ds->get_mesh()->getMin().y()) / 2.0f, 0));
@@ -359,7 +359,7 @@ void vr_test::translate_model_in_y_dir_upwards() {
 	label_outofdate = true;
 }
 ///
-void vr_test::load_addi_two_guys(string f) {
+void vr_rigging::load_addi_two_guys(string f) {
 	tmpskel_view_1->load_skeleton_given_name(f);
 	tmpskel_view_1->set_skel_origin_ori_translation(Vec3(0, 1, 0), 90, Vec3(-2, 1, -1.2));
 
@@ -367,7 +367,7 @@ void vr_test::load_addi_two_guys(string f) {
 	tmpskel_view_2->set_skel_origin_ori_translation(Vec3(0, 1, 0), 45, Vec3(-2, 1, -2.8));
 }
 ///
-void vr_test::load_mesh() {
+void vr_rigging::load_mesh() {
 	g_mesh_filename = cgv::gui::file_open_dialog("Open", "OBJ Files (*.obj):*.obj");
 	mmesh->read_obj(g_mesh_filename.c_str());
 	ds->set_mesh(mmesh);
@@ -376,7 +376,7 @@ void vr_test::load_mesh() {
 	post_redraw();
 }
 ///
-void vr_test::load_mesh_with_gui() {
+void vr_rigging::load_mesh_with_gui() {
 	mesh_dir = working_dir + "speider_simple0/spiderman.obj";
 	mmesh->read_obj(mesh_dir.c_str());
 	//mmesh->read_obj(g_mesh_filename.c_str());
@@ -386,7 +386,7 @@ void vr_test::load_mesh_with_gui() {
 	post_redraw();
 }
 ///
-cgv::render::render_types::mat3 vr_test::from_global_roll_yaw_pitch_vec_to_matrix() {
+cgv::render::render_types::mat3 vr_rigging::from_global_roll_yaw_pitch_vec_to_matrix() {
 	vec3 tmp_roll_yaw_pitch_vec = vec3(
 		cur_local_frame_rot_rel_XYZ[0],
 		cur_local_frame_rot_rel_XYZ[1],
@@ -395,7 +395,7 @@ cgv::render::render_types::mat3 vr_test::from_global_roll_yaw_pitch_vec_to_matri
 	return rotate3(tmp_roll_yaw_pitch_vec);
 }
 ///
-cgv::render::render_types::mat3 vr_test::compute_matrix_from_two_dirs(vec3 a, vec3 b) {
+cgv::render::render_types::mat3 vr_rigging::compute_matrix_from_two_dirs(vec3 a, vec3 b) {
 	a.normalize();
 	b.normalize();
 	vec3 rot_axis = cross(a, b);
@@ -404,7 +404,7 @@ cgv::render::render_types::mat3 vr_test::compute_matrix_from_two_dirs(vec3 a, ve
 	return rotate3(rot_degree, rot_axis);
 }
 ///
-void vr_test::from_matrix_to_euler_angle_as_global_var(mat3 rot_mat) {
+void vr_rigging::from_matrix_to_euler_angle_as_global_var(mat3 rot_mat) {
 	// from http://planning.cs.uiuc.edu/node103.html
 	float yaw = atan2(rot_mat(1, 0), rot_mat(0, 0));
 	float pitch = atan2(-rot_mat(2, 0), sqrt(pow(rot_mat(2, 1), 2) + pow(rot_mat(2, 2), 2)));
@@ -414,7 +414,7 @@ void vr_test::from_matrix_to_euler_angle_as_global_var(mat3 rot_mat) {
 	cur_local_frame_rot_rel_XYZ[2] = yaw * 180 / PI;
 }
 ///
-void vr_test::init_cameras(vr::vr_kit* kit_ptr)
+void vr_rigging::init_cameras(vr::vr_kit* kit_ptr)
 {
 	vr::vr_camera* camera_ptr = kit_ptr->get_camera();
 	if (!camera_ptr)
@@ -440,7 +440,7 @@ void vr_test::init_cameras(vr::vr_kit* kit_ptr)
 	post_recreate_gui();
 }
 ///
-void vr_test::start_camera()
+void vr_rigging::start_camera()
 {
 	if (!vr_view_ptr)
 		return;
@@ -454,7 +454,7 @@ void vr_test::start_camera()
 		cgv::gui::message(camera_ptr->get_last_error());
 }
 ///
-void vr_test::stop_camera()
+void vr_rigging::stop_camera()
 {
 	if (!vr_view_ptr)
 		return;
@@ -468,7 +468,7 @@ void vr_test::stop_camera()
 		cgv::gui::message(camera_ptr->get_last_error());
 }
 /// compute intersection points of controller ray with movable boxes
-void vr_test::compute_intersections(const vec3& origin, const vec3& direction, int ci, const rgb& color)
+void vr_rigging::compute_intersections(const vec3& origin, const vec3& direction, int ci, const rgb& color)
 {
 	for (size_t i = 0; i < movable_boxes.size(); ++i) {
 		vec3 origin_box_i = origin - movable_box_translations[i];
@@ -497,7 +497,7 @@ void vr_test::compute_intersections(const vec3& origin, const vec3& direction, i
 	}
 }
 ///
-void vr_test::gui_compute_intersections(const vec3& origin, const vec3& direction, int ci, const rgb& color)
+void vr_rigging::gui_compute_intersections(const vec3& origin, const vec3& direction, int ci, const rgb& color)
 {
 	for (size_t i = 0; i < pg1->boxvector.size(); ++i) {
 		vec3 origin_box_i = origin;
@@ -526,7 +526,7 @@ void vr_test::gui_compute_intersections(const vec3& origin, const vec3& directio
 	}
 }
 ///
-void vr_test::skel_joint_box_compute_intersections(const vec3& origin, const vec3& direction, int ci, const rgb& color) {
+void vr_rigging::skel_joint_box_compute_intersections(const vec3& origin, const vec3& direction, int ci, const rgb& color) {
 	// put all boxes into a vector<box3> list, similar to the draw call in skelviewer 
 	// skel_view->get_jointlist();
 	// it was "static" var. getted from skel_view obj. so this will not take too much effort
@@ -552,7 +552,7 @@ void vr_test::skel_joint_box_compute_intersections(const vec3& origin, const vec
 	}
 }
 ///
-void vr_test::fast_joint_box_compute_intersections(const vec3& origin, const vec3& direction, int ci, const rgb& color) {
+void vr_rigging::fast_joint_box_compute_intersections(const vec3& origin, const vec3& direction, int ci, const rgb& color) {
 	for (size_t i = 0; i < fast_jointlist.size(); ++i) {
 		float t_result;
 		vec3  p_result;
@@ -567,7 +567,7 @@ void vr_test::fast_joint_box_compute_intersections(const vec3& origin, const vec
 	}
 }
 /// keep track of status changes
-void vr_test::on_status_change(void* kit_handle, int ci, vr::VRStatus old_status, vr::VRStatus new_status)
+void vr_rigging::on_status_change(void* kit_handle, int ci, vr::VRStatus old_status, vr::VRStatus new_status)
 {
 	// ignore all but left controller changes
 	if (ci != 0)
@@ -587,7 +587,7 @@ void vr_test::on_status_change(void* kit_handle, int ci, vr::VRStatus old_status
 	}
 }
 /// register on device change events
-void vr_test::on_device_change(void* kit_handle, bool attach)
+void vr_rigging::on_device_change(void* kit_handle, bool attach)
 {
 	if (attach) {
 		if (last_kit_handle == 0) {
@@ -611,7 +611,7 @@ void vr_test::on_device_change(void* kit_handle, bool attach)
 	}
 }
 /// construct boxes that represent a table of dimensions tw,td,th and leg width tW
-void vr_test::construct_table(float tw, float td, float th, float tW) {
+void vr_rigging::construct_table(float tw, float td, float th, float tW) {
 	std::default_random_engine generator;
 	std::uniform_real_distribution<float> distribution(0, 1);
 	// construct table
@@ -637,7 +637,7 @@ void vr_test::construct_table(float tw, float td, float th, float tW) {
 	box_colors.push_back(table_clr);
 }
 /// construct boxes that represent a room of dimensions w,d,h and wall width W
-void vr_test::construct_room(float w, float d, float h, float W, bool walls, bool ceiling) {
+void vr_rigging::construct_room(float w, float d, float h, float W, bool walls, bool ceiling) {
 	// construct floor
 	boxes.push_back(box3(vec3(-0.5f*w, -W, -0.5f*d), vec3(0.5f*w, 0, 0.5f*d)));
 	box_colors.push_back(rgb(0.2f, 0.2f, 0.2f));
@@ -659,7 +659,7 @@ void vr_test::construct_room(float w, float d, float h, float W, bool walls, boo
 	}
 }
 /// construct boxes for environment
-void vr_test::construct_environment(float s, float ew, float ed, float eh, float w, float d, float h)
+void vr_rigging::construct_environment(float s, float ew, float ed, float eh, float w, float d, float h)
 {
 	std::default_random_engine generator;
 	std::uniform_real_distribution<float> distribution(0, 1);
@@ -686,7 +686,7 @@ void vr_test::construct_environment(float s, float ew, float ed, float eh, float
 	}
 }
 /// construct boxes that can be moved around
-void vr_test::construct_left_hand_box()
+void vr_rigging::construct_left_hand_box()
 {
 	std::default_random_engine generator;
 	std::uniform_real_distribution<float> distribution(0, 1);
@@ -745,7 +745,7 @@ void vr_test::construct_left_hand_box()
 	}*/
 }
 /// construct boxes that can be moved around
-void vr_test::construct_movable_boxes(float tw, float td, float th, float tW, size_t nr) {
+void vr_rigging::construct_movable_boxes(float tw, float td, float th, float tW, size_t nr) {
 	/*
 	vec3 extent(0.75f, 0.5f, 0.05f);
 	movable_boxes.push_back(box3(-0.5f * extent, 0.5f * extent));
@@ -773,7 +773,7 @@ void vr_test::construct_movable_boxes(float tw, float td, float th, float tW, si
 	}
 }
 /// construct a scene with a table
-void vr_test::build_scene(float w, float d, float h, float W, float tw, float td, float th, float tW)
+void vr_rigging::build_scene(float w, float d, float h, float W, float tw, float td, float th, float tW)
 {
 	construct_room(w, d, h, W, false, false);
 	construct_table(tw, td, th, tW);
@@ -782,7 +782,7 @@ void vr_test::build_scene(float w, float d, float h, float W, float tw, float td
 	construct_boxgui();
 }
 ///
-void vr_test::construct_boxgui() {
+void vr_rigging::construct_boxgui() {
 	std::default_random_engine generator;
 	std::uniform_real_distribution<float> distribution(0, 1);
 	rgb writecol = rgb(1, 1, 1);
@@ -1191,7 +1191,7 @@ void vr_test::construct_boxgui() {
 	pg1->push_to_render_vector();
 }
 ///
-void vr_test::render_confirm_panel() {
+void vr_rigging::render_confirm_panel() {
 		int smaller_f = 25;
 		int smallbox_font_size = 50;
 
@@ -1208,7 +1208,7 @@ void vr_test::render_confirm_panel() {
 		post_redraw();
 }
 ///
-cgv::render::render_types::vec3 vr_test::compute_ray_plane_intersection_point(const vec3& origin, const vec3& direction)
+cgv::render::render_types::vec3 vr_rigging::compute_ray_plane_intersection_point(const vec3& origin, const vec3& direction)
 {
 	float t_result;
 	vec3  p_result = vec3(0);
@@ -1224,7 +1224,7 @@ cgv::render::render_types::vec3 vr_test::compute_ray_plane_intersection_point(co
 	return p_result;
 }
 ///
-vr_test::vr_test() 
+vr_rigging::vr_rigging()
 {
 	frame_split = 0;
 	extent_texcrd = vec2(0.5f, 0.5f);
@@ -1247,8 +1247,8 @@ vr_test::vr_test()
 	vr_view_ptr = 0;
 	ray_length = 2;
 	last_kit_handle = 0;
-	connect(cgv::gui::ref_vr_server().on_device_change, this, &vr_test::on_device_change);
-	connect(cgv::gui::ref_vr_server().on_status_change, this, &vr_test::on_status_change);
+	connect(cgv::gui::ref_vr_server().on_device_change, this, &vr_rigging::on_device_change);
+	connect(cgv::gui::ref_vr_server().on_status_change, this, &vr_rigging::on_status_change);
 
 	mesh_scale = 0.019f;
 	/*mesh_location = dvec3(0, 0.85f, 0);
@@ -1342,11 +1342,11 @@ vr_test::vr_test()
 	ik_view = new IKViewer(ds);
 }
 ///	
-void vr_test::stream_help(std::ostream& os) {
+void vr_rigging::stream_help(std::ostream& os) {
 	os << "vr_test: no shortcuts defined" << std::endl;
 }
 ///
-void vr_test::on_set(void* member_ptr)
+void vr_rigging::on_set(void* member_ptr)
 {
 	if (member_ptr == &label_face_type || member_ptr == &label_font_idx) {
 		label_font_face = cgv::media::font::find_font(font_names[label_font_idx])->get_font_face(label_face_type);
@@ -1367,7 +1367,7 @@ void vr_test::on_set(void* member_ptr)
 	post_redraw();
 }
 ///
-bool vr_test::handle(cgv::gui::event& e)
+bool vr_rigging::handle(cgv::gui::event& e)
 {
 	// check if vr event flag is not set and don't process events in this case
 	if ((e.get_flags() & cgv::gui::EF_VR) == 0)
@@ -2712,25 +2712,11 @@ bool vr_test::handle(cgv::gui::event& e)
 	return false;
 }
 ///
-bool vr_test::init(cgv::render::context& ctx)
+bool vr_rigging::init(cgv::render::context& ctx)
 {
 	if (!cgv::utils::has_option("NO_OPENVR"))
 		ctx.set_gamma(2.2f);
 
-	/*if (!seethrough.build_program(ctx, "seethrough.glpr"))
-		cgv::gui::message("could not build seethrough program");*/
-	
-//	cgv::media::mesh::simple_mesh<> M;
-////#ifdef 1
-//	if (M.read("D:/data/surface/meshes/obj/Max-Planck_lowres.obj")) {
-////#else
-////	if (M.read("D:/data/surface/meshes/obj/Max-Planck_highres.obj")) {
-////#endif
-//		MI.construct(ctx, M);
-//		MI.bind(ctx, ctx.ref_surface_shader_program(true), true);
-//	}
-
-	
 	cgv::gui::connect_vr_server(true);
 	fast_bone_posi_vec_as_chain.clear();
 
@@ -2762,9 +2748,9 @@ bool vr_test::init(cgv::render::context& ctx)
 	}
 
 	skyprog.build_program(ctx, "skycube.glpr");
-	img_tex.create_from_images(ctx, "../../../plugins/vr_rigging_pub/proj_new/skybox/cm_{xp,xn,yp,yn,zp,zn}.jpg");
-	tmp_tex.create_from_images(ctx, "../../../plugins/vr_rigging_pub/proj_new/skybox/BluePinkNebular_{xp,xn,yp,yn,zp,zn}.jpg");
-	test_tex.create_from_images(ctx, "../../../plugins/vr_rigging_pub/proj_new/skybox/igen_2/{xp,xn,yp,yn,zp,zn}.jpg");
+	img_tex.create_from_images(ctx, "../../../plugins/vr_rigging/proj/skybox/cm_{xp,xn,yp,yn,zp,zn}.jpg");
+	tmp_tex.create_from_images(ctx, "../../../plugins/vr_rigging/proj/skybox/BluePinkNebular_{xp,xn,yp,yn,zp,zn}.jpg");
+	test_tex.create_from_images(ctx, "../../../plugins/vr_rigging/proj/skybox/igen_2/{xp,xn,yp,yn,zp,zn}.jpg");
 
 	if(pg1)
 		pg1->icon_shader_prog.build_program(ctx, "image.glpr");
@@ -2789,14 +2775,14 @@ bool vr_test::init(cgv::render::context& ctx)
 	return true;
 }
 ///
-void vr_test::clear(cgv::render::context& ctx)
+void vr_rigging::clear(cgv::render::context& ctx)
 {
 	cgv::render::ref_box_renderer(ctx, -1);
 	cgv::render::ref_sphere_renderer(ctx, -1);
 	cgv::render::ref_rounded_cone_renderer(ctx, -1);
 }
 ///
-void vr_test::init_frame(cgv::render::context& ctx)
+void vr_rigging::init_frame(cgv::render::context& ctx)
 {
 	for (int i = 0; i < pg1->elements.size(); i++) {
 		if (pg1->elements.at(i).flag_use_label) {
@@ -3012,7 +2998,7 @@ void vr_test::init_frame(cgv::render::context& ctx)
 
 }
 ///
-void vr_test::draw(cgv::render::context& ctx)
+void vr_rigging::draw(cgv::render::context& ctx)
 {
 	// draw skybox 
 	switch (which_skybox) {
@@ -3694,7 +3680,7 @@ void vr_test::draw(cgv::render::context& ctx)
 	}
 }
 ///
-void vr_test::finish_draw(cgv::render::context& ctx)
+void vr_rigging::finish_draw(cgv::render::context& ctx)
 {
 	return;
 	if ((!shared_texture && camera_tex.is_created()) || (shared_texture && camera_tex_id != -1)) {
@@ -3729,18 +3715,18 @@ void vr_test::finish_draw(cgv::render::context& ctx)
 	}
 }
 ///
-void vr_test::create_gui() {
-	add_decorator("vr_test", "heading", "level=2");
+void vr_rigging::create_gui() {
+	add_decorator("vr_rigging", "heading", "level=2");
 	add_member_control(this, "toggle_usage_description", toggle_usage_description, "check");
 	add_member_control(this, "toggle_render_local_frame", toggle_render_local_frame, "check");
 
-	connect_copy(add_button("load_mesh_with_gui")->click, cgv::signal::rebind(this, &vr_test::load_mesh_with_gui));
-	connect_copy(add_button("load_skel_with_dofs")->click, cgv::signal::rebind(this, &vr_test::load_skel_with_dofs));
-	connect_copy(add_button("load_demo_skel1")->click, cgv::signal::rebind(this, &vr_test::load_demo_skel1));
-	connect_copy(add_button("load_demo_skel2")->click, cgv::signal::rebind(this, &vr_test::load_demo_skel2));
-	connect_copy(add_button("load_demo_skel3")->click, cgv::signal::rebind(this, &vr_test::load_demo_skel3));
+	connect_copy(add_button("load_mesh_with_gui")->click, cgv::signal::rebind(this, &vr_rigging::load_mesh_with_gui));
+	connect_copy(add_button("load_skel_with_dofs")->click, cgv::signal::rebind(this, &vr_rigging::load_skel_with_dofs));
+	connect_copy(add_button("load_demo_skel1")->click, cgv::signal::rebind(this, &vr_rigging::load_demo_skel1));
+	connect_copy(add_button("load_demo_skel2")->click, cgv::signal::rebind(this, &vr_rigging::load_demo_skel2));
+	connect_copy(add_button("load_demo_skel3")->click, cgv::signal::rebind(this, &vr_rigging::load_demo_skel3));
 }
 
 #include <cgv/base/register.h>
 
-cgv::base::object_registration<vr_test> vr_test_reg("vr_test");
+cgv::base::object_registration<vr_rigging> vr_rigging_reg("vr_rigging");

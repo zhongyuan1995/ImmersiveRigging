@@ -2,7 +2,7 @@
 // chair of the TU Dresden. Do not distribute! 
 // Copyright (C) CGV TU Dresden - All Rights Reserved
 //
-#include "DataStore.h"
+#include "datastore.h"
 
 DataStore::DataStore()
 	: skeleton(nullptr), mesh(nullptr), endeffector(nullptr), base(nullptr), dof_changed_by_ik(false)
