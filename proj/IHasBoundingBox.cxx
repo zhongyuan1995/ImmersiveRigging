@@ -4,7 +4,6 @@
 //
 #include "IHasBoundingBox.h"
 
-
 IHasBoundingBox::IHasBoundingBox(void)
 {
 	reset_bounding_box();
@@ -15,7 +14,6 @@ void IHasBoundingBox::reset_bounding_box()
 	max = Vec3(-std::numeric_limits<float>::infinity());
 	min = Vec3(std::numeric_limits<float>::infinity());
 }
-
 
 IHasBoundingBox::~IHasBoundingBox(void)
 {
