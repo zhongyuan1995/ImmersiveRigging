@@ -202,6 +202,9 @@ private:
 	bool toggle_render_local_frame = true;
 	bool keydown_adjest_bone_exist = false;
 	bool from_jump_asf = true;
+	bool toggle_boxgui = true;
+	bool show_mesh_related = false;
+	bool show_skel_related = false;
 
 	// rendering text labels for information board 
 	string label_text;

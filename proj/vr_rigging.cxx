@@ -806,9 +806,9 @@ void vr_rigging::construct_boxgui() {
 	pg1->elements.push_back(first_btn);
 
 
-	string image2dir = "../../../plugins/vr_rigging_pub/proj_new/skybox/cm_xp.jpg";
-	string image0dir = "../../../plugins/vr_rigging_pub/proj_new/skybox/BluePinkNebular_xp.jpg";
-	string image1dir = "../../../plugins/vr_rigging_pub/proj_new/skybox/igen_2/xp.jpg";
+	string image2dir = working_dir + "../proj/skybox/cm_xp.jpg";
+	string image0dir = working_dir + "../proj/skybox/BluePinkNebular_xp.jpg";
+	string image1dir = working_dir + "../proj/skybox/igen_2/xp.jpg";
 
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.5, -1.75f), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
 		"xxx", 0, image0dir, false);
@@ -2748,9 +2748,9 @@ bool vr_rigging::init(cgv::render::context& ctx)
 	}
 
 	skyprog.build_program(ctx, "skycube.glpr");
-	img_tex.create_from_images(ctx, "../../../plugins/vr_rigging/proj/skybox/cm_{xp,xn,yp,yn,zp,zn}.jpg");
-	tmp_tex.create_from_images(ctx, "../../../plugins/vr_rigging/proj/skybox/BluePinkNebular_{xp,xn,yp,yn,zp,zn}.jpg");
-	test_tex.create_from_images(ctx, "../../../plugins/vr_rigging/proj/skybox/igen_2/{xp,xn,yp,yn,zp,zn}.jpg");
+	img_tex.create_from_images(ctx, working_dir + "../proj/skybox/cm_{xp,xn,yp,yn,zp,zn}.jpg");
+	tmp_tex.create_from_images(ctx, working_dir + "../proj/skybox/BluePinkNebular_{xp,xn,yp,yn,zp,zn}.jpg");
+	test_tex.create_from_images(ctx, working_dir + "../proj/skybox/igen_2/{xp,xn,yp,yn,zp,zn}.jpg");
 
 	if(pg1)
 		pg1->icon_shader_prog.build_program(ctx, "image.glpr");
@@ -3039,6 +3039,8 @@ void vr_rigging::draw(cgv::render::context& ctx)
 		glDepthMask(GL_TRUE);
 		break;
 	}
+
+	//
 	if (vr_view_ptr) {
 		if ((!shared_texture && camera_tex.is_created()) || (shared_texture && camera_tex_id != -1)) {
 			if (vr_view_ptr->get_rendered_vr_kit() != 0 && vr_view_ptr->get_rendered_vr_kit() == vr_view_ptr->get_current_vr_kit()) {
@@ -3162,6 +3164,8 @@ void vr_rigging::draw(cgv::render::context& ctx)
 			}
 		}
 	}
+	
+	//
 	cgv::render::box_renderer& renderer = cgv::render::ref_box_renderer(ctx);
 
 	// draw dynamic boxes 
@@ -3261,7 +3265,8 @@ void vr_rigging::draw(cgv::render::context& ctx)
 		cgv::render::attribute_array_binding::disable_global_array(ctx, ti);
 	}
 
-	// draw quad with ref. 
+	// draw quads for boxgui 
+	if(toggle_boxgui)
 	for (int i = 0; i < pg1->elements.size(); i++) {
 		vec3 center = pg1->elements.at(i).center_of_quad; // (2.39, 2.8f, -3.0f); is the posi. of the first 
 		vec2 ext_vec_quad = pg1->elements.at(i).ext_of_quad; // half 
@@ -3321,7 +3326,7 @@ void vr_rigging::draw(cgv::render::context& ctx)
 	}
 
 	// draw boxgui, pg1->ele 
-	if (pg1->elements.size() > 0) {
+	if (toggle_boxgui && pg1->elements.size() > 0) {
 		renderer.set_render_style(movable_style);
 		renderer.set_box_array(ctx, pg1->boxvector);
 		renderer.set_color_array(ctx, pg1->colorvector);
@@ -3719,12 +3724,26 @@ void vr_rigging::create_gui() {
 	add_decorator("vr_rigging", "heading", "level=2");
 	add_member_control(this, "toggle_usage_description", toggle_usage_description, "check");
 	add_member_control(this, "toggle_render_local_frame", toggle_render_local_frame, "check");
+	add_member_control(this, "toggle_boxgui", toggle_boxgui, "check");
 
-	connect_copy(add_button("load_mesh_with_gui")->click, cgv::signal::rebind(this, &vr_rigging::load_mesh_with_gui));
-	connect_copy(add_button("load_skel_with_dofs")->click, cgv::signal::rebind(this, &vr_rigging::load_skel_with_dofs));
-	connect_copy(add_button("load_demo_skel1")->click, cgv::signal::rebind(this, &vr_rigging::load_demo_skel1));
-	connect_copy(add_button("load_demo_skel2")->click, cgv::signal::rebind(this, &vr_rigging::load_demo_skel2));
-	connect_copy(add_button("load_demo_skel3")->click, cgv::signal::rebind(this, &vr_rigging::load_demo_skel3));
+
+	if (begin_tree_node("mesh related", show_mesh_related, false, "level=2")) {
+		align("\a");
+		connect_copy(add_button("load_mesh")->click, cgv::signal::rebind(this, &vr_rigging::load_mesh_with_gui));
+		align("\b");
+		end_tree_node(show_mesh_related);
+	}
+
+	if (begin_tree_node("skeleton related", show_skel_related, false, "level=2")) {
+		align("\a");
+		connect_copy(add_button("load_skel_with_dofs")->click, cgv::signal::rebind(this, &vr_rigging::load_skel_with_dofs));
+		connect_copy(add_button("load_demo_skel1")->click, cgv::signal::rebind(this, &vr_rigging::load_demo_skel1));
+		connect_copy(add_button("load_demo_skel2")->click, cgv::signal::rebind(this, &vr_rigging::load_demo_skel2));
+		connect_copy(add_button("load_demo_skel3")->click, cgv::signal::rebind(this, &vr_rigging::load_demo_skel3));
+		align("\b");
+		end_tree_node(show_skel_related);
+	}
+
 }
 
 #include <cgv/base/register.h>
