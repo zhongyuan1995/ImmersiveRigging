@@ -68,6 +68,9 @@ void vr_rigging::del_skel() {
 		}
 	}
 	jointlist.clear(); // tobetested 
+
+	skel_view->skeleton_changed(ds->get_skeleton());
+
 	label_content = "[INFO] bones deleted\n" + label_content;
 	label_outofdate = true;
 }
@@ -333,16 +336,10 @@ void vr_rigging::shuffle_frame() {
 	cur_local_frame_rot_rel_XYZ[1] = pitch * 180 / PI;
 	cur_local_frame_rot_rel_XYZ[2] = yaw * 180 / PI;
 
-	/*cur_local_frame_rot_rel_XYZ[0] = 90;
-	cur_local_frame_rot_rel_XYZ[1] = 0;
-	cur_local_frame_rot_rel_XYZ[2] = 0;*/
 	post_redraw();
 }
 ///
 void vr_rigging::remove_pg1() {
-	/*pg1->elements.pop_back();
-	pg1->boxvector.pop_back();
-	pg1->colorvector.pop_back();*/
 	pg1->elements.clear();
 	pg1->boxvector.clear();
 	pg1->colorvector.clear();
@@ -707,49 +704,9 @@ void vr_rigging::construct_left_hand_box()
 	quat rot(cur_left_hand_rot);
 	rot.normalize();
 	movable_box_rotations.push_back(rot);
-
-	// box2
-	//movable_boxes.push_back(box3(-0.5f * 2 * extent, 0.5f * 2 * extent));
-	//movable_box_colors.push_back(rgb(distribution(generator),
-	//	distribution(generator),
-	//	distribution(generator)));
-	//movable_box_translations.push_back(cur_left_hand_posi + posi2);
-	///*quat rot;
-	//rot.normalize();*/
-	//movable_box_rotations.push_back(rot);
-
-	/*for (size_t i = 0; i < nr; ++i) {
-		float x = distribution(generator);
-		float y = distribution(generator);
-		vec3 extent(distribution(generator), distribution(generator), distribution(generator));
-		extent += 0.1f;
-		extent *= std::min(tw, td)*0.2f;
-
-		vec3 center(-0.5f*tw + x * tw, th + tW, -0.5f*td + y * td);
-		movable_boxes.push_back(box3(-0.5f*extent, 0.5f*extent));
-		movable_box_colors.push_back(rgb(distribution(generator),
-				distribution(generator),
-				distribution(generator)));
-		movable_box_translations.push_back(center);
-		quat rot(
-			signed_distribution(generator),
-			signed_distribution(generator),
-			signed_distribution(generator),
-			signed_distribution(generator)
-		);
-		rot.normalize();
-		movable_box_rotations.push_back(rot);
-	}*/
 }
 /// construct boxes that can be moved around
 void vr_rigging::construct_movable_boxes(float tw, float td, float th, float tW, size_t nr) {
-	/*
-	vec3 extent(0.75f, 0.5f, 0.05f);
-	movable_boxes.push_back(box3(-0.5f * extent, 0.5f * extent));
-	movable_box_colors.push_back(rgb(0, 0, 0));
-	movable_box_translations.push_back(vec3(0, 1.2f, 0));
-	movable_box_rotations.push_back(quat(1, 0, 0, 0));
-	*/
 	std::default_random_engine generator;
 	std::uniform_real_distribution<float> distribution(0, 1);
 	std::uniform_real_distribution<float> signed_distribution(-1, 1);
@@ -789,19 +746,12 @@ void vr_rigging::construct_boxgui() {
 	float smallbox_font_size = 50;
 	float smaller_f = 25;
 
-	//rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f );
-	// title
 	boxgui_button first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.8f, -3.0f), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f), "<", 120, "xxx", true);
 	pg1->elements.push_back(first_btn);
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.8f, -2.5f), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f), ">", 120, "xxx", true);
 	pg1->elements.push_back(first_btn);
-	/*first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.8f, 0), 0.1, 0.2, 0.8, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ), "Settings", font_size, "D:/icon_res/default.png", true);
-	pg1->elements.push_back(first_btn);*/
-	// list
-
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.5, -2.5f), 0.1, 0.2, 0.8, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f), "Change Skybox", font_size, "xxx", true);
 	pg1->elements.push_back(first_btn);
-
 
 	string image2dir = working_dir + "../proj/skybox/cm_xp.jpg";
 	string image0dir = working_dir + "../proj/skybox/BluePinkNebular_xp.jpg";
@@ -928,13 +878,6 @@ void vr_rigging::construct_boxgui() {
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.0f + 0.5f - 0.5, -1.75f + 0.25f * 2), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
 		"scale_\njointbox", smallbox_font_size, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);
-	/*
-	first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.0f+ 0.5f, -1.75f + 0.25f * 6), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-		"walk around", smallbox_font_size, "D:/icon_res/default.png", true);
-	pg1->elements.push_back(first_btn);
-	first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.0f+ 0.5f, -1.75f + 0.25f * 7), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-		"walk around", smallbox_font_size, "D:/icon_res/default.png", true);
-	pg1->elements.push_back(first_btn);*/
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.0f + 0.5f - 0.5, -1.75f + 0.25f * 3), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
 		"build_bone", smallbox_font_size, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);
@@ -1039,35 +982,10 @@ void vr_rigging::construct_boxgui() {
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.5f + 1, -1.75f + 0.25f * 1), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
 		"rotation.", smallbox_font_size, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);
-	//center_gan = vec3(2.45f - 0.3 - 0.6, 2.0f, -1.75f + 0.25f * 3);
-	//extend_gan = vec3(0.6, 0.01, 0.01);
-	//gan = box3(vec3(center_gan - extend_gan), vec3(center_gan + extend_gan));
-	//boxes.push_back(gan);
-	//box_colors.push_back(rgb(1, 0, 0));
-
-	//center_slider = vec3(2.45f - 0.3, 2.0f, -1.75f + 0.25f * 3); // adjestable x 
-	//extend_slider = vec3(0.05);
-	//slider = box3(vec3(center_slider - extend_slider), vec3(center_slider + extend_slider));
-	//boxes.push_back(slider);
-	//box_colors.push_back(rgb(1, 0, 0));
 	rgb cur_color = rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f);
 	first_btn = boxgui_button(vec3(2.45f, 2.0f, -1.75f + 0.25f * 2), 0.1, 0.2, 0.2, cur_color,
 		"scale", smallbox_font_size, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);
-	/*first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.5f + 0.06, -1.75f + 0.25f * 5 - 0.06), 0.1, 0.08, 0.08, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-		"+", 200, "D:/icon_res/default.png", true);
-	pg1->elements.push_back(first_btn);*/
-	//center_gan = vec3(2.45f - 0.3 - 0.6, 2.0f, -0.75f);
-	//extend_gan = vec3(0.6,0.01, 0.01);
-	//gan = box3(vec3(center_gan - extend_gan),vec3(center_gan + extend_gan));
-	//boxes.push_back(gan);
-	//box_colors.push_back(cur_color);
-
-	//center_slider = vec3(2.45f - 0.3-0.6, 2.0f, -0.75f); // adjestable x 
-	//extend_slider = vec3(0.05);
-	//slider = box3(vec3(center_slider - extend_slider), vec3(center_slider + extend_slider));
-	//boxes.push_back(slider);
-	//box_colors.push_back(cur_color);
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.5f + 1, -1.75f + 0.25f * 3), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
 		"toggle\nmesh", smallbox_font_size, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);
@@ -1083,12 +1001,6 @@ void vr_rigging::construct_boxgui() {
 
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.25f, -2.5f), 0.1, 0.2, 0.8, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f), "Skinning", font_size, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);
-	/*first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.25f, -1.75f), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-		"adjest bone posi.", smaller_f, "D:/icon_res/default.png", true);
-	pg1->elements.push_back(first_btn);*/
-	/*first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.25f, -1.75f + 0.25f * 0), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
-		"skinning", smallbox_font_size, "D:/icon_res/default.png", true);
-	pg1->elements.push_back(first_btn);*/
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.25f, -1.75f + 0.25f * 0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
 		"write_\npinocchio\n_skel.", smallbox_font_size, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);
@@ -1183,7 +1095,6 @@ void vr_rigging::construct_boxgui() {
 	first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
 	first_btn.set_trans(vec3(2.25f - 0.5f, 2.5 - 0.25 * 2, 0.5f));
 	pg1->elements.push_back(first_btn);*/
-	//
 
 	pg1->push_to_render_vector();
 }
