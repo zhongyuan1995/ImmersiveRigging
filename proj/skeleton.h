@@ -67,6 +67,8 @@ public:
 	void apply_dofs_given_skel_pointer(SkinningSkeleton* master);
 	///
 	void postprocess(Bone* node, const Vec3& global_position);
+	/// 
+	void clear_bones() { bones.clear(); bone_list.clear(); }
 
 private:
 	Mat4 origin;

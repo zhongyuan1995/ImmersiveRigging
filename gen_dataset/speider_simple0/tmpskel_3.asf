@@ -14,7 +14,7 @@
  begin
 	id 1
 	name new_new_bone_0
-	direction  -0.125769 0.348402 -0.051867
+	direction  0.131653 0.256092 0.093642
 	length 16.666668
 	axis 0.000000 0.000000 0.000000   XYZ
 	dof rx ry rz 
@@ -24,30 +24,8 @@
  end
  begin
 	id 2
-	name new_new_bone_4
-	direction  -0.298855 -0.254504 0.024248
-	length 16.666668
-	axis 0.000000 0.000000 0.000000   XYZ
-	dof rx ry rz 
-	limits (-180 180)
-	(-180 180)
-	(-180 180)
- end
- begin
-	id 3
 	name new_new_bone_2
-	direction  0.078795 0.359577 -0.016974
-	length 16.666668
-	axis 0.000000 0.000000 0.000000   XYZ
-	dof rx ry rz 
-	limits (-180 180)
-	(-180 180)
-	(-180 180)
- end
- begin
-	id 4
-	name new_new_bone_6
-	direction  0.320937 -0.235783 -0.017614
+	direction  -0.144014 0.274052 0.020958
 	length 16.666668
 	axis 0.000000 0.000000 0.000000   XYZ
 	dof rx ry rz 
@@ -58,6 +36,4 @@
 :hierarchy
  begin
 	root new_new_bone_0 new_new_bone_2 
-	new_new_bone_0 new_new_bone_4 
-	new_new_bone_2 new_new_bone_6 
  end

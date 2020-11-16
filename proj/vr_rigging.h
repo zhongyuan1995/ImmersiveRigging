@@ -296,6 +296,7 @@ private:
 	Bone* left_ee;
 	Bone* right_ee;
 	Bone* hmd_ee;
+	Bone* base_bone;
 
 	// control the mirror effect 
 	float mirror_plane_z = -2;

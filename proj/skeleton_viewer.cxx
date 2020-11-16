@@ -120,7 +120,7 @@ void SkeletonViewer::draw_skeleton_subtree(Bone* node, const Mat4& global_to_par
 
 		if ((aTip - aRoot).length() > std::numeric_limits<double>::epsilon()) 
 			{
-				// ref. vr_view_ptr rewrite todo 
+				// draw lines as bones 
 				glLineWidth(5);
 				glBegin(GL_LINES);
 				glColor3f(0, 0, 0);
@@ -193,6 +193,7 @@ void SkeletonViewer::draw_skeleton_subtree(Bone* node, const Mat4& global_to_par
 		////ctx.set_color(rgb(0, 0, 1));
 		//ctx.tesselate_arrow(axis_root_vec3, axis_root_vec3 + translated_local_axis_z, 0.1, 2.0, 0.5);
 		//ctx.ref_surface_shader_program().disable(ctx);
+
 		std::vector<vec3> p_list;
 		std::vector<rgb> color_list;
 		p_list.push_back(axis_root_vec3);
@@ -273,32 +274,18 @@ void SkeletonViewer::skeleton_changed(std::shared_ptr<SkinningSkeleton> s)
 {
 	// This function is called whenever the according signal of the
 	// data store has been called.
-
-	//Rebuild the tree-view
+	// Rebuild the tree-view
 	generate_tree_view_nodes();
 
-	//Fit view to skeleton
-	//std::vector<cgv::render::view*> view_ptrs;
-	//cgv::base::find_interface<cgv::render::view>(get_node(), view_ptrs);
-	//if (view_ptrs.empty()) {
-	//	// If there is no view, we cannot update it
-	//	cgv::gui::message("could not find a view to adjust!!");
-	//}
-	//else
-	//{
-	//	Vec3 center = (s->getMin() + s->getMax()) * 0.5;
-	//	view_ptrs[0]->set_focus(center.x(), center.y(), center.z());
-	//	// Set the scene's size at the focus point
-	//	view_ptrs[0]->set_y_extent_at_focus(s->getMax().y() - s->getMin().y());
-	//}	
-
+	// clear all bones 
 	data->get_skeleton()->clear_bone_list();
 	jointlist.clear();
 	jointlist_color.clear();
-	compute_posi_jointlist_recur(s->get_root(), s->get_origin(), 0);// for intersection computation 
 
+	// re-compute joint_list, for intersection computation 
+	compute_posi_jointlist_recur(s->get_root(), s->get_origin(), 0);
 
-	//connect signals	
+	// connect signals	
 	recursive_connect_signals(s->get_root());	
 
 	post_redraw();
