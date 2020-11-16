@@ -69,7 +69,7 @@ public:
 		label = l;
 		has_intersec = false;
 		center_of_quad = posi + vec3(-ext_x / 2.0f - 0.01f, 0, 0);
-		ext_of_quad = vec2(ext_y / 2.0f - 0.02f, ext_z / 2.0f - 0.02f);
+		ext_of_quad = vec2(ext_y / 2.0f - 0.01f, ext_z / 2.0f - 0.01f);
 		double aspect_ptr;
 		bool has_alpha_ptr;
 		double aspect;

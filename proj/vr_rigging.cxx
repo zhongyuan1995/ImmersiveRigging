@@ -743,7 +743,7 @@ void vr_rigging::construct_boxgui() {
 	rgb bkgcol = rgb(0.7, 0.6, 0.7);
 	rgb col1 = rgb(100 / 255.0f, 46 / 255.0f, 128 / 255.0f);
 	float font_size = 100; // pp- yzy font will become small if all are 150. 2h
-	float smallbox_font_size = 50;
+	float smallbox_font_size = 100;
 	float smaller_f = 25;
 
 	boxgui_button first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.8f, -3.0f), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f), "<", 120, "xxx", true);
@@ -819,24 +819,24 @@ void vr_rigging::construct_boxgui() {
 	pg1->elements.push_back(first_btn);*/
 
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.0f - 0.5, -1.75f + 0.25f * 3), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-		"s_anim1", smallbox_font_size, "D:/icon_res/default.png", true);
+		"s_anim1", smallbox_font_size - 20, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.0f - 0.5, -1.75f + 0.25f * 4), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-		"s_anim2", smallbox_font_size, "D:/icon_res/default.png", true);
+		"s_anim2", smallbox_font_size - 20, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.0f - 0.5, -1.75f + 0.25f * 5), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-		"s_anim3", smallbox_font_size, "D:/icon_res/default.png", true);
+		"s_anim3", smallbox_font_size - 20, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);
 	/*first_btn = boxgui_button(vec3(2.5f - 0.05f, 1.5f, -2.5f), 0.1, 0.2, 0.8, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ), "Save Animation", font_size, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);*/
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.0f - 0.5, -1.75f + 0.25f * 6), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-		"l_anim1", smallbox_font_size, "D:/icon_res/default.png", true);
+		"l_anim1", smallbox_font_size - 20, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.0f - 0.5, -1.75f + 0.25f * 7), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-		"l_anim2", smallbox_font_size, "D:/icon_res/default.png", true);
+		"l_anim2", smallbox_font_size - 20, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.0f - 0.5, -1.75f + 0.25f * 8), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-		"l_anim3", smallbox_font_size, "D:/icon_res/default.png", true);
+		"l_anim3", smallbox_font_size - 20, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.0f - 0.5, -1.75f + 0.25f * 9), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
 		"stop_anim", smallbox_font_size, "D:/icon_res/default.png", true);
@@ -1013,83 +1013,101 @@ void vr_rigging::construct_boxgui() {
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.25f, -1.75f + 0.25f * 3), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
 		"apply_\nattachments", smallbox_font_size, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);
-	//---------------------------------------------------------------second part of gui------------------------//
-	first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.8, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f), "Load Scene", font_size, "D:/icon_res/icon_chg_skybox.png", true);
-	first_btn.do_transform = true;
-	first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
-	first_btn.set_trans(vec3(2.25f - 0.5f, 2.5, 0.5f));
-	pg1->elements.push_back(first_btn);
-	first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-		"l_scene1", smallbox_font_size, "D:/icon_res/default.png", true);
-	first_btn.do_transform = true;
-	first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
-	first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 0, 2.5, 0.5f));
-	pg1->elements.push_back(first_btn);
 
-	first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-		"toggle_addi\n_skel", smallbox_font_size, "D:/icon_res/default.png", true);
-	first_btn.do_transform = true;
-	first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
-	first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 1, 2.5, 0.5f));
-	pg1->elements.push_back(first_btn);
 
-	first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-		"toggle_\nimitating", smallbox_font_size, "D:/icon_res/default.png", true);
-	first_btn.do_transform = true;
-	first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
-	first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 2, 2.5, 0.5f));
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f, -2.5f), 0.1, 0.2, 0.8, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f), 
+		"IK", font_size, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);
-	first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.8, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f), "IK", font_size, "D:/icon_res/icon_chg_skybox.png", true);
-	first_btn.do_transform = true;
-	first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
-	first_btn.set_trans(vec3(2.25f - 0.5f, 2.5 - 0.25 * 1, 0.5f));
-	pg1->elements.push_back(first_btn);
-	first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-		"ccd", smallbox_font_size, "D:/icon_res/default.png", true);
-	first_btn.do_transform = true;
-	first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
-	first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 0, 2.5 - 0.25 * 1, 0.5f));
-	pg1->elements.push_back(first_btn);
-	first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-		"opti. ccd", smallbox_font_size, "D:/icon_res/default.png", true);
-	first_btn.do_transform = true;
-	first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
-	first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 1, 2.5 - 0.25 * 1, 0.5f));
-	pg1->elements.push_back(first_btn);
-	first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-		"posing", smallbox_font_size, "D:/icon_res/default.png", true);
-	first_btn.do_transform = true;
-	first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
-	first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 2, 2.5 - 0.25 * 1, 0.5f));
-	pg1->elements.push_back(first_btn);
-	//
-	first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f, -1.75f + 0.25f * 0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
 		"s_base", smallbox_font_size, "D:/icon_res/default.png", true);
-	first_btn.do_transform = true;
-	first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
-	first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 3, 2.5 - 0.25 * 1, 0.5f));
 	pg1->elements.push_back(first_btn);
-	//
-	first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f, -1.75f + 0.25f * 1), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
 		"s_ee_left", smallbox_font_size, "D:/icon_res/default.png", true);
-	first_btn.do_transform = true;
-	first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
-	first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 4, 2.5 - 0.25 * 1, 0.5f));
 	pg1->elements.push_back(first_btn);
-	//
-	first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f, -1.75f + 0.25f * 2), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
 		"s_ee_right", smallbox_font_size, "D:/icon_res/default.png", true);
-	first_btn.do_transform = true;
-	first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
-	first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 5, 2.5 - 0.25 * 1, 0.5f));
 	pg1->elements.push_back(first_btn);
-	//
-	first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+	first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f, -1.75f + 0.25f * 3), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
 		"s_ee_head", smallbox_font_size, "D:/icon_res/default.png", true);
-	first_btn.do_transform = true;
-	first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
-	first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 6, 2.5 - 0.25 * 1, 0.5f));
 	pg1->elements.push_back(first_btn);
+
+	//---------------------------------------------------------------second part of gui------------------------//
+	//first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.8, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f), "Load Scene", font_size, "D:/icon_res/icon_chg_skybox.png", true);
+	//first_btn.do_transform = true;
+	//first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
+	//first_btn.set_trans(vec3(2.25f - 0.5f, 2.5, 0.5f));
+	//pg1->elements.push_back(first_btn);
+	//first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+	//	"l_scene1", smallbox_font_size, "D:/icon_res/default.png", true);
+	//first_btn.do_transform = true;
+	//first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
+	//first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 0, 2.5, 0.5f));
+	//pg1->elements.push_back(first_btn);
+
+	//first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+	//	"toggle_addi\n_skel", smallbox_font_size, "D:/icon_res/default.png", true);
+	//first_btn.do_transform = true;
+	//first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
+	//first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 1, 2.5, 0.5f));
+	//pg1->elements.push_back(first_btn);
+
+	//first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+	//	"toggle_\nimitating", smallbox_font_size, "D:/icon_res/default.png", true);
+	//first_btn.do_transform = true;
+	//first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
+	//first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 2, 2.5, 0.5f));
+	//pg1->elements.push_back(first_btn);
+	//first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.8, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f), "IK", font_size, "D:/icon_res/icon_chg_skybox.png", true);
+	//first_btn.do_transform = true;
+	//first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
+	//first_btn.set_trans(vec3(2.25f - 0.5f, 2.5 - 0.25 * 1, 0.5f));
+	//pg1->elements.push_back(first_btn);
+	//first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+	//	"ccd", smallbox_font_size, "D:/icon_res/default.png", true);
+	//first_btn.do_transform = true;
+	//first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
+	//first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 0, 2.5 - 0.25 * 1, 0.5f));
+	//pg1->elements.push_back(first_btn);
+	//first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+	//	"opti. ccd", smallbox_font_size, "D:/icon_res/default.png", true);
+	//first_btn.do_transform = true;
+	//first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
+	//first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 1, 2.5 - 0.25 * 1, 0.5f));
+	//pg1->elements.push_back(first_btn);
+	//first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+	//	"posing", smallbox_font_size, "D:/icon_res/default.png", true);
+	//first_btn.do_transform = true;
+	//first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
+	//first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 2, 2.5 - 0.25 * 1, 0.5f));
+	//pg1->elements.push_back(first_btn);
+	////
+	//first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+	//	"s_base", smallbox_font_size, "D:/icon_res/default.png", true);
+	//first_btn.do_transform = true;
+	//first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
+	//first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 3, 2.5 - 0.25 * 1, 0.5f));
+	//pg1->elements.push_back(first_btn);
+	////
+	//first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+	//	"s_ee_left", smallbox_font_size, "D:/icon_res/default.png", true);
+	//first_btn.do_transform = true;
+	//first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
+	//first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 4, 2.5 - 0.25 * 1, 0.5f));
+	//pg1->elements.push_back(first_btn);
+	////
+	//first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+	//	"s_ee_right", smallbox_font_size, "D:/icon_res/default.png", true);
+	//first_btn.do_transform = true;
+	//first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
+	//first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 5, 2.5 - 0.25 * 1, 0.5f));
+	//pg1->elements.push_back(first_btn);
+	////
+	//first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
+	//	"s_ee_head", smallbox_font_size, "D:/icon_res/default.png", true);
+	//first_btn.do_transform = true;
+	//first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
+	//first_btn.set_trans(vec3(2.25f - 0.5f - 0.25f - 0.5f - 0.25f * 6, 2.5 - 0.25 * 1, 0.5f));
+	//pg1->elements.push_back(first_btn);
 	/*first_btn = boxgui_button(vec3(0), 0.1, 0.2, 0.8, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ), "Skel. Retargeting", font_size, "D:/icon_res/icon_chg_skybox.png", true);
 	first_btn.do_transform = true;
 	first_btn.set_rot(cgv::math::rotate3<double>(-90.0f, vec3(0, 1, 0)));
@@ -2973,50 +2991,12 @@ void vr_rigging::init_frame(cgv::render::context& ctx)
 			}
 		}
 	}
-
+	
 }
 ///
 void vr_rigging::draw(cgv::render::context& ctx)
 {
-	// rendering the skybox 
-	switch (which_skybox) {
-	case 0:
-		glDepthMask(GL_FALSE);
-		glDisable(GL_CULL_FACE);
-		test_tex.enable(ctx, 1);
-		skyprog.enable(ctx);
-		skyprog.set_uniform(ctx, "img_tex", 1);
-		ctx.tesselate_unit_cube();
-		skyprog.disable(ctx);
-		test_tex.disable(ctx);
-		glEnable(GL_CULL_FACE);
-		glDepthMask(GL_TRUE);
-		break;
-	case 1:
-		glDepthMask(GL_FALSE);
-		glDisable(GL_CULL_FACE);
-		img_tex.enable(ctx, 1);
-		skyprog.enable(ctx);
-		skyprog.set_uniform(ctx, "img_tex", 1);
-		ctx.tesselate_unit_cube();
-		skyprog.disable(ctx);
-		img_tex.disable(ctx);
-		glEnable(GL_CULL_FACE);
-		glDepthMask(GL_TRUE);
-		break;
-	case 2:
-		glDepthMask(GL_FALSE);
-		glDisable(GL_CULL_FACE);
-		tmp_tex.enable(ctx, 1);
-		skyprog.enable(ctx);
-		skyprog.set_uniform(ctx, "img_tex", 1);
-		ctx.tesselate_unit_cube();
-		skyprog.disable(ctx);
-		tmp_tex.disable(ctx);
-		glEnable(GL_CULL_FACE);
-		glDepthMask(GL_TRUE);
-		break;
-	}
+	
 
 	// rendering headset and controller
 	if (vr_view_ptr) {
@@ -3074,6 +3054,60 @@ void vr_rigging::draw(cgv::render::context& ctx)
 		renderer.draw(ctx, 0, boxes.size());
 	}
 	renderer.disable(ctx);
+
+	// rendering the skybox 
+	// large enough to contain the whole scene
+	float max_scene_extent = 100;
+	switch (which_skybox) {
+	case 0:
+		glDepthMask(GL_FALSE);
+		glDisable(GL_CULL_FACE);
+		test_tex.enable(ctx, 1);
+		skyprog.enable(ctx);
+		skyprog.set_uniform(ctx, "img_tex", 1);
+		ctx.push_modelview_matrix();
+		ctx.mul_modelview_matrix(cgv::math::scale4<double>(
+			max_scene_extent, max_scene_extent, max_scene_extent));
+		ctx.tesselate_unit_cube();
+		ctx.pop_modelview_matrix();
+		skyprog.disable(ctx);
+		test_tex.disable(ctx);
+		glEnable(GL_CULL_FACE);
+		glDepthMask(GL_TRUE);
+		break;
+	case 1:
+		glDepthMask(GL_FALSE);
+		glDisable(GL_CULL_FACE);
+		img_tex.enable(ctx, 1);
+		skyprog.enable(ctx);
+		skyprog.set_uniform(ctx, "img_tex", 1);
+		ctx.push_modelview_matrix();
+		ctx.mul_modelview_matrix(cgv::math::scale4<double>(
+			max_scene_extent, max_scene_extent, max_scene_extent));
+		ctx.tesselate_unit_cube();
+		ctx.pop_modelview_matrix();
+		skyprog.disable(ctx);
+		img_tex.disable(ctx);
+		glEnable(GL_CULL_FACE);
+		glDepthMask(GL_TRUE);
+		break;
+	case 2:
+		glDepthMask(GL_FALSE);
+		glDisable(GL_CULL_FACE);
+		tmp_tex.enable(ctx, 1);
+		skyprog.enable(ctx);
+		skyprog.set_uniform(ctx, "img_tex", 1);
+		ctx.push_modelview_matrix();
+		ctx.mul_modelview_matrix(cgv::math::scale4<double>(
+			max_scene_extent, max_scene_extent, max_scene_extent));
+		ctx.tesselate_unit_cube();
+		ctx.pop_modelview_matrix();
+		skyprog.disable(ctx);
+		tmp_tex.disable(ctx);
+		glEnable(GL_CULL_FACE);
+		glDepthMask(GL_TRUE);
+		break;
+	}
 
 	// draw info label
 	if (vr_view_ptr && label_tex.is_created()) {
@@ -3526,6 +3560,8 @@ void vr_rigging::draw(cgv::render::context& ctx)
 		cgv::render::attribute_array_binding::disable_global_array(ctx, ci);
 		glLineWidth(1);
 	}
+
+
 }
 ///
 void vr_rigging::finish_draw(cgv::render::context& ctx)
