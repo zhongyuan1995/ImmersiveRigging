@@ -256,6 +256,7 @@ private:
 	// arrays for rendering skeletons 
 	std::vector<box3> jointlist;
 	std::vector<rgb> jointlist_colors;
+	std::vector<rgb> jointlist_colors_standard;
 	std::vector<box3> fast_jointlist;
 	std::vector<rgb> fast_jointlist_colors;
 	std::vector<vec3> start_point_list;
@@ -339,6 +340,8 @@ public:
 	void construct_left_hand_box(); 
 	///
 	void gui_compute_intersections(const vec3& origin, const vec3& direction, int ci, const rgb& color);
+	/// 
+	void reset_jointlist_color();
 	///
 	void skel_joint_box_compute_intersections(const vec3& origin, const vec3& direction, int ci, const rgb& color);
 	///

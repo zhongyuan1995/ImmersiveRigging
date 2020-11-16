@@ -13,8 +13,8 @@
 :bonedata
  begin
 	id 1
-	name new_new_bone_0
-	direction  0.131653 0.256092 0.093642
+	name new_new_bone_32
+	direction  -0.172550 0.372783 -0.075173
 	length 16.666668
 	axis 0.000000 0.000000 0.000000   XYZ
 	dof rx ry rz 
@@ -24,10 +24,21 @@
  end
  begin
 	id 2
-	name new_new_bone_2
-	direction  -0.144014 0.274052 0.020958
+	name new_new_bone_34
+	direction  -0.153506 -0.156921 0.039054
 	length 16.666668
-	axis 0.000000 0.000000 0.000000   XYZ
+	axis 23.698771 -10.087899 -134.369644   XYZ
+	dof rx ry rz 
+	limits (-180 180)
+	(-180 180)
+	(-180 180)
+ end
+ begin
+	id 3
+	name new_new_bone_36
+	direction  -0.149993 -0.144289 0.048631
+	length 16.666668
+	axis 31.933298 -13.151783 -136.110443   XYZ
 	dof rx ry rz 
 	limits (-180 180)
 	(-180 180)
@@ -35,5 +46,7 @@
  end
 :hierarchy
  begin
-	root new_new_bone_0 new_new_bone_2 
+	root new_new_bone_32 
+	new_new_bone_32 new_new_bone_34 
+	new_new_bone_34 new_new_bone_36 
  end

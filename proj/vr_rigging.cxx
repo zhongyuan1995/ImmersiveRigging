@@ -512,11 +512,6 @@ void vr_rigging::gui_compute_intersections(const vec3& origin, const vec3& direc
 			pg1->boxvector.at(i),
 			t_result, p_result, n_result, 0.000001f)) {
 
-			// transform result back to world coordinates
-			//movable_box_rotations[i].rotate(p_result);
-			//p_result += pg1->boxvector.at(i).get_center();
-			//movable_box_rotations[i].rotate(n_result);
-
 			// store intersection information
 			gui_intersection_points.push_back(p_result);
 			gui_intersection_colors.push_back(color);
@@ -525,10 +520,12 @@ void vr_rigging::gui_compute_intersections(const vec3& origin, const vec3& direc
 		}
 	}
 }
+void vr_rigging::reset_jointlist_color() { // reset after loading from skel_view 
+	jointlist_colors = jointlist_colors_standard;
+}
 ///
 void vr_rigging::skel_joint_box_compute_intersections(const vec3& origin, const vec3& direction, int ci, const rgb& color) {
 	// put all boxes into a vector<box3> list, similar to the draw call in skelviewer 
-	// skel_view->get_jointlist();
 	// it was "static" var. getted from skel_view obj. so this will not take too much effort
 	if (skel_view) { // new added: stack-overflow
 		jointlist = skel_view->get_jointlist();
@@ -1726,6 +1723,13 @@ bool vr_rigging::handle(cgv::gui::event& e)
 						left_ee = right_ee = hmd_ee = nullptr;
 						skel_view->load_skeleton_given_name(working_dir + "speider_simple0/jump.asf");
 						skel_view->set_skel_origin_ori_translation(Vec3(0, 1, 0), 0, Vec3(1.2, 1, -2.8));
+						
+						// set global varibles for rendering 
+						jointlist = skel_view->get_jointlist();
+						jointlist_colors_standard = skel_view->get_jointlistcolor();
+						jointlist_colors = skel_view->get_jointlistcolor();
+
+						// load additional two guys 
 						load_addi_two_guys(working_dir + "speider_simple0/jump.asf");
 						post_redraw();
 
@@ -1742,6 +1746,12 @@ bool vr_rigging::handle(cgv::gui::event& e)
 
 						skel_view->load_skeleton_given_name(working_dir + "speider_simple0/tmpskel_1.asf");
 						skel_view->set_skel_origin_ori_translation(Vec3(0, 1, 0), 0, Vec3(1.2, 1, -2.8));
+						
+						// set global varibles for rendering 
+						jointlist = skel_view->get_jointlist();
+						jointlist_colors_standard = skel_view->get_jointlistcolor();
+						jointlist_colors = skel_view->get_jointlistcolor();
+						
 						load_addi_two_guys(working_dir + "speider_simple0/tmpskel_1.asf");
 						post_redraw();
 
@@ -1758,6 +1768,12 @@ bool vr_rigging::handle(cgv::gui::event& e)
 
 						skel_view->load_skeleton_given_name(working_dir + "speider_simple0/tmpskel_2.asf");
 						skel_view->set_skel_origin_ori_translation(Vec3(0, 1, 0), 0, Vec3(1.2, 1, -2.8));
+
+						// set global varibles for rendering 
+						jointlist = skel_view->get_jointlist();
+						jointlist_colors_standard = skel_view->get_jointlistcolor();
+						jointlist_colors = skel_view->get_jointlistcolor();
+						
 						load_addi_two_guys(working_dir + "speider_simple0/tmpskel_2.asf");
 						post_redraw();
 
@@ -1774,6 +1790,12 @@ bool vr_rigging::handle(cgv::gui::event& e)
 
 						skel_view->load_skeleton_given_name(working_dir + "speider_simple0/tmpskel_3.asf");
 						skel_view->set_skel_origin_ori_translation(Vec3(0, 1, 0), 0, Vec3(1.2, 1, -2.8));
+
+						// set global varibles for rendering, load from skel_view 
+						jointlist = skel_view->get_jointlist();
+						jointlist_colors_standard = skel_view->get_jointlistcolor();
+						jointlist_colors = skel_view->get_jointlistcolor();
+						
 						load_addi_two_guys(working_dir + "speider_simple0/tmpskel_3.asf");
 						post_redraw();
 
@@ -2194,7 +2216,6 @@ bool vr_rigging::handle(cgv::gui::event& e)
 				gui_intersection_colors.clear();
 				gui_intersection_box_indices.clear();
 				gui_intersection_controller_indices.clear();
-				for (auto e : pg1->elements) { e.has_intersec = false; }
 
 				// clear the skeleton intersection list 
 				skel_intersection_points.clear();
@@ -2208,25 +2229,28 @@ bool vr_rigging::handle(cgv::gui::event& e)
 				// compute intersections 
 				vec3 origin, direction;
 
-				// for getting left hand posi. cur.
+				// computing intersection with skeleton 
 				vrpe.get_state().controller[0].put_ray(&origin(0), &direction(0));
-
 				// mark cur. posi as global var.
 				cur_left_hand_posi = origin;
 				cur_left_hand_dir = direction;
 				if (!skel_view->playing)
 					skel_joint_box_compute_intersections(origin, direction, 1, ci == 0 ? rgb(1, 0, 0) : rgb(0, 0, 1));
 
-				//cur_left_hand_rot = vrpe.get_rotation_matrix();
+				// computing intersection with boxgui buttons 
 				vrpe.get_state().controller[1].put_ray(&origin(0), &direction(0));
-
-				// can be optimized later. todo 
 				gui_compute_intersections(origin, direction, 1, ci == 0 ? rgb(1, 0, 0) : rgb(0, 0, 1));
 
 				// has intersec. with skel. joint box 
 				if (skel_intersection_points.size() > 0) {
 					// front means the first intersection box idx 
+					// render yellow for intersected joint boxes 
 					jointlist_colors.at(skel_intersection_box_indices.front()) = rgb(1, 1, 102.0f / 255.0f);
+				}
+				else {
+
+					// reset color array to standard color array 
+					reset_jointlist_color();
 				}
 
 				// has intersec. with boxgui
@@ -2252,7 +2276,7 @@ bool vr_rigging::handle(cgv::gui::event& e)
 							pg1->elements.at(i).has_intersec = false;
 						}
 						pg1->push_to_render_vector();// re-gen the vec. for rendering 
-						post_redraw();
+						//post_redraw();
 					}
 				}
 			}
@@ -2392,13 +2416,14 @@ bool vr_rigging::handle(cgv::gui::event& e)
 				if (skel_intersection_points.size() > 0) {
 					left_ee = ds->get_skeleton()->find_bone_in_a_list_by_id(skel_intersection_box_indices.front());
 					ds->set_endeffector(left_ee, 0);
+					jointlist_colors_standard.at(skel_intersection_box_indices.front()) = rgb(1, 0, 0);
+					//post_redraw();
 					// ik_view->endeffector_changed(cur_bone, 0);
 					// must include this to calcu. the kinematics chain!
 					// provide info. later todo. 
 					// set up the endeffector of chain0, and calculate chain auto.
 					// we have to calculate chain1 and 2 with other two buttons 
 				}
-				post_redraw();
 				select_endeffector = false;
 			}
 
@@ -2413,13 +2438,12 @@ bool vr_rigging::handle(cgv::gui::event& e)
 				if (skel_intersection_points.size() > 0) {
 					right_ee = ds->get_skeleton()->find_bone_in_a_list_by_id(skel_intersection_box_indices.front());
 					ds->set_endeffector(right_ee, 0);
-					jointlist_colors.at(skel_intersection_box_indices.front()) = rgb(1, 0, 0);
+					jointlist_colors_standard.at(skel_intersection_box_indices.front()) = rgb(1, 0, 0);
 					//ik_view->endeffector_changed(cur_bone, 0);// must include this to calcu. the kinematics chain!
 					// provide info. later todo. 
 					// set up the endeffector of chain0, and calculate chain auto.
 					// we have to calculate chain1 and 2 with other two buttons 
 				}
-				post_redraw();
 				select_endeffector_1 = false;
 			}
 
@@ -2434,11 +2458,11 @@ bool vr_rigging::handle(cgv::gui::event& e)
 				if (skel_intersection_points.size() > 0) {
 					hmd_ee = ds->get_skeleton()->find_bone_in_a_list_by_id(skel_intersection_box_indices.front());
 					ds->set_endeffector(hmd_ee, 0);
-					jointlist_colors.at(skel_intersection_box_indices.front()) = rgb(1, 0, 0);
+					jointlist_colors_standard.at(skel_intersection_box_indices.front()) = rgb(1, 0, 0);
 					// set up the endeffector of chain2, and calculate chain auto.
 					// we have to calculate chain1 and 2 with other two buttons 
 				}
-				post_redraw();
+				//post_redraw();
 				select_endeffector_2 = false;
 			}
 
@@ -2453,9 +2477,9 @@ bool vr_rigging::handle(cgv::gui::event& e)
 				if (skel_intersection_points.size() > 0) {
 					base_bone = ds->get_skeleton()->find_bone_in_a_list_by_id(skel_intersection_box_indices.front());
 					ds->set_base(base_bone);
-					jointlist_colors.at(skel_intersection_box_indices.front()) = rgb(1, 0, 0);
+					jointlist_colors_standard.at(skel_intersection_box_indices.front()) = rgb(1, 0, 0);
 				}
-				post_redraw();
+				//post_redraw();
 				select_base = false;
 			}
 
@@ -3540,7 +3564,7 @@ void vr_rigging::draw(cgv::render::context& ctx)
 			colorarray.push_back(rgb(0, 0, 0));
 			colorarray.push_back(rgb(0, 0, 0));
 			vertex_array_in_point_list.push_back(cur_posi - vec3(0, 0, 0.3));
-			vertex_array_in_point_list.push_back(cur_posi + vec3(0, 0, 0,3));
+			vertex_array_in_point_list.push_back(cur_posi + vec3(0, 0, 0.3));
 			colorarray.push_back(rgb(0, 0, 0));
 			colorarray.push_back(rgb(0, 0, 0));
 		}
