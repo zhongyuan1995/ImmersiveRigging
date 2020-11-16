@@ -1,0 +1,35 @@
+#version 330 compatibility
+
+layout(location=0) in vec3 in_position;
+layout(location=1) in vec4 bone_weights;
+layout(location=2) in vec4 bone_indices;
+
+out vec4 position;
+
+uniform bool skinned;
+uniform mat4 bone_matrices[50];
+
+//***** begin interface of view.glsl ***********************************
+//mat4 get_modelview_matrix();
+//mat4 get_projection_matrix();
+//mat4 get_modelview_projection_matrix();
+//mat4 get_inverse_modelview_matrix();
+//mat4 get_inverse_modelview_projection_matrix();
+//mat3 get_normal_matrix();
+//mat3 get_inverse_normal_matrix();
+//***** end interface of view.glsl ***********************************
+
+void main(void)
+{
+	position = vec4(in_position, 1.0);
+
+	if(skinned)
+	{
+		ivec4 indices = ivec4(bone_indices);
+
+		vec3 p = vec3(0, 0, 0);
+		for(int i = 0; i < 4; ++i)
+			p += bone_weights[i] * (bone_matrices[indices[i]] * position).xyz;
+		position = vec4(p, 1.0);
+	}
+}
