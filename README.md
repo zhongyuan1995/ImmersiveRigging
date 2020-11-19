@@ -137,10 +137,11 @@
         fix the controller rendering 
         installation guide, documentation 
     tobetested:
+        use of CGV_DATA to load meshes 
+        fix the path prob. 
     todo:  
         fix the problem in mesh loading, two meshes 
         beginners guide 
-        fix the path prob. 
     future work:    
         enable texturing for the mesh loader
         a better custom mesh loader, which is too simple now, 
