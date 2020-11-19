@@ -2,8 +2,7 @@
 ![](docs/pics/multipleviews.png)
 [cgv framework](https://github.com/sgumhold/cgv/tree/develop)
 
-[usage description](https://cloudstore.zih.tu-dresden.de/index.php/s/C8G4TGdDrzGqfkp)
-
+<!-- [usage description](https://cloudstore.zih.tu-dresden.de/index.php/s/C8G4TGdDrzGqfkp) -->
 
     build instructions: (in develop branch)
         Clone the develop branch of the cgv framework 
@@ -125,24 +124,29 @@
         build_bone
         adjest bone local frames, two ways.
         yellow box 
-    tobetested:
         take use of the ori of the controllers 
         draw target position 
-    todo:  
-        defense 
         code cleaning 
         load and test the skel. with dofs 
-        (additional)adjest dofs in vr (details designed in private repository)
-        (additional)rig half of a mesh and auto-complete. Add a button: skel_auto_complete 
-        (additional)cut out part of the mesh with right hand controller 
-        (additional)fix the problem in mesh loading 
-        (additional)a posting application  
-        (additional)vis bone weights for each components (vertices)
-        (additional)enable texturing for the mesh loader
-        (additional)fix the dof adjestment in course cg2, implement a numerical            
-            optimization process
-        (additional)a better custom mesh loader, which is too simple now, 
+        adjest dofs in vr (details designed in private repository)
+        --- for presentation 
+        fix the controller rendering 
+    tobetested:
+    todo:  
+        fix the problem in mesh loading, two meshes 
+        beginners guide 
+        fix the path prob. 
+        installation guide, documentation 
+    future work:    
+        enable texturing for the mesh loader
+        a better custom mesh loader, which is too simple now, 
             ref. the one from the prof.
+        rig half of a mesh and auto-complete. Add a button: skel_auto_complete 
+        cut out part of the mesh with right hand controller 
+        posing function  
+        vis bone weights for each components (vertices)
+        fix the dof adjestment in course cg2, implement a numerical            
+            optimization process
     change log: 	
         07/05/2020	
         12/05/2020
