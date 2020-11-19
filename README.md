@@ -10,20 +10,19 @@
         * Clone this project in the "plugins" folder in the cgv framework, this is required by some relative file paths in the code.
         Generate makefiles with the help of the proj_new/vr_rigging_new.pj as normal.
         Compile it.
-    try the executable: (build with master branch of cgv)
-        One can run the program by simply clicking on the batch file called "run_exec.bat" 
-            in the following folder: "exec\exec_vr_rigging".
+<!-- try the executable: (build with master branch of cgv)
+    One can run the program by simply clicking on the batch file called "run_exec.bat" 
+        in the following folder: "exec\exec_vr_rigging". -->
     usage description: 
         //
             Typically, rigging and skinning of a given mesh should be straightforward and no other instructions necessary.
             Due to the fact that the repo. is under heavy development, it may be a little bit hard to use currently.
             So i decide to write some instructions here.
-        Basic user interface in VR to control core functionalities
-        Create and manipulate bones of a rigging skeleton
-        Skinning of a mesh with the created skeleton
-        Follows the users movement (motion capture)
-        Recording, saving and loading of animations
-        Creating multiple views
+        Just follow the beginners guide to:
+            Create and manipulate bones of a rigging skeleton
+            Skinning of a mesh with the created skeleton
+            Follows the users movement (motion capture)
+            Recording, saving and loading of animations
     technique stack:
         basic user interface in VR
         create and manipulate bones of a rigging skeleton
@@ -147,33 +146,6 @@
         vis bone weights for each components (vertices)
         fix the dof adjestment in course cg2, implement a numerical            
             optimization process
-    change log: 	
-        07/05/2020	
-        12/05/2020
-        13/05/2020
-        14/05/2020
-        16/05/2020
-        17/05/2020
-        18/05/2020
-        19/05/2020
-        20/05/2020
-        21/05/2020
-        22/05/2020
-        21/07/2020
-        27/07/2020
-        28/07/2020
-        29/07/2020
-        30/07/2020
-        31/07/2020
-        01/08/2020
-        11/08/2020
-        12/08/2020
-        13/08/2020
-        14/08/2020
-        25/08/2020
-        25/09/2020
-        07/11/2020
-        08/11/2020
     current sreenshots:
 ![Demo CountPages alpha](docs/pics/preview.gif)
 ![](docs/pics/with_info_board.png)
