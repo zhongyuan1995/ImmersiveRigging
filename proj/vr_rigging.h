@@ -304,7 +304,8 @@ private:
 	float mirror_plane_x = 1.2;
 
 	// one has to adjest working directory on his computer if not place the whole project in "plugins" dir 
-	std::string working_dir = "../../../plugins/vr_rigging/gen_dataset/";
+	char* cgv_data = getenv("CGV_DATA");
+	string data_dir = string(cgv_data);
 	std::string mesh_dir = "";
 
 public:

@@ -78,9 +78,9 @@ void vr_rigging::del_skel() {
 void vr_rigging::load_skel_with_dofs() { // those three skel. should be added at the same time 
 	// editable one 
 	if (skel_view) {
-		skel_view->load_skeleton_given_name(working_dir + "speider_simple0/jump.asf");
+		skel_view->load_skeleton_given_name(data_dir + "/gen_dataset/" + "speider_simple0/jump.asf");
 		skel_view->set_skel_origin_ori_translation(Vec3(0, 1, 0), 0, Vec3(1.2, 1, -2.8));
-		load_addi_two_guys(working_dir + "speider_simple0/jump.asf");
+		load_addi_two_guys(data_dir + "/gen_dataset/" + "speider_simple0/jump.asf");
 		post_redraw();
 
 		label_content = "[INFO] demo skel. loaded\n" + label_content;
@@ -94,9 +94,9 @@ void vr_rigging::load_demo_skel1() {
 	start_point_list.clear();
 	end_point_list.clear();
 
-	skel_view->load_skeleton_given_name(working_dir + "speider_simple0/tmpskel_1.asf");
+	skel_view->load_skeleton_given_name(data_dir + "/gen_dataset/" + "speider_simple0/tmpskel_1.asf");
 	skel_view->set_skel_origin_ori_translation(Vec3(0, 1, 0), 0, Vec3(1.2, 1, -2.8));
-	load_addi_two_guys(working_dir + "speider_simple0/tmpskel_1.asf");
+	load_addi_two_guys(data_dir + "/gen_dataset/" + "speider_simple0/tmpskel_1.asf");
 	post_redraw();
 
 	label_content = "[INFO] button clicked!\n" + label_content;
@@ -109,9 +109,9 @@ void vr_rigging::load_demo_skel2() {
 	start_point_list.clear();
 	end_point_list.clear();
 
-	skel_view->load_skeleton_given_name(working_dir + "speider_simple0/tmpskel_2.asf");
+	skel_view->load_skeleton_given_name(data_dir + "/gen_dataset/" + "speider_simple0/tmpskel_2.asf");
 	skel_view->set_skel_origin_ori_translation(Vec3(0, 1, 0), 0, Vec3(1.2, 1, -2.8));
-	load_addi_two_guys(working_dir + "speider_simple0/tmpskel_2.asf");
+	load_addi_two_guys(data_dir + "/gen_dataset/" + "speider_simple0/tmpskel_2.asf");
 	post_redraw();
 
 	label_content = "[INFO] button clicked!\n" + label_content;
@@ -124,9 +124,9 @@ void vr_rigging::load_demo_skel3() {
 	start_point_list.clear();
 	end_point_list.clear();
 
-	skel_view->load_skeleton_given_name(working_dir + "speider_simple0/tmpskel_3.asf");
+	skel_view->load_skeleton_given_name(data_dir + "/gen_dataset/" + "speider_simple0/tmpskel_3.asf");
 	skel_view->set_skel_origin_ori_translation(Vec3(0, 1, 0), 0, Vec3(1.2, 1, -2.8));
-	load_addi_two_guys(working_dir + "speider_simple0/tmpskel_3.asf");
+	load_addi_two_guys(data_dir + "/gen_dataset/" + "speider_simple0/tmpskel_3.asf");
 	post_redraw();
 
 	label_content = "[INFO] button clicked!\n" + label_content;
@@ -137,23 +137,23 @@ void vr_rigging::take_screen_capture() {
 	context* ctx = get_context();
 	if (ctx == 0)
 		return;
-	ctx->write_frame_buffer_to_image(working_dir + "speider_simple0/screen_capture.png");
+	ctx->write_frame_buffer_to_image(data_dir + "/gen_dataset/" + "speider_simple0/screen_capture.png");
 }
 ///
 void vr_rigging::load_demo_animation() {
-	skel_view->load_animation_given_name(working_dir + "speider_simple0/jump.amc", false);
+	skel_view->load_animation_given_name(data_dir + "/gen_dataset/" + "speider_simple0/jump.amc", false);
 }
 ///
 void vr_rigging::load_stored_anim1() {
-	skel_view->load_animation_given_name(working_dir + "speider_simple0/anim_1.amc", true);
+	skel_view->load_animation_given_name(data_dir + "/gen_dataset/" + "speider_simple0/anim_1.amc", true);
 }
 ///
 void vr_rigging::load_stored_anim2() {
-	skel_view->load_animation_given_name(working_dir + "speider_simple0/anim_2.amc", true);
+	skel_view->load_animation_given_name(data_dir + "/gen_dataset/" + "speider_simple0/anim_2.amc", true);
 }
 ///
 void vr_rigging::load_stored_anim3() {
-	skel_view->load_animation_given_name(working_dir + "speider_simple0/anim_3.amc", true);
+	skel_view->load_animation_given_name(data_dir + "/gen_dataset/" + "speider_simple0/anim_3.amc", true);
 }
 ///
 void vr_rigging::stop_anim() {
@@ -169,18 +169,18 @@ void vr_rigging::start_record() {
 }
 ///
 void vr_rigging::stop_record_and_save() {
-	skel_view->stop_record_anim(working_dir + "speider_simple0/test.amc");
+	skel_view->stop_record_anim(data_dir + "/gen_dataset/" + "speider_simple0/test.amc");
 	label_content = "[INFO] animation has been exported as 'test.amc' \n" + label_content;
 	label_outofdate = true;
 }
 ///
 void vr_rigging::save_curskel_to_file() {
 	if (ds->get_skeleton()) {
-		ds->get_skeleton()->write_pinocchio_file(working_dir + "speider_simple0/tmpskel.txt");
+		ds->get_skeleton()->write_pinocchio_file(data_dir + "/gen_dataset/" + "speider_simple0/tmpskel.txt");
 		//ds->get_skeleton()->set_origin_rotation();
 		// problem occour when rigging with pinocchio, write pinocchio with an other coordi.
 		if (!from_jump_asf)
-			ds->get_skeleton()->writeASFFile(working_dir + "speider_simple0/tmpskel.asf");
+			ds->get_skeleton()->writeASFFile(data_dir + "/gen_dataset/" + "speider_simple0/tmpskel.asf");
 	}
 	label_content = "[INFO] created skel. has been saved \nto tmp. file as 'tmpskel.asf'\n" + label_content;
 	label_outofdate = true;
@@ -189,10 +189,10 @@ void vr_rigging::save_curskel_to_file() {
 void vr_rigging::apply_rigged_skel()
 {
 	if (from_jump_asf) { // do not have to adjest skel. in vr 
-		ds->get_skeleton()->read_pinocchio_file(working_dir + "speider_simple0/adjested_skeleton.out");
+		ds->get_skeleton()->read_pinocchio_file(data_dir + "/gen_dataset/" + "speider_simple0/adjested_skeleton.out");
 	}
 	skel_view->skeleton_changed(ds->get_skeleton());
-	mmesh->read_attachment(working_dir + "speider_simple0/skinned_attachment.out");
+	mmesh->read_attachment(data_dir + "/gen_dataset/" + "speider_simple0/skinned_attachment.out");
 	post_redraw();
 	label_content = "[INFO] attachment has been loaded! mesh skinned\n" + label_content;
 	label_outofdate = true;
@@ -210,7 +210,7 @@ void vr_rigging::build_skel() {
 }
 ///
 void vr_rigging::gen_asf_skel_file() {
-	ds->get_skeleton()->writeASFFile(working_dir + "speider_simple0/tmpskel.asf");
+	ds->get_skeleton()->writeASFFile(data_dir + "/gen_dataset/" + "speider_simple0/tmpskel.asf");
 }
 ///
 void vr_rigging::start_autorigging_pinoccio() {
@@ -220,7 +220,7 @@ void vr_rigging::start_autorigging_pinoccio() {
 	ArgData a;
 
 	a.filename = mesh_dir;
-	string skelfile = working_dir + "speider_simple0/tmpskel.txt";
+	string skelfile = data_dir + "/gen_dataset/" + "speider_simple0/tmpskel.txt";
 	a.skeleton = FileSkeleton(skelfile);
 	a.skeletonname = skelfile;
 
@@ -282,14 +282,14 @@ void vr_rigging::start_autorigging_pinoccio() {
 	//output skeleton embedding
 	for (int i = 0; i < (int)o.embedding.size(); ++i)
 		o.embedding[i] = (o.embedding[i] - m.toAdd) / m.scale;
-	ofstream oss(working_dir + "speider_simple0/adjested_skeleton.out");
+	ofstream oss(data_dir + "/gen_dataset/" + "speider_simple0/adjested_skeleton.out");
 	for (i = 0; i < (int)o.embedding.size(); ++i) {
 		oss << i << " " << o.embedding[i][0] << " " << o.embedding[i][1] <<
 			" " << o.embedding[i][2] << " " << a.skeleton.fPrev()[i] << endl;
 	}
 
 	//output attachment
-	ofstream astrm(working_dir + "speider_simple0/skinned_attachment.out");
+	ofstream astrm(data_dir + "/gen_dataset/" + "speider_simple0/skinned_attachment.out");
 	for (i = 0; i < (int)m.vertices.size(); ++i) {
 		Vector<double, -1> v = o.attachment->getWeights(i);
 		for (int j = 0; j < v.size(); ++j) {
@@ -374,7 +374,7 @@ void vr_rigging::load_mesh() {
 }
 ///
 void vr_rigging::load_mesh_with_gui() {
-	mesh_dir = working_dir + "speider_simple0/spiderman.obj";
+	mesh_dir = data_dir + "/gen_dataset/" + "speider_simple0/spiderman.obj";
 	mmesh->read_obj(mesh_dir.c_str());
 	//mmesh->read_obj(g_mesh_filename.c_str());
 	ds->set_mesh(mmesh);
@@ -753,9 +753,9 @@ void vr_rigging::construct_boxgui() {
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.5, -2.5f), 0.1, 0.2, 0.8, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f), "Change Skybox", font_size, "xxx", true);
 	pg1->elements.push_back(first_btn);
 
-	string image2dir = working_dir + "../proj/skybox/cm_xp.jpg";
-	string image0dir = working_dir + "../proj/skybox/BluePinkNebular_xp.jpg";
-	string image1dir = working_dir + "../proj/skybox/igen_2/xp.jpg";
+	string image2dir = data_dir + "/skybox/cm_xp.jpg";
+	string image0dir = data_dir + "/skybox/BluePinkNebular_xp.jpg";
+	string image1dir = data_dir + "/skybox/igen_2/xp.jpg";
 
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.5, -1.75f), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
 		"xxx", 0, image0dir, false);
@@ -1578,7 +1578,7 @@ bool vr_rigging::handle(cgv::gui::event& e)
 
 					// load demo mesh 
 					if (pg1->elements.at(cur_btn_idx).label._Equal("l_demo1")) {
-						mesh_dir = working_dir + "speider_simple0/spiderman.obj";
+						mesh_dir = data_dir + "/gen_dataset/" + "speider_simple0/spiderman.obj";
 						mmesh->read_obj(mesh_dir.c_str());
 						start_point_list.clear();
 						end_point_list.clear();
@@ -1591,7 +1591,7 @@ bool vr_rigging::handle(cgv::gui::event& e)
 
 					//
 					if (pg1->elements.at(cur_btn_idx).label._Equal("l_demo2")) {
-						mesh_dir = working_dir + "horse_simple0/horse.obj";
+						mesh_dir = data_dir + "/gen_dataset/" + "horse_simple0/horse.obj";
 						mmesh->read_obj(mesh_dir.c_str());
 						start_point_list.clear();
 						end_point_list.clear();
@@ -1604,7 +1604,7 @@ bool vr_rigging::handle(cgv::gui::event& e)
 
 					//
 					if (pg1->elements.at(cur_btn_idx).label._Equal("l_demo3")) {
-						mesh_dir = working_dir + "pinocchio_model1_0/Model1.obj";
+						mesh_dir = data_dir + "/gen_dataset/" + "pinocchio_model1_0/Model1.obj";
 						mmesh->read_obj(mesh_dir.c_str());
 						start_point_list.clear();
 						end_point_list.clear();
@@ -1617,7 +1617,7 @@ bool vr_rigging::handle(cgv::gui::event& e)
 
 					//
 					if (pg1->elements.at(cur_btn_idx).label._Equal("l_demo4")) {
-						mesh_dir = working_dir + "pinocchio_model6_0/Model6.obj";
+						mesh_dir = data_dir + "/gen_dataset/" + "pinocchio_model6_0/Model6.obj";
 						mmesh->read_obj(mesh_dir.c_str());
 						start_point_list.clear();
 						end_point_list.clear();
@@ -1630,7 +1630,7 @@ bool vr_rigging::handle(cgv::gui::event& e)
 
 					//
 					if (pg1->elements.at(cur_btn_idx).label._Equal("l_demo5")) {
-						mesh_dir = working_dir + "robot_0/Robot Kyle.obj";
+						mesh_dir = data_dir + "/gen_dataset/" + "robot_0/Robot Kyle.obj";
 						mmesh->read_obj(mesh_dir.c_str());
 						start_point_list.clear();
 						end_point_list.clear();
@@ -1650,7 +1650,7 @@ bool vr_rigging::handle(cgv::gui::event& e)
 
 						from_jump_asf = true;
 						left_ee = right_ee = hmd_ee = nullptr;
-						skel_view->load_skeleton_given_name(working_dir + "speider_simple0/jump.asf");
+						skel_view->load_skeleton_given_name(data_dir + "/gen_dataset/" + "speider_simple0/jump.asf");
 						skel_view->set_skel_origin_ori_translation(Vec3(0, 1, 0), 0, Vec3(1.2, 1, -2.8));
 						
 						// set global varibles for rendering 
@@ -1659,7 +1659,7 @@ bool vr_rigging::handle(cgv::gui::event& e)
 						jointlist_colors = skel_view->get_jointlistcolor();
 
 						// load additional two guys 
-						load_addi_two_guys(working_dir + "speider_simple0/jump.asf");
+						load_addi_two_guys(data_dir + "/gen_dataset/" + "speider_simple0/jump.asf");
 						post_redraw();
 
 						label_content = "[INFO] demo skel. loaded\n" + label_content;
@@ -1673,7 +1673,7 @@ bool vr_rigging::handle(cgv::gui::event& e)
 						start_point_list.clear();
 						end_point_list.clear();
 
-						skel_view->load_skeleton_given_name(working_dir + "speider_simple0/tmpskel_1.asf");
+						skel_view->load_skeleton_given_name(data_dir + "/gen_dataset/" + "speider_simple0/tmpskel_1.asf");
 						skel_view->set_skel_origin_ori_translation(Vec3(0, 1, 0), 0, Vec3(1.2, 1, -2.8));
 						
 						// set global varibles for rendering 
@@ -1681,7 +1681,7 @@ bool vr_rigging::handle(cgv::gui::event& e)
 						jointlist_colors_standard = skel_view->get_jointlistcolor();
 						jointlist_colors = skel_view->get_jointlistcolor();
 						
-						load_addi_two_guys(working_dir + "speider_simple0/tmpskel_1.asf");
+						load_addi_two_guys(data_dir + "/gen_dataset/" + "speider_simple0/tmpskel_1.asf");
 						post_redraw();
 
 						label_content = "[INFO] button clicked!\n" + label_content;
@@ -1695,7 +1695,7 @@ bool vr_rigging::handle(cgv::gui::event& e)
 						start_point_list.clear();
 						end_point_list.clear();
 
-						skel_view->load_skeleton_given_name(working_dir + "speider_simple0/tmpskel_2.asf");
+						skel_view->load_skeleton_given_name(data_dir + "/gen_dataset/" + "speider_simple0/tmpskel_2.asf");
 						skel_view->set_skel_origin_ori_translation(Vec3(0, 1, 0), 0, Vec3(1.2, 1, -2.8));
 
 						// set global varibles for rendering 
@@ -1703,7 +1703,7 @@ bool vr_rigging::handle(cgv::gui::event& e)
 						jointlist_colors_standard = skel_view->get_jointlistcolor();
 						jointlist_colors = skel_view->get_jointlistcolor();
 						
-						load_addi_two_guys(working_dir + "speider_simple0/tmpskel_2.asf");
+						load_addi_two_guys(data_dir + "/gen_dataset/" + "speider_simple0/tmpskel_2.asf");
 						post_redraw();
 
 						label_content = "[INFO] button clicked!\n" + label_content;
@@ -1717,7 +1717,7 @@ bool vr_rigging::handle(cgv::gui::event& e)
 						start_point_list.clear();
 						end_point_list.clear();
 
-						skel_view->load_skeleton_given_name(working_dir + "speider_simple0/tmpskel_3.asf");
+						skel_view->load_skeleton_given_name(data_dir + "/gen_dataset/" + "speider_simple0/tmpskel_3.asf");
 						skel_view->set_skel_origin_ori_translation(Vec3(0, 1, 0), 0, Vec3(1.2, 1, -2.8));
 
 						// set global varibles for rendering, load from skel_view 
@@ -1725,7 +1725,7 @@ bool vr_rigging::handle(cgv::gui::event& e)
 						jointlist_colors_standard = skel_view->get_jointlistcolor();
 						jointlist_colors = skel_view->get_jointlistcolor();
 						
-						load_addi_two_guys(working_dir + "speider_simple0/tmpskel_3.asf");
+						load_addi_two_guys(data_dir + "/gen_dataset/" + "speider_simple0/tmpskel_3.asf");
 						post_redraw();
 
 						label_content = "[INFO] button clicked!\n" + label_content;
@@ -1734,24 +1734,24 @@ bool vr_rigging::handle(cgv::gui::event& e)
 
 					// save skel. 
 					if (pg1->elements.at(cur_btn_idx).label._Equal("s_skel1")) {
-						ds->get_skeleton()->write_pinocchio_file(working_dir + "speider_simple0/tmpskel_1.txt");
-						ds->get_skeleton()->writeASFFile(working_dir + "speider_simple0/tmpskel_1.asf");
+						ds->get_skeleton()->write_pinocchio_file(data_dir + "/gen_dataset/" + "speider_simple0/tmpskel_1.txt");
+						ds->get_skeleton()->writeASFFile(data_dir + "/gen_dataset/" + "speider_simple0/tmpskel_1.asf");
 						label_content = "[INFO] skel. saved!\n" + label_content;
 						label_outofdate = true;
 					}
 
 					//
 					if (pg1->elements.at(cur_btn_idx).label._Equal("s_skel2")) {
-						ds->get_skeleton()->write_pinocchio_file(working_dir + "speider_simple0/tmpskel_2.txt");
-						ds->get_skeleton()->writeASFFile(working_dir + "speider_simple0/tmpskel_2.asf");
+						ds->get_skeleton()->write_pinocchio_file(data_dir + "/gen_dataset/" + "speider_simple0/tmpskel_2.txt");
+						ds->get_skeleton()->writeASFFile(data_dir + "/gen_dataset/" + "speider_simple0/tmpskel_2.asf");
 						label_content = "[INFO] skel. saved!\n" + label_content;
 						label_outofdate = true;
 					}
 
 					//
 					if (pg1->elements.at(cur_btn_idx).label._Equal("s_skel3")) {
-						ds->get_skeleton()->write_pinocchio_file(working_dir + "speider_simple0/tmpskel_3.txt");
-						ds->get_skeleton()->writeASFFile(working_dir + "speider_simple0/tmpskel_3.asf");
+						ds->get_skeleton()->write_pinocchio_file(data_dir + "/gen_dataset/" + "speider_simple0/tmpskel_3.txt");
+						ds->get_skeleton()->writeASFFile(data_dir + "/gen_dataset/" + "speider_simple0/tmpskel_3.asf");
 						label_content = "[INFO] skel. saved!\n" + label_content;
 						label_outofdate = true;
 					}
@@ -1912,42 +1912,42 @@ bool vr_rigging::handle(cgv::gui::event& e)
 					if (pg1->elements.at(cur_btn_idx).label._Equal("s_anim1")) {
 						label_content = "[INFO] button clicked!\n" + label_content;
 						label_outofdate = true;
-						skel_view->stop_record_anim(working_dir + "speider_simple0/anim_1.amc");
+						skel_view->stop_record_anim(data_dir + "/gen_dataset/" + "speider_simple0/anim_1.amc");
 					}
 
 					//
 					if (pg1->elements.at(cur_btn_idx).label._Equal("s_anim2")) {
 						label_content = "[INFO] button clicked!\n" + label_content;
 						label_outofdate = true;
-						skel_view->stop_record_anim(working_dir + "speider_simple0/anim_2.amc");
+						skel_view->stop_record_anim(data_dir + "/gen_dataset/" + "speider_simple0/anim_2.amc");
 					}
 
 					//
 					if (pg1->elements.at(cur_btn_idx).label._Equal("s_anim3")) {
 						label_content = "[INFO] button clicked!\n" + label_content;
 						label_outofdate = true;
-						skel_view->stop_record_anim(working_dir + "speider_simple0/anim_3.amc");
+						skel_view->stop_record_anim(data_dir + "/gen_dataset/" + "speider_simple0/anim_3.amc");
 					}
 
 					// load animation 
 					if (pg1->elements.at(cur_btn_idx).label._Equal("l_anim1")) {
 						label_content = "[INFO] button clicked!\n" + label_content;
 						label_outofdate = true;
-						skel_view->load_animation_given_name(working_dir + "speider_simple0/anim_1.amc", true);
+						skel_view->load_animation_given_name(data_dir + "/gen_dataset/" + "speider_simple0/anim_1.amc", true);
 					}
 
 					//
 					if (pg1->elements.at(cur_btn_idx).label._Equal("l_anim2")) {
 						label_content = "[INFO] button clicked!\n" + label_content;
 						label_outofdate = true;
-						skel_view->load_animation_given_name(working_dir + "speider_simple0/anim_2.amc", true);
+						skel_view->load_animation_given_name(data_dir + "/gen_dataset/" + "speider_simple0/anim_2.amc", true);
 					}
 
 					//
 					if (pg1->elements.at(cur_btn_idx).label._Equal("l_anim3")) {
 						label_content = "[INFO] button clicked!\n" + label_content;
 						label_outofdate = true;
-						skel_view->load_animation_given_name(working_dir + "speider_simple0/anim_3.amc", true);
+						skel_view->load_animation_given_name(data_dir + "/gen_dataset/" + "speider_simple0/anim_3.amc", true);
 					}
 
 					//
@@ -2776,9 +2776,9 @@ bool vr_rigging::init(cgv::render::context& ctx)
 	}
 
 	skyprog.build_program(ctx, "skycube.glpr");
-	img_tex.create_from_images(ctx, working_dir + "../proj/skybox/cm_{xp,xn,yp,yn,zp,zn}.jpg");
-	tmp_tex.create_from_images(ctx, working_dir + "../proj/skybox/BluePinkNebular_{xp,xn,yp,yn,zp,zn}.jpg");
-	test_tex.create_from_images(ctx, working_dir + "../proj/skybox/igen_2/{xp,xn,yp,yn,zp,zn}.jpg");
+	img_tex.create_from_images(ctx, data_dir + "/skybox/cm_{xp,xn,yp,yn,zp,zn}.jpg");
+	tmp_tex.create_from_images(ctx, data_dir + "/skybox/BluePinkNebular_{xp,xn,yp,yn,zp,zn}.jpg");
+	test_tex.create_from_images(ctx, data_dir + "/skybox/igen_2/{xp,xn,yp,yn,zp,zn}.jpg");
 
 	if(pg1)
 		pg1->icon_shader_prog.build_program(ctx, "image.glpr");
@@ -3600,7 +3600,6 @@ void vr_rigging::finish_draw(cgv::render::context& ctx)
 }
 ///
 void vr_rigging::create_gui() {
-	add_decorator("vr_rigging", "heading", "level=2");
 	add_member_control(this, "toggle_usage_description", toggle_usage_description, "check");
 	add_member_control(this, "toggle_render_local_frame", toggle_render_local_frame, "check");
 	add_member_control(this, "toggle_boxgui", toggle_boxgui, "check");

@@ -135,12 +135,12 @@
         adjest dofs in vr (details designed in private repository)
         --- for presentation 
         fix the controller rendering 
+        installation guide, documentation 
     tobetested:
     todo:  
         fix the problem in mesh loading, two meshes 
         beginners guide 
         fix the path prob. 
-        installation guide, documentation 
     future work:    
         enable texturing for the mesh loader
         a better custom mesh loader, which is too simple now, 
