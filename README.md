@@ -10,14 +10,12 @@
     build instructions: (in develop branch)
         Clone the develop branch of the cgv framework 
         Click on define_system_variables.bat to define the path to the framework.
-        * Clone this project in the "plugins" folder in the cgv framework, 
-            this is required by some relative file paths in the code when loading and saving data in vr.
-            otherwise, you have to manually change the working directory varible in vr_rigging.h:
-                working_dir = "../../../plugins/vr_rigging/gen_dataset/";
-            this is a relative path from .sln project directory to our dataset directory.
-            contact me for any issues.
+        * Clone this repository, set the system varible "CGV_DATA" to "data" directory under this project: 
+            drag data directory onto cgv/define_data_dir.bat
+            or run the command define_data_dir.bat <global-path-to-data-directory>
         Generate makefiles with the help of the proj_new/vr_rigging_new.pj as normal.
         Compile it.
+        contact me for any issues.
     usage description: 
         //
             Typically, rigging and skinning of a given mesh should be straightforward and no other instructions necessary.
@@ -136,9 +134,9 @@
         --- for presentation 
         fix the controller rendering 
         installation guide, documentation 
-    tobetested:
         use of CGV_DATA to load meshes 
         fix the path prob. 
+    tobetested:
     todo:  
         fix the problem in mesh loading, two meshes 
         beginners guide 
