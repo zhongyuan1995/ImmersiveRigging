@@ -172,6 +172,10 @@ private:
 	// varibles for rendering mesh 
 	std::shared_ptr<SkinningMesh> mmesh;
 	string g_mesh_filename = "";
+	box3 mesh_bbox;
+	std::vector<vec3> minmax_pointlist;
+	std::vector<rgb> minmax_pointlist_color;
+
 
 	// boolean varibles to control left hand behaviors
 	bool b_render_mesh = true;
@@ -204,6 +208,7 @@ private:
 	bool toggle_boxgui = true;
 	bool show_mesh_related = false;
 	bool show_skel_related = false;
+	bool render_mesh_bbox = false;
 
 	// rendering text labels for information board 
 	string label_text;

@@ -14,13 +14,26 @@
         不同重点
         和普通的rigging区别
         possible projects? 
-        share our work!
+        share our work! 
+        The project is about rigging, skinning and animating a given mesh.
     usage description 
-        hello everyone, i am going to show you my research project "immersive rigging". 
-            The project is about rigging, skinning and animating a given mesh.
-        0.when the programm starts, we can see a button wall in front of us. we can use right hand controller to choose the mode we 
-            would like to work with in the vr env. and left hand controller to perform some operations. 
-        1.The first thing, we have to load a mesh into the scene, by clicking l_demo1/2/... each represents a mesh 
+        Hi welcom to my research project "immersive rigging". 
+        0.let me show you how the system looks like.
+            when the progrem starts, a [wall of buttons] is rendered in front of us. 
+                A typical workflow is that: we first load a mesh , and then, define a skel. 
+                    skinning with the skel. making some animations.
+                That's to say, [from top to bottom].
+            we can [use right hand controller] to choose the mode we would like to work in the vr env. 
+                and left hand controller to perform the operations. 
+                A [visual feedback] is imp. As you can see, when the ray emmiting from the right hand controller intersects 
+                    with the button. Ii looks like that we are pushing the buttons.
+
+        1.As a first step, a mesh should be loaded into the scene. This can be done by clicking here
+            l_demo1/2/... The meshes are stored under CGV_DATA dir. 
+            if a mesh is too large, we can perform an [automatic scale adjestment] by clicking on this scale_adjestment button,
+                it will scale the mesh to the same hight as our headset by computing a factor and multiplies it to the current scale.
+            additionally, we can rotate/translate a mesh by clicking here, rotation, trans. button 
+                each time we press the button, the mesh will rotate 90 degree around the global y axis.
         ///rig 
         2.after that, we can add bone manuelly or load pre-defined skel. or the skel. we saved on disk.  
         lets load it first. 

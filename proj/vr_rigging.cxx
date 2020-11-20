@@ -29,6 +29,13 @@ void vr_rigging::load_mesh_1() {
 	// set mesh 
 	mmesh->read_obj(mesh_dir.c_str());
 	ds->set_mesh(mmesh);
+	mesh_bbox = box3(mmesh->getMin(), mmesh->getMax());
+	minmax_pointlist.clear();
+	minmax_pointlist_color.clear();
+	minmax_pointlist.push_back(mmesh->getMin());
+	minmax_pointlist_color.push_back(rgb(1, 0, 0));
+	minmax_pointlist.push_back(mmesh->getMax());
+	minmax_pointlist_color.push_back(rgb(0, 0, 1));
 
 	// update info board 
 	label_content = "[INFO] mesh loaded!\n" + label_content;
@@ -48,6 +55,13 @@ void vr_rigging::load_mesh_2() {
 	// set mesh 
 	mmesh->read_obj(mesh_dir.c_str());
 	ds->set_mesh(mmesh);
+	mesh_bbox = box3(mmesh->getMin(), mmesh->getMax());
+	minmax_pointlist.clear();
+	minmax_pointlist_color.clear();
+	minmax_pointlist.push_back(mmesh->getMin());
+	minmax_pointlist_color.push_back(rgb(1, 0, 0));
+	minmax_pointlist.push_back(mmesh->getMax());
+	minmax_pointlist_color.push_back(rgb(0, 0, 1));
 
 	// update info board 
 	label_content = "[INFO] mesh loaded!\n" + label_content;
@@ -67,6 +81,13 @@ void vr_rigging::load_mesh_3() {
 	// set mesh 
 	mmesh->read_obj(mesh_dir.c_str());
 	ds->set_mesh(mmesh);
+	mesh_bbox = box3(mmesh->getMin(), mmesh->getMax());
+	minmax_pointlist.clear();
+	minmax_pointlist_color.clear();
+	minmax_pointlist.push_back(mmesh->getMin());
+	minmax_pointlist_color.push_back(rgb(1, 0, 0));
+	minmax_pointlist.push_back(mmesh->getMax());
+	minmax_pointlist_color.push_back(rgb(0, 0, 1));
 
 	// update info board 
 	label_content = "[INFO] mesh loaded!\n" + label_content;
@@ -86,6 +107,13 @@ void vr_rigging::load_mesh_4() {
 	// set mesh 
 	mmesh->read_obj(mesh_dir.c_str());
 	ds->set_mesh(mmesh);
+	mesh_bbox = box3(mmesh->getMin(), mmesh->getMax());
+	minmax_pointlist.clear();
+	minmax_pointlist_color.clear();
+	minmax_pointlist.push_back(mmesh->getMin());
+	minmax_pointlist_color.push_back(rgb(1, 0, 0));
+	minmax_pointlist.push_back(mmesh->getMax());
+	minmax_pointlist_color.push_back(rgb(0, 0, 1));
 
 	// update info board 
 	label_content = "[INFO] mesh loaded!\n" + label_content;
@@ -106,6 +134,15 @@ void vr_rigging::load_mesh_5() {
 	mmesh->read_obj(mesh_dir.c_str());
 	ds->set_mesh(mmesh);
 
+	// update bbox and min max points 
+	mesh_bbox = box3(mmesh->getMin(), mmesh->getMax());
+	minmax_pointlist.clear();
+	minmax_pointlist_color.clear();
+	minmax_pointlist.push_back(mmesh->getMin());
+	minmax_pointlist_color.push_back(rgb(1, 0, 0));
+	minmax_pointlist.push_back(mmesh->getMax());
+	minmax_pointlist_color.push_back(rgb(0, 0, 1));
+
 	// update info board 
 	label_content = "[INFO] mesh loaded!\n" + label_content;
 	label_outofdate = true;
@@ -113,8 +150,19 @@ void vr_rigging::load_mesh_5() {
 }
 /// 
 void vr_rigging::translation_to_desired_posi() {
-	mmesh->set_mesh_translation(cur_left_hand_posi);
+	vec3 bbox = mmesh->getMax() - mmesh->getMin();
+	vec3 half_bbox = vec3(0, bbox.y() / 2.0f, 0);
+	mmesh->set_mesh_translation(cur_left_hand_posi - half_bbox);
 	mmesh->read_obj(mesh_dir.c_str());
+
+	// update bbox and min max points 
+	mesh_bbox = box3(mmesh->getMin(), mmesh->getMax());
+	minmax_pointlist.clear();
+	minmax_pointlist_color.clear();
+	minmax_pointlist.push_back(mmesh->getMin());
+	minmax_pointlist_color.push_back(rgb(1, 0, 0));
+	minmax_pointlist.push_back(mmesh->getMax());
+	minmax_pointlist_color.push_back(rgb(0, 0, 1));
 	ds->set_mesh(mmesh);
 }
 /// 
@@ -123,6 +171,15 @@ void vr_rigging::orient_to_desired_ori() {
 	mat3 new_rot = cgv::math::rotate3<double>(90, vec3(0, 1, 0));
 	mmesh->set_mesh_orientation(new_rot * cur_ori);
 	mmesh->read_obj(mesh_dir.c_str());
+
+	// update bbox and min max points 
+	mesh_bbox = box3(mmesh->getMin(), mmesh->getMax());
+	minmax_pointlist.clear();
+	minmax_pointlist_color.clear();
+	minmax_pointlist.push_back(mmesh->getMin());
+	minmax_pointlist_color.push_back(rgb(1, 0, 0));
+	minmax_pointlist.push_back(mmesh->getMax());
+	minmax_pointlist_color.push_back(rgb(0, 0, 1));
 	ds->set_mesh(mmesh);
 }
 ///
@@ -1100,7 +1157,7 @@ void vr_rigging::construct_boxgui() {
 	pg1->elements.push_back(first_btn);
 	rgb cur_color = rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f);
 	first_btn = boxgui_button(vec3(2.45f, 2.0f, -1.75f + 0.25f * 2), 0.1, 0.2, 0.2, cur_color,
-		"scale", smallbox_font_size, "D:/icon_res/default.png", true);
+		"toggle\nbbox", smallbox_font_size, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, 0.5f + 0.5f + 1, -1.75f + 0.25f * 3), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
 		"toggle\nmesh", smallbox_font_size, "D:/icon_res/default.png", true);
@@ -1292,7 +1349,7 @@ vr_rigging::vr_rigging()
 	connect(cgv::gui::ref_vr_server().on_device_change, this, &vr_rigging::on_device_change);
 	connect(cgv::gui::ref_vr_server().on_status_change, this, &vr_rigging::on_status_change);
 
-	srs.radius = 0.005f;
+	srs.radius = 0.05f;
 
 	label_outofdate = true;
 	label_text = "Info Board"; // change the content with this varible! 
@@ -1955,6 +2012,13 @@ bool vr_rigging::handle(cgv::gui::event& e)
 						label_content = "[INFO] button clicked!\n" + label_content;
 						toggle_mesh_render();
 					}
+
+					//
+					if (pg1->elements.at(cur_btn_idx).label._Equal("toggle\nbbox")) {
+						render_mesh_bbox = !render_mesh_bbox;
+					}
+
+					//
 					if (pg1->elements.at(cur_btn_idx).label._Equal("toggle\ntransparent")) {
 						label_content = "[INFO] button clicked!\n" + label_content;
 						label_outofdate = true;
@@ -3076,7 +3140,6 @@ void vr_rigging::init_frame(cgv::render::context& ctx)
 void vr_rigging::draw(cgv::render::context& ctx)
 {
 	
-
 	// rendering headset and controller
 	if (vr_view_ptr) {
 		std::vector<vec3> P;
@@ -3133,6 +3196,23 @@ void vr_rigging::draw(cgv::render::context& ctx)
 		renderer.draw(ctx, 0, boxes.size());
 	}
 	renderer.disable(ctx);
+
+	// draw mesh_bbox
+	if (render_mesh_bbox && mesh_bbox.is_valid()) {
+		ctx.ref_default_shader_program().enable(ctx);
+		ctx.set_color(rgb(0, 1, 0));
+		glLineWidth(3);
+		ctx.tesselate_box(mesh_bbox, false, true);
+		ctx.ref_default_shader_program().disable(ctx);
+		glLineWidth(1);
+	}
+	if (render_mesh_bbox && !minmax_pointlist.empty()) {
+		auto& sr = cgv::render::ref_sphere_renderer(ctx);
+		sr.set_position_array(ctx, minmax_pointlist);
+		sr.set_color_array(ctx, minmax_pointlist_color);
+		sr.set_render_style(srs);
+		sr.render(ctx, 0, minmax_pointlist.size());
+	}
 
 	// rendering the skybox 
 	// large enough to contain the whole scene
@@ -3682,6 +3762,7 @@ void vr_rigging::create_gui() {
 	add_member_control(this, "toggle_usage_description", toggle_usage_description, "check");
 	add_member_control(this, "toggle_render_local_frame", toggle_render_local_frame, "check");
 	add_member_control(this, "toggle_boxgui", toggle_boxgui, "check");
+	add_member_control(this, "toggle_boxgui", render_mesh_bbox, "check");
 
 	if (begin_tree_node("mesh related", show_mesh_related, true, "level=2")) {
 		align("\a");
