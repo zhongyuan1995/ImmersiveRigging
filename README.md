@@ -11,7 +11,7 @@
         Clone the develop branch of the cgv framework 
         Click on define_system_variables.bat to define the path to the framework.
         * Clone this repository, set the system varible "CGV_DATA" to "data" directory under this project: 
-            drag data directory onto cgv/define_data_dir.bat
+            drag the "data" directory onto cgv/define_data_dir.bat
             or run the command define_data_dir.bat <global-path-to-data-directory>
         Generate makefiles with the help of the proj_new/vr_rigging_new.pj as normal.
         Compile it.

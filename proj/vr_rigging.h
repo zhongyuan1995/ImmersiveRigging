@@ -92,7 +92,6 @@ private:
 	cgv::render::rounded_cone_render_style cone_style;
 
 	// sample for rendering a mesh
-	double mesh_scale;
 	dvec3 mesh_location;
 	dquat mesh_orientation;
 
@@ -365,11 +364,15 @@ public:
 	/// with working_dir varible 
 	void load_mesh_with_gui();
 	///
-	void adjest_mesh();
+	void adjest_mesh_scale();
 	/// adjesting the hight of the mesh: the same as the headset 
 	void translate_model_in_y_dir_upwards();
 	/// load additional two guys imitating our main skeleton as mirror effect 
 	void load_addi_two_guys(string f);
+	/// translate to the posi of left hand controller 
+	void translation_to_desired_posi();
+	/// rotate each 90 degree each time 
+	void orient_to_desired_ori();
 	///
 	void toggle_mesh_render();
 	///
@@ -425,6 +428,17 @@ public:
 	void start_record();
 	///
 	void stop_record_and_save();
+	///
+	void load_mesh_1();
+	/// 
+	void load_mesh_2();
+	/// 
+	void load_mesh_3();
+	/// 
+	void load_mesh_4();
+	/// 
+	void load_mesh_5();
+	/// 
 
 public:
 	vr_rigging();
@@ -448,6 +462,7 @@ public:
 	void finish_draw(cgv::render::context& ctx);
 	///
 	void create_gui();
-};
+	/// 
 
 ///@}
+};

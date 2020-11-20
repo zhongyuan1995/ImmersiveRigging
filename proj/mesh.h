@@ -20,23 +20,26 @@ public:
 	SkinningMesh();
 	~SkinningMesh();
 
-	//Compiles all used shaders.
+	// Compiles all used shaders.
 	static bool init_shaders(cgv::render::context& ctx);
 
-	//Loads geometry data from an OBJ file.
+	// Loads geometry data from an OBJ file.
 	bool read_obj(const char* filename);
 
-	//Loads attachment data from a Pinocchio file.
+	// Loads attachment data from a Pinocchio file.
 	void read_attachment(std::string filename);
 
-	//Draws the mesh
+	// Draws the mesh
 	void draw(cgv::render::context& ctx);
 
-	//Sets the matrices used for skinning.
+	// Sets the matrices used for skinning.
 	void set_skinning_matrices(const std::vector<Mat4>& matrices);
 	void set_mesh_scale(float s) { mesh_scale = s; }
-	void set_rotation_translation(cgv::math::fmat<float, 3, 3> r, cgv::math::fvec<float, 3> t) { rot = r; trans = t; }
+	void set_orientation_translation(cgv::math::fmat<float, 3, 3> r, cgv::math::fvec<float, 3> t) { rot = r; trans = t; }
 	
+	// getters and setters for mesh orientation and transformation 
+	void set_mesh_orientation(cgv::math::fmat<float, 3, 3> r) { rot = r; }
+	cgv::math::fmat<float, 3, 3> get_mesh_orientation() { return rot; }
 	void set_mesh_translation(cgv::math::fvec<float, 3> t) { trans = t; }
 	cgv::math::fvec<float, 3> get_mesh_translation() { return trans; }
 

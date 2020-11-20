@@ -16,6 +16,115 @@
 #include "intersection.h"
 #include <math_helper.h>
 
+
+void vr_rigging::load_mesh_1() {
+	mesh_dir = data_dir + "/gen_dataset/speider_simple0/spiderman.obj";
+
+	// clear varibles 
+	start_point_list.clear();
+	end_point_list.clear();
+	mmesh->set_orientation_translation(rotate3<double>(0, vec3(0, 1, 0)), vec3(1.2, 0, -2.8));
+	mmesh->set_mesh_scale(0.019f);
+
+	// set mesh 
+	mmesh->read_obj(mesh_dir.c_str());
+	ds->set_mesh(mmesh);
+
+	// update info board 
+	label_content = "[INFO] mesh loaded!\n" + label_content;
+	label_outofdate = true;
+	post_redraw();
+}
+///
+void vr_rigging::load_mesh_2() {
+	mesh_dir = data_dir + "/gen_dataset/" + "horse_simple0/horse.obj";
+
+	// clear varibles 
+	start_point_list.clear();
+	end_point_list.clear();
+	mmesh->set_orientation_translation(rotate3<double>(0, vec3(0, 1, 0)), vec3(1.2, 0, -2.8));
+	mmesh->set_mesh_scale(1);
+
+	// set mesh 
+	mmesh->read_obj(mesh_dir.c_str());
+	ds->set_mesh(mmesh);
+
+	// update info board 
+	label_content = "[INFO] mesh loaded!\n" + label_content;
+	label_outofdate = true;
+	post_redraw();
+}
+///
+void vr_rigging::load_mesh_3() {
+	mesh_dir = data_dir + "/gen_dataset/pinocchio_model1_0/mesh.obj";
+
+	// clear varibles 
+	start_point_list.clear();
+	end_point_list.clear();
+	mmesh->set_orientation_translation(rotate3<double>(0, vec3(0, 1, 0)), vec3(1.2, 0, -2.8));
+	mmesh->set_mesh_scale(1);
+
+	// set mesh 
+	mmesh->read_obj(mesh_dir.c_str());
+	ds->set_mesh(mmesh);
+
+	// update info board 
+	label_content = "[INFO] mesh loaded!\n" + label_content;
+	label_outofdate = true;
+	post_redraw();
+}
+///
+void vr_rigging::load_mesh_4() {
+	mesh_dir = data_dir + "/gen_dataset/pinocchio_model6_0/mesh.obj";
+
+	// clear varibles 
+	start_point_list.clear();
+	end_point_list.clear();
+	mmesh->set_orientation_translation(rotate3<double>(0, vec3(0, 1, 0)), vec3(1.2, 0, -2.8));
+	mmesh->set_mesh_scale(1);
+
+	// set mesh 
+	mmesh->read_obj(mesh_dir.c_str());
+	ds->set_mesh(mmesh);
+
+	// update info board 
+	label_content = "[INFO] mesh loaded!\n" + label_content;
+	label_outofdate = true;
+	post_redraw();
+}
+///
+void vr_rigging::load_mesh_5() {
+	mesh_dir = data_dir + "/gen_dataset/robot_0/mesh.obj";
+
+	// clear varibles 
+	start_point_list.clear();
+	end_point_list.clear();
+	mmesh->set_orientation_translation(rotate3<double>(0, vec3(0, 1, 0)), vec3(1.2, 0, -2.8));
+	mmesh->set_mesh_scale(1);
+
+	// set mesh 
+	mmesh->read_obj(mesh_dir.c_str());
+	ds->set_mesh(mmesh);
+
+	// update info board 
+	label_content = "[INFO] mesh loaded!\n" + label_content;
+	label_outofdate = true;
+	post_redraw();
+}
+/// 
+void vr_rigging::translation_to_desired_posi() {
+	mmesh->set_mesh_translation(cur_left_hand_posi);
+	mmesh->read_obj(mesh_dir.c_str());
+	ds->set_mesh(mmesh);
+}
+/// 
+void vr_rigging::orient_to_desired_ori() {
+	mat3 cur_ori = mmesh->get_mesh_orientation();
+	mat3 new_rot = cgv::math::rotate3<double>(90, vec3(0, 1, 0));
+	mmesh->set_mesh_orientation(new_rot * cur_ori);
+	mmesh->read_obj(mesh_dir.c_str());
+	ds->set_mesh(mmesh);
+}
 ///
 void vr_rigging::toggle_mesh_render() {
 	b_render_mesh = !b_render_mesh;
@@ -305,14 +414,21 @@ void vr_rigging::start_autorigging_pinoccio() {
 	label_outofdate = true;
 }
 ///
-void vr_rigging::adjest_mesh() {
-	float new_factor = hmd_origin.y() / (ds->get_mesh()->getMax().y() - ds->get_mesh()->getMin().y());
+void vr_rigging::adjest_mesh_scale() {
+	float height_of_the_mesh = ds->get_mesh()->getMax().y() - ds->get_mesh()->getMin().y();
+	float height_of_the_avater = hmd_origin.y();
+	float new_factor = height_of_the_avater / height_of_the_mesh;
+	cout << "height_of_the_mesh: " << height_of_the_mesh << endl;
+	cout << "height_of_the_avater: " << height_of_the_avater << endl;
 	cout << "new_factor: " << new_factor << endl;
-	ds->get_mesh()->set_mesh_scale(mesh_scale * new_factor);
+	if (new_factor > 0.0001f)
+		ds->get_mesh()->set_mesh_scale(new_factor);
 
 	// re-load mesh
 	mmesh->read_obj(mesh_dir.c_str());
 	ds->set_mesh(mmesh);
+
+	// update info board 
 	label_content = "[INFO] mesh loaded!\n" + label_content;
 	label_outofdate = true;
 	post_redraw();
@@ -347,7 +463,7 @@ void vr_rigging::remove_pg1() {
 }
 ///
 void vr_rigging::translate_model_in_y_dir_upwards() {
-	ds->get_mesh()->set_rotation_translation(
+	ds->get_mesh()->set_orientation_translation(
 		cgv::math::rotate3<double>(180.0f, vec3(0, 1, 0)),
 		vec3(1.5, (ds->get_mesh()->getMax().y() - ds->get_mesh()->getMin().y()) / 2.0f, 0));
 	load_mesh();
@@ -906,25 +1022,25 @@ void vr_rigging::construct_boxgui() {
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, .75f + 0.5f + 1, -2.5f), 0.1, 0.2, 0.8, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f), "Mesh Style", font_size, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, .75f + 0.5f + 1, -1.75f), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-		"l_demo1", smallbox_font_size, "D:/icon_res/default.png", true);
+		"l_demo1", smallbox_font_size - 20, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, .75f + 0.5f + 1, -1.75f + 0.25f * 1), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-		"l_demo2", smallbox_font_size, "D:/icon_res/default.png", true);
+		"l_demo2", smallbox_font_size - 20, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, .75f + 0.5f + 1, -1.75f + 0.25f * 2), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-		"l_demo3", smallbox_font_size, "D:/icon_res/default.png", true);
+		"l_demo3", smallbox_font_size - 20, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, .75f + 0.5f + 1, -1.75f + 0.25f * 3), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-		"l_demo4", smallbox_font_size, "D:/icon_res/default.png", true);
+		"l_demo4", smallbox_font_size - 20, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, .75f + 0.5f + 1, -1.75f + 0.25f * 4), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-		"l_demo5", smallbox_font_size, "D:/icon_res/default.png", true);
+		"l_demo5", smallbox_font_size - 20, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, .75f + 0.5f + 1, -1.75f + 0.25f * 5), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
 		"scale_\nadjestment", smallbox_font_size, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, .75f + 0.5f + 1, -1.75f + 0.25f * 6), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
-		"reset_\nscale", smallbox_font_size, "D:/icon_res/default.png", true);
+		"reset_\nmesh", smallbox_font_size, "D:/icon_res/default.png", true);
 	pg1->elements.push_back(first_btn);
 	/*first_btn = boxgui_button(vec3(2.5f - 0.05f, .75f, -1.75f + 0.25f * 7), 0.1, 0.2, 0.2, rgb( 0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f ),
 		"demo8", smallbox_font_size, "D:/icon_res/default.png", true);
@@ -1175,10 +1291,6 @@ vr_rigging::vr_rigging()
 	last_kit_handle = 0;
 	connect(cgv::gui::ref_vr_server().on_device_change, this, &vr_rigging::on_device_change);
 	connect(cgv::gui::ref_vr_server().on_status_change, this, &vr_rigging::on_status_change);
-
-	mesh_scale = 0.019f;
-	/*mesh_location = dvec3(0, 0.85f, 0);
-	mesh_orientation = dquat(1, 0, 0, 0);*/
 
 	srs.radius = 0.005f;
 
@@ -1486,15 +1598,6 @@ bool vr_rigging::handle(cgv::gui::event& e)
 				vr_view_ptr->set_tracking_rotation(vr_view_ptr->get_tracking_rotation() - 10);
 			}
 			if (vrse.get_controller_index() == 1 && mesh_scale_mode) {
-				cout << "adjesting mesh!\n";
-				mesh_scale = (1 + vrse.get_y()) * mesh_scale;
-				ds->get_mesh()->set_mesh_scale(mesh_scale);
-				// re-load mesh
-				mmesh->read_obj(mesh_dir.c_str());
-				ds->set_mesh(mmesh);
-				label_content = "[INFO] mesh loaded!\n" + label_content;
-				label_outofdate = true;
-				post_redraw();
 			}
 			return true;
 		}
@@ -1556,21 +1659,28 @@ bool vr_rigging::handle(cgv::gui::event& e)
 
 					//
 					if (pg1->elements.at(cur_btn_idx).label._Equal("scale_\nadjestment")) {
-						adjest_mesh();
+						adjest_mesh_scale();
 					}
 
 					//
 					if (pg1->elements.at(cur_btn_idx).label._Equal("scale")) {
-						mesh_scale_mode = !mesh_scale_mode;
+						//mesh_scale_mode = !mesh_scale_mode;
+						//adjest_mesh_scale();
 					}
 
 					//
-					if (pg1->elements.at(cur_btn_idx).label._Equal("reset_\nscale")) {
-						mesh_scale = 0.019f;
-						ds->get_mesh()->set_mesh_scale(mesh_scale);
+					if (pg1->elements.at(cur_btn_idx).label._Equal("reset_\nmesh")) {
+						// clean varibles 
+						start_point_list.clear();
+						end_point_list.clear();
+						mmesh->set_orientation_translation(rotate3<double>(0, vec3(0, 1, 0)), vec3(1.2, 0, -2.8));
+						mmesh->set_mesh_scale(1);
+
 						// re-load mesh
 						mmesh->read_obj(mesh_dir.c_str());
 						ds->set_mesh(mmesh);
+
+						// update info board 
 						label_content = "[INFO] mesh loaded!\n" + label_content;
 						label_outofdate = true;
 						post_redraw();
@@ -1578,67 +1688,27 @@ bool vr_rigging::handle(cgv::gui::event& e)
 
 					// load demo mesh 
 					if (pg1->elements.at(cur_btn_idx).label._Equal("l_demo1")) {
-						mesh_dir = data_dir + "/gen_dataset/" + "speider_simple0/spiderman.obj";
-						mmesh->read_obj(mesh_dir.c_str());
-						start_point_list.clear();
-						end_point_list.clear();
-						//mmesh->read_obj(g_mesh_filename.c_str());
-						ds->set_mesh(mmesh);
-						label_content = "[INFO] mesh loaded!\n" + label_content;
-						label_outofdate = true;
-						post_redraw();
+						load_mesh_1();
 					}
 
 					//
 					if (pg1->elements.at(cur_btn_idx).label._Equal("l_demo2")) {
-						mesh_dir = data_dir + "/gen_dataset/" + "horse_simple0/horse.obj";
-						mmesh->read_obj(mesh_dir.c_str());
-						start_point_list.clear();
-						end_point_list.clear();
-						//mmesh->read_obj(g_mesh_filename.c_str());
-						ds->set_mesh(mmesh);
-						label_content = "[INFO] mesh loaded!\n" + label_content;
-						label_outofdate = true;
-						post_redraw();
+						load_mesh_2();
 					}
 
 					//
 					if (pg1->elements.at(cur_btn_idx).label._Equal("l_demo3")) {
-						mesh_dir = data_dir + "/gen_dataset/" + "pinocchio_model1_0/Model1.obj";
-						mmesh->read_obj(mesh_dir.c_str());
-						start_point_list.clear();
-						end_point_list.clear();
-						//mmesh->read_obj(g_mesh_filename.c_str());
-						ds->set_mesh(mmesh);
-						label_content = "[INFO] mesh loaded!\n" + label_content;
-						label_outofdate = true;
-						post_redraw();
+						load_mesh_3();
 					}
 
 					//
 					if (pg1->elements.at(cur_btn_idx).label._Equal("l_demo4")) {
-						mesh_dir = data_dir + "/gen_dataset/" + "pinocchio_model6_0/Model6.obj";
-						mmesh->read_obj(mesh_dir.c_str());
-						start_point_list.clear();
-						end_point_list.clear();
-						//mmesh->read_obj(g_mesh_filename.c_str());
-						ds->set_mesh(mmesh);
-						label_content = "[INFO] mesh loaded!\n" + label_content;
-						label_outofdate = true;
-						post_redraw();
+						load_mesh_4();
 					}
 
 					//
 					if (pg1->elements.at(cur_btn_idx).label._Equal("l_demo5")) {
-						mesh_dir = data_dir + "/gen_dataset/" + "robot_0/Robot Kyle.obj";
-						mmesh->read_obj(mesh_dir.c_str());
-						start_point_list.clear();
-						end_point_list.clear();
-						//mmesh->read_obj(g_mesh_filename.c_str());
-						ds->set_mesh(mmesh);
-						label_content = "[INFO] mesh loaded!\n" + label_content;
-						label_outofdate = true;
-						post_redraw();
+						load_mesh_5();
 					}
 
 					// load demo skel. 
@@ -2113,6 +2183,16 @@ bool vr_rigging::handle(cgv::gui::event& e)
 
 						label_content = "[INFO] a new bone has been built!\n" + label_content;
 						label_outofdate = true;
+					}
+
+					// transform to the position of the left hand controller 
+					if (pg1->elements.at(cur_btn_idx).label._Equal("trans.")) {
+						translation_to_desired_posi();
+					}
+
+					// rotate 90 degree each time 
+					if (pg1->elements.at(cur_btn_idx).label._Equal("rotation.")) {
+						orient_to_desired_ori();
 					}
 
 					// add further button callbacks functions here
@@ -2787,8 +2867,7 @@ bool vr_rigging::init(cgv::render::context& ctx)
 	mmesh = std::make_shared<SkinningMesh>();
 	if (mmesh) {
 		mmesh->init_shaders(ctx);
-		mmesh->set_rotation_translation(cgv::math::rotate3<double>(0, vec3(0, 1, 0)), vec3(1.2, 0, -2.8));
-		mmesh->set_mesh_scale(mesh_scale);
+		mmesh->set_orientation_translation(cgv::math::rotate3<double>(0, vec3(0, 1, 0)), vec3(1.2, 0, -2.8));
 	}
 	cgv::render::ref_box_renderer(ctx, 1);
 	cgv::render::ref_sphere_renderer(ctx, 1);
@@ -3604,14 +3683,22 @@ void vr_rigging::create_gui() {
 	add_member_control(this, "toggle_render_local_frame", toggle_render_local_frame, "check");
 	add_member_control(this, "toggle_boxgui", toggle_boxgui, "check");
 
-	if (begin_tree_node("mesh related", show_mesh_related, false, "level=2")) {
+	if (begin_tree_node("mesh related", show_mesh_related, true, "level=2")) {
 		align("\a");
-		connect_copy(add_button("load_mesh")->click, cgv::signal::rebind(this, &vr_rigging::load_mesh_with_gui));
+		connect_copy(add_button("translation_to_desired_posi")->click, cgv::signal::rebind(this, &vr_rigging::translation_to_desired_posi));
+		connect_copy(add_button("orient_to_desired_ori")->click, cgv::signal::rebind(this, &vr_rigging::orient_to_desired_ori));
+		connect_copy(add_button("adjest_mesh_scale")->click, cgv::signal::rebind(this, &vr_rigging::adjest_mesh_scale));
+		connect_copy(add_button("load_mesh_1")->click, cgv::signal::rebind(this, &vr_rigging::load_mesh_1));
+		connect_copy(add_button("load_mesh_2")->click, cgv::signal::rebind(this, &vr_rigging::load_mesh_2));
+		connect_copy(add_button("load_mesh_3")->click, cgv::signal::rebind(this, &vr_rigging::load_mesh_3));
+		connect_copy(add_button("load_mesh_4")->click, cgv::signal::rebind(this, &vr_rigging::load_mesh_4));
+		connect_copy(add_button("load_mesh_5")->click, cgv::signal::rebind(this, &vr_rigging::load_mesh_5));
+
 		align("\b");
 		end_tree_node(show_mesh_related);
 	}
 
-	if (begin_tree_node("skeleton related", show_skel_related, false, "level=2")) {
+	if (begin_tree_node("skeleton related", show_skel_related, true, "level=2")) {
 		align("\a");
 		connect_copy(add_button("load_skel_with_dofs")->click, cgv::signal::rebind(this, &vr_rigging::load_skel_with_dofs));
 		connect_copy(add_button("load_demo_skel1")->click, cgv::signal::rebind(this, &vr_rigging::load_demo_skel1));
