@@ -17,47 +17,70 @@
         share our work! 
         The project is about rigging, skinning and animating a given mesh.
     usage description 
-        Hi welcom to my research project "immersive rigging". 
-        0.let me show you how the system looks like.
+        // basic user interfaces
+        0.Hi welcom to my research project "immersive rigging". let me show you how the system works.
             when the progrem starts, a [wall of buttons] is rendered in front of us. 
-                A typical workflow is that: we first load a mesh , and then, define a skel. 
-                    skinning with the skel. making some animations.
-                That's to say, [from top to bottom].
-            we can [use right hand controller] to choose the mode we would like to work in the vr env. 
-                and left hand controller to perform the operations. 
-                A [visual feedback] is imp. As you can see, when the ray emmiting from the right hand controller intersects 
-                    with the button. Ii looks like that we are pushing the buttons.
-
+            A [typical workflow] is that: we first load a mesh , and then, define a skel. 
+                skinning with the skel. making some animations.
+                That's to say, from top to bottom.
+            // dynamic
+                two controllers are used.
+                the right hand controller is used to Interact with the gui buttons 
+                and left hand controller to perform the cooresp. operations. 
+            A [visual feedback] is imp. As you can see, when the ray emmiting from the right hand controller intersects 
+                with the button. It will be pushed back for a small step. 
+                and then, you can click it with the grap button.
+        // mesh related operations
         1.As a first step, a mesh should be loaded into the scene. This can be done by clicking here
             l_demo1/2/... The meshes are stored under CGV_DATA dir. 
-            if a mesh is too large, we can perform an [automatic scale adjestment] by clicking on this scale_adjestment button,
+            relmesh1. if a mesh is too large, we can perform an [automatic scale adjestment] by clicking on this scale_adjestment button,
                 it will scale the mesh to the same hight as our headset by computing a factor and multiplies it to the current scale.
-            additionally, we can rotate/translate a mesh by clicking here, rotation, trans. button 
+            relmesh2. additionally, we can [rotate/translate] a mesh by clicking here, rotation, trans. button 
                 each time we press the button, the mesh will rotate 90 degree around the global y axis.
-        ///rig 
-        2.after that, we can add bone manuelly or load pre-defined skel. or the skel. we saved on disk.  
-        lets load it first. 
-        as you can see, there is a skel. placed in the middle of the mesh, we can modify it easily. 
-            add bone: clicking the grip button on right hand to select "bone addition mode", then, we use left hand controller to add bones. 
-                in detail, we have to select the parent bone first. when there is an intersection,   
-            modify a bone: ...
-            del bone:... touch on the left hand controller 
-        ///skinning 
-        3.after the bone is adjested, we can get the skel. skined with the pinnoccio library 
-            in order to do so, we have to write the skel. to a external file will be feed to pinnoccio, so, click on grip button to do this. 
-            then, we perfrom the skinning operation by ckicking this. This may take a well, it depends how camplex our skel. is. 
-            after that, we have to apply the attachments to the mesh manuelly, those three steps can be merged to one if needed. 
-        ///animation 
-        4.let try to animate the mesh! 
+                the center of the mesh will be transformed to the posi. of left hand comtroller 
+            relmesh3. the following buttons are used to control the [visualization styles]
+                we can click here "toggle bbox" to render a bbox, here ... to ...
+                we can click here to toggle if we render ... or not
+        /// skeleton definition
+        2.after the load of a mesh, we can now define our skeleton! 
+            by clicking here [add_root], we can define a root bone, it has 6dofs. 
+            after that, we click here [add_bone_exist] to add a bone to the existing bone. now it switchs to add_bone mode, 
+                touch on the left hand controller to select the parent bone. touch again to fix the bone direction.
+            addi1.then we have to define the local frame of the current bone. eg. we want x-asix pointing to the same direction to the bone dir, we 
+                can [shuffle local frame] by clicking on this. local coordi. system.
+            addi2.if we want [the other two axes] pointing on some direction, we can modify it easily. just clicking on this....
+                we can rotate the local frame with the help of my left hand controller, the higher the controller, the more 
+                it will rotate. (the y position has been projected to the roattional angle)
+            once everything is finished, we click on the [build_bone] button to add current bone to the current skeleton.
+            //
+            load--[we can build a complete skeleton in this way]. Here i show you my work directly: I made a skel. before and stored it 
+                as skel.2. let's load it. As mentioned on the slides, skel. can saved and loaded into the scene.
+            modify--as you can see, there is a skel. placed in the middle of the mesh. we can also modify the loaded skel. eg. we 
+                can [cut its arm] like this, the man becomes disabled. left hand controller 
+                pointing on the bone we want to delete...and touch!
+                let's load it again.
+        /// skinning with pinnoccio
+        4.as the skel. is defined, we can get the skel. skined with the pinnoccio library 
+            in order to do so, we have to:
+                (x3buttons)[write the skel. to a external file] will be feed to pinnoccio, so, click on grip button to do this. 
+                then, we perfrom the [skinning operation] by ckicking this. This may take a well, it depends how camplex our skel. is. 
+                after that, we have to [apply the attachments to the mesh], bone weights will be loaded for each vertex.
+                those three steps can be merged to one if needed. 
+        /// animate the mesh!
+        5.let try to animate the mesh! 
+            as the mesh is attached to the skeleton, we are now, going to animate the skel. with IK algo.
             currently, a simple ccd algorithm is imp. the mesh can follow our movements. 
-            to do this, we have select the end effectors of both hands, click on this on right hand, and touch on left hand. You should be 
-            able to see such lines if ee selected successfully. 
-            the same thing for right hand ee. 
-            everything is done, we can start ccd now, click the touchpad on positive y axis on left hand controller to start. it will follow 
-            our movements. 
-        ///recording 
-        5.if you wanna record the movements, you should click on recording button first. then, start ccd, and stop recording. to check, 
-            you can load it again by this. look, it works! 
+            [sel]to do this, we have to define the base bone and ee. eg. lets def. the l_ee
+                the box will become red after the selection as visual feedback.
+            the same thing for right hand ee and the head_ee  
+            we can [enable] the ik algo. with a pressing event on the touchpad
+            wave hands, swim, play table tinnes
+            the black cursor indicates the mirrored target position.
+            //
+            [rec].if you wanna record the movements, you should click on recording button first. then, start ccd, and stop recording. to check, 
+                you can load it again by this. look, it works! 
+        /// addi1 -- imitating 
+        /// addi2 -- user guide 
     formal report/ paper 
         // as a whole system 
             Title: Immersive Rigging, Skinning and Motion Capturing 

@@ -483,6 +483,14 @@ void vr_rigging::adjest_mesh_scale() {
 
 	// re-load mesh
 	mmesh->read_obj(mesh_dir.c_str());
+	// update bbox and min max points 
+	mesh_bbox = box3(mmesh->getMin(), mmesh->getMax());
+	minmax_pointlist.clear();
+	minmax_pointlist_color.clear();
+	minmax_pointlist.push_back(mmesh->getMin());
+	minmax_pointlist_color.push_back(rgb(1, 0, 0));
+	minmax_pointlist.push_back(mmesh->getMax());
+	minmax_pointlist_color.push_back(rgb(0, 0, 1));
 	ds->set_mesh(mmesh);
 
 	// update info board 
