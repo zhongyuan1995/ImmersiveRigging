@@ -109,12 +109,14 @@ public:
 	/// for rendering 
 	std::vector<box3> boxvector;
 	std::vector<rgb> colorvector;
+	std::vector<rgb> default_colorvector;
 	/// for gui logic
 	std::vector<boxgui_button> elements; // only buttons cur. 
 	///
 	void push_to_render_vector() {
 		boxvector.clear();
 		colorvector.clear();
+		default_colorvector.clear();
 		float anim_range = 0.1;
 		for (int i = 0; i < elements.size(); i++) {
 			if (elements.at(i).do_transform) {
@@ -159,6 +161,7 @@ public:
 				}
 			}
 			colorvector.push_back(elements.at(i).color);
+			default_colorvector.push_back(elements.at(i).color);
 		}
 	}
 };

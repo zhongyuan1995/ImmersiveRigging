@@ -176,7 +176,6 @@ private:
 	std::vector<vec3> minmax_pointlist;
 	std::vector<rgb> minmax_pointlist_color;
 
-
 	// boolean varibles to control left hand behaviors
 	bool b_render_mesh = true;
 	bool b_toggle_show_imitating_skel = true;
@@ -256,6 +255,12 @@ private:
 	bool confirm_needed = false;
 	bool confirmed = false;
 	vec3 confirm_gui_posi = 0;
+	double total_render_time = 0;
+	bool flip = false;
+	//int last_render_time = 0;
+	int cur_step = 0;
+	//int cur_step_idx = 0;
+	std::vector<int> cur_idx_list;
 
 	// arrays for rendering skeletons 
 	std::vector<box3> jointlist;
@@ -360,6 +365,7 @@ public:
 
 	/// gui related functions 
 	void remove_pg1();
+	///
 	void take_screen_capture();
 
 	/// mesh related operations
@@ -468,6 +474,7 @@ public:
 	///
 	void create_gui();
 	/// 
+	void timer_event(double, double dt);
 
 ///@}
 };

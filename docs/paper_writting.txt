@@ -17,7 +17,7 @@
         share our work! 
         The project is about rigging, skinning and animating a given mesh.
     usage description 
-        // basic user interfaces
+        // basic user interfaces -- trac 17 
         0.Hi welcom to my research project "immersive rigging". let me show you how the system works.
             when the progrem starts, a [wall of buttons] is rendered in front of us. 
             A [typical workflow] is that: we first load a mesh , and then, define a skel. 
@@ -79,7 +79,29 @@
             //
             [rec].if you wanna record the movements, you should click on recording button first. then, start ccd, and stop recording. to check, 
                 you can load it again by this. look, it works! 
-        /// addi1 -- imitating 
+        /// 附加细节，各个地方
+            we can [define the skeleton in any form] we want. eg. we can just rig like this, write, auto rig, and apply attachments
+            define ... and start the ccd algorithm, it looks like this. It looks wired beacause the bone is unnatural and 
+            many vertices are affacted by the same bone. 
+            
+            you can understand the mesh better with the bbox. rotate/translate/...
+                the red ball indicates the min point while the blue one indicates the max point of the bounding box.
+            
+            when taking a closer look, you will find that the local x-asix is pointing on the bone dir 
+                and yz asix are also adjested. thus, we can define dofs easier. 
+                    eg. if we define the local coordi. for the elbow like this, it is obvious that the range 
+                    rotating y asix is from 0 to 135 degree.
+                dofs should be adjested so that we can get a more natural result after applying IK algorithms.
+        /// 附加场景介绍
+            from this point of view, we can see clearly that 
+            
+            the other two skel. has been loaded and is imitating our motion
+                to archieve this, dofs of each bone from the main skeleton has been assigned to them. 
+            infoboard, showing some log informations. it rotates the same angle as our headset.
+            And a table, as a future work, we can pick up some mesh editing tools from it. 
+                eg. a cutting tool could be rendered here.
+                    it could be used to cut off part of the mesh.
+                and a mesh Morpher could be imp. at the same time.
         /// addi2 -- user guide 
     formal report/ paper 
         // as a whole system 

@@ -16,7 +16,27 @@
 #include "intersection.h"
 #include <math_helper.h>
 
-
+///
+void vr_rigging::timer_event(double, double dt)
+{
+	total_render_time += dt;
+	if (total_render_time > 0.5) {
+		//std::cout << "this is called once a second!" << std::endl;
+		flip = !flip;
+		if (flip) {
+			pg1->colorvector.at(cur_idx_list.at(cur_step)) = rgb(1, 1, 102.0f / 255.0f);
+		}
+		else {
+			pg1->colorvector.at(cur_idx_list.at(cur_step)) = pg1->default_colorvector.at(cur_idx_list.at(cur_step));
+			/*cur_step++;
+			if (cur_step > cur_idx_list.size() - 1)
+				cur_step = 0;*/
+		}
+		post_redraw();
+		total_render_time = 0;
+	}
+}
+/// 
 void vr_rigging::load_mesh_1() {
 	mesh_dir = data_dir + "/gen_dataset/speider_simple0/spiderman.obj";
 
@@ -698,6 +718,7 @@ void vr_rigging::gui_compute_intersections(const vec3& origin, const vec3& direc
 		}
 	}
 }
+///
 void vr_rigging::reset_jointlist_color() { // reset after loading from skel_view 
 	jointlist_colors = jointlist_colors_standard;
 }
@@ -915,6 +936,54 @@ void vr_rigging::build_scene(float w, float d, float h, float W, float tw, float
 	construct_environment(0.2f, 1.3 * w, 1.3 * d, h, w, d, h); // performance issue
 	construct_movable_boxes(tw, td, th, tW, 50);
 	construct_boxgui();
+	//
+	for (int i = 0; i < pg1->elements.size(); i++) {
+		if (pg1->elements.at(i).label == "l_demo1") {
+			cur_idx_list.push_back(i);
+		}
+	}
+	for (int i = 0; i < pg1->elements.size(); i++) {
+		if (pg1->elements.at(i).label == "l_skel2") {
+			cur_idx_list.push_back(i);
+		}
+	}
+	/// 
+	for (int i = 0; i < pg1->elements.size(); i++) {
+		if (pg1->elements.at(i).label == "write_\npinocchio\n_skel.") {
+			cur_idx_list.push_back(i);
+		}
+	}
+	for (int i = 0; i < pg1->elements.size(); i++) {
+		if (pg1->elements.at(i).label == "autorig_\nwith_\npinocchio") {
+			cur_idx_list.push_back(i);
+		}
+	}
+	for (int i = 0; i < pg1->elements.size(); i++) {
+		if (pg1->elements.at(i).label == "apply_\nattachments") {
+			cur_idx_list.push_back(i);
+		}
+	}
+	/// 
+	for (int i = 0; i < pg1->elements.size(); i++) {
+		if (pg1->elements.at(i).label == "s_base") {
+			cur_idx_list.push_back(i);
+		}
+	}
+	for (int i = 0; i < pg1->elements.size(); i++) {
+		if (pg1->elements.at(i).label == "s_ee_left") {
+			cur_idx_list.push_back(i);
+		}
+	}
+	for (int i = 0; i < pg1->elements.size(); i++) {
+		if (pg1->elements.at(i).label == "s_ee_right") {
+			cur_idx_list.push_back(i);
+		}
+	}
+	for (int i = 0; i < pg1->elements.size(); i++) {
+		if (pg1->elements.at(i).label == "s_ee_head") {
+			cur_idx_list.push_back(i);
+		}
+	}
 }
 ///
 void vr_rigging::construct_boxgui() {
@@ -1356,6 +1425,7 @@ vr_rigging::vr_rigging()
 	last_kit_handle = 0;
 	connect(cgv::gui::ref_vr_server().on_device_change, this, &vr_rigging::on_device_change);
 	connect(cgv::gui::ref_vr_server().on_status_change, this, &vr_rigging::on_status_change);
+	connect(get_animation_trigger().shoot, this, &vr_rigging::timer_event);
 
 	srs.radius = 0.05f;
 
@@ -1754,6 +1824,9 @@ bool vr_rigging::handle(cgv::gui::event& e)
 					// load demo mesh 
 					if (pg1->elements.at(cur_btn_idx).label._Equal("l_demo1")) {
 						load_mesh_1();
+						cur_step++;
+						if (cur_step > cur_idx_list.size() - 1)
+							cur_step = 0;
 					}
 
 					//
@@ -1839,10 +1912,15 @@ bool vr_rigging::handle(cgv::gui::event& e)
 						jointlist_colors = skel_view->get_jointlistcolor();
 						
 						load_addi_two_guys(data_dir + "/gen_dataset/" + "speider_simple0/tmpskel_2.asf");
-						post_redraw();
+						
+						// beginners guide
+						cur_step++;
+						if (cur_step > cur_idx_list.size() - 1)
+							cur_step = 0;
 
 						label_content = "[INFO] button clicked!\n" + label_content;
 						label_outofdate = true;
+						post_redraw();
 					}
 
 					//
@@ -1903,6 +1981,13 @@ bool vr_rigging::handle(cgv::gui::event& e)
 						label_content = "[INFO] button clicked!\n" + label_content;
 						label_outofdate = true;
 						save_curskel_to_file();
+
+						// beginners guide
+						cur_step++;
+						if (cur_step > cur_idx_list.size() - 1)
+							cur_step = 0;
+
+						post_redraw();
 					}
 
 					// autorig with pinocchio 
@@ -1910,7 +1995,14 @@ bool vr_rigging::handle(cgv::gui::event& e)
 						label_content = "[INFO] button clicked!\n" + label_content;
 						label_outofdate = true;
 						start_autorigging_pinoccio();
-						//will be modified to multithread 
+						// will be modified to multithread 
+
+						// beginners guide
+						cur_step++;
+						if (cur_step > cur_idx_list.size() - 1)
+							cur_step = 0;
+
+						post_redraw();
 					}
 
 					// apply_\nattachments
@@ -1918,6 +2010,13 @@ bool vr_rigging::handle(cgv::gui::event& e)
 						label_content = "[INFO] button clicked!\n" + label_content;
 						label_outofdate = true;
 						apply_rigged_skel();
+
+						// beginners guide
+						cur_step++;
+						if (cur_step > cur_idx_list.size() - 1)
+							cur_step = 0;
+
+						post_redraw();
 					}
 
 					// motion capture rel.
@@ -1943,6 +2042,13 @@ bool vr_rigging::handle(cgv::gui::event& e)
 						label_content = "[INFO] button clicked!\n" + label_content;
 						label_outofdate = true;
 						lefthandmode = "select base";
+
+						// beginners guide
+						cur_step++;
+						if (cur_step > cur_idx_list.size() - 1)
+							cur_step = 0;
+
+						post_redraw();
 					}
 
 					//
@@ -1950,6 +2056,13 @@ bool vr_rigging::handle(cgv::gui::event& e)
 						label_content = "[INFO] button clicked!\n" + label_content;
 						label_outofdate = true;
 						lefthandmode = "select ee left";
+
+						// beginners guide
+						cur_step++;
+						if (cur_step > cur_idx_list.size() - 1)
+							cur_step = 0;
+
+						post_redraw();
 					}
 
 					//
@@ -1957,6 +2070,13 @@ bool vr_rigging::handle(cgv::gui::event& e)
 						label_content = "[INFO] button clicked!\n" + label_content;
 						label_outofdate = true;
 						lefthandmode = "select ee right";
+
+						// beginners guide
+						cur_step++;
+						if (cur_step > cur_idx_list.size() - 1)
+							cur_step = 0;
+
+						post_redraw();
 					}
 
 					//
@@ -1964,6 +2084,13 @@ bool vr_rigging::handle(cgv::gui::event& e)
 						label_content = "[INFO] button clicked!\n" + label_content;
 						label_outofdate = true;
 						lefthandmode = "select ee head";
+
+						// beginners guide
+						cur_step++;
+						if (cur_step > cur_idx_list.size() - 1)
+							cur_step = 0;
+
+						post_redraw();
 					}
 
 					// bone skel. editing rel. 
@@ -3798,6 +3925,7 @@ void vr_rigging::create_gui() {
 	}
 
 }
+
 
 #include <cgv/base/register.h>
 
