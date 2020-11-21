@@ -19,6 +19,8 @@
 ///
 void vr_rigging::timer_event(double, double dt)
 {
+	if (!toggle_beginners_guide)
+		return;
 	total_render_time += dt;
 	if (total_render_time > 0.5) {
 		//std::cout << "this is called once a second!" << std::endl;
@@ -3897,7 +3899,8 @@ void vr_rigging::create_gui() {
 	add_member_control(this, "toggle_usage_description", toggle_usage_description, "check");
 	add_member_control(this, "toggle_render_local_frame", toggle_render_local_frame, "check");
 	add_member_control(this, "toggle_boxgui", toggle_boxgui, "check");
-	add_member_control(this, "toggle_boxgui", render_mesh_bbox, "check");
+	add_member_control(this, "render_mesh_bbox", render_mesh_bbox, "check");
+	add_member_control(this, "toggle_beginners_guide", toggle_beginners_guide, "check");
 
 	if (begin_tree_node("mesh related", show_mesh_related, true, "level=2")) {
 		align("\a");

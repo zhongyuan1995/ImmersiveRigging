@@ -136,17 +136,17 @@
         installation guide, documentation 
         use of CGV_DATA to load meshes 
         fix the path prob. 
-    tobetested:
-    todo:  
+        posing function  
         fix the problem in mesh loading, two meshes 
         beginners guide 
+    tobetested:
+    todo:  
     future work:    
         enable texturing for the mesh loader
         a better custom mesh loader, which is too simple now, 
             ref. the one from the prof.
         rig half of a mesh and auto-complete. Add a button: skel_auto_complete 
         cut out part of the mesh with right hand controller 
-        posing function  
         vis bone weights for each components (vertices)
         fix the dof adjestment in course cg2, implement a numerical            
             optimization process

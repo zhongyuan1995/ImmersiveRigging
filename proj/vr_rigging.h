@@ -208,6 +208,7 @@ private:
 	bool show_mesh_related = false;
 	bool show_skel_related = false;
 	bool render_mesh_bbox = false;
+	bool toggle_beginners_guide = true;
 
 	// rendering text labels for information board 
 	string label_text;
