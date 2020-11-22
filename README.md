@@ -13,7 +13,7 @@
         * Clone this repository, set the system varible "CGV_DATA" to "data" directory under this project: 
             drag the "data" directory onto cgv/define_data_dir.bat
             or run the command define_data_dir.bat <global-path-to-data-directory>
-        Generate makefiles with the help of the proj_new/vr_rigging_new.pj as normal.
+        * Generate makefiles with the help of the proj/vr_rigging.pj as normal.
         Compile it.
         contact me for any issues.
     usage description: 
