@@ -1005,9 +1005,9 @@ void vr_rigging::construct_boxgui() {
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.5, -2.5f), 0.1, 0.2, 0.8, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f), "Change Skybox", font_size, "xxx", true);
 	pg1->elements.push_back(first_btn);
 
-	string image2dir = data_dir + "/skybox/cm_xp.jpg";
-	string image0dir = data_dir + "/skybox/BluePinkNebular_xp.jpg";
-	string image1dir = data_dir + "/skybox/igen_2/xp.jpg";
+	string image0dir = data_dir + "/skybox/igen_2/xp.jpg";
+	string image1dir = data_dir + "/skybox/cm_xp.jpg";
+	string image2dir = data_dir + "/skybox/BluePinkNebular_xp.jpg";
 
 	first_btn = boxgui_button(vec3(2.5f - 0.05f, 2.5, -1.75f), 0.1, 0.2, 0.2, rgb(0.4f * distribution(generator) + 0.1f, 0.4f * distribution(generator) + 0.3f, 0.4f * distribution(generator) + 0.1f),
 		"xxx", 0, image0dir, false);
