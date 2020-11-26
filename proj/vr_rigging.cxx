@@ -933,9 +933,10 @@ void vr_rigging::construct_movable_boxes(float tw, float td, float th, float tW,
 /// construct a scene with a table
 void vr_rigging::build_scene(float w, float d, float h, float W, float tw, float td, float th, float tW)
 {
+	// for presentation 
 	construct_room(w, d, h, W, false, false);
 	construct_table(tw, td, th, tW);
-	construct_environment(0.2f, 1.3 * w, 1.3 * d, h, w, d, h); // performance issue
+	construct_environment(0.2f, 1.3 * w, 1.3 * d, h, w, d, h);
 	construct_movable_boxes(tw, td, th, tW, 50);
 	construct_boxgui();
 	//
@@ -1515,6 +1516,11 @@ vr_rigging::vr_rigging()
 	tmpskel_view_1 = new SkeletonViewer(tmpdata_1, "newskel_1");
 	tmpskel_view_2 = new SkeletonViewer(tmpdata_2, "newskel_2");
 	ik_view = new IKViewer(ds);
+
+	// for presentation 
+	// register objects 
+	/*register_object(base_ptr(skel_view), "");
+	register_object(base_ptr(ik_view), "");*/
 }
 ///	
 void vr_rigging::stream_help(std::ostream& os) {
@@ -3276,6 +3282,62 @@ void vr_rigging::init_frame(cgv::render::context& ctx)
 ///
 void vr_rigging::draw(cgv::render::context& ctx)
 {
+	// for presentation 
+	//ctx.set_bg_color(1, 1, 1, 1);
+
+	// rendering the skybox 
+	// large enough to contain the whole scene
+	float max_scene_extent = 100;
+	switch (which_skybox) {
+	case 0:
+		glDepthMask(GL_FALSE);
+		glDisable(GL_CULL_FACE);
+		test_tex.enable(ctx, 1);
+		skyprog.enable(ctx);
+		skyprog.set_uniform(ctx, "img_tex", 1);
+		ctx.push_modelview_matrix();
+		ctx.mul_modelview_matrix(cgv::math::scale4<double>(
+			max_scene_extent, max_scene_extent, max_scene_extent));
+		ctx.tesselate_unit_cube();
+		ctx.pop_modelview_matrix();
+		skyprog.disable(ctx);
+		test_tex.disable(ctx);
+		glEnable(GL_CULL_FACE);
+		glDepthMask(GL_TRUE);
+		break;
+	case 1:
+		glDepthMask(GL_FALSE);
+		glDisable(GL_CULL_FACE);
+		img_tex.enable(ctx, 1);
+		skyprog.enable(ctx);
+		skyprog.set_uniform(ctx, "img_tex", 1);
+		ctx.push_modelview_matrix();
+		ctx.mul_modelview_matrix(cgv::math::scale4<double>(
+			max_scene_extent, max_scene_extent, max_scene_extent));
+		ctx.tesselate_unit_cube();
+		ctx.pop_modelview_matrix();
+		skyprog.disable(ctx);
+		img_tex.disable(ctx);
+		glEnable(GL_CULL_FACE);
+		glDepthMask(GL_TRUE);
+		break;
+	case 2:
+		glDepthMask(GL_FALSE);
+		glDisable(GL_CULL_FACE);
+		tmp_tex.enable(ctx, 1);
+		skyprog.enable(ctx);
+		skyprog.set_uniform(ctx, "img_tex", 1);
+		ctx.push_modelview_matrix();
+		ctx.mul_modelview_matrix(cgv::math::scale4<double>(
+			max_scene_extent, max_scene_extent, max_scene_extent));
+		ctx.tesselate_unit_cube();
+		ctx.pop_modelview_matrix();
+		skyprog.disable(ctx);
+		tmp_tex.disable(ctx);
+		glEnable(GL_CULL_FACE);
+		glDepthMask(GL_TRUE);
+		break;
+	}
 	
 	// rendering headset and controller
 	if (vr_view_ptr) {
@@ -3349,60 +3411,6 @@ void vr_rigging::draw(cgv::render::context& ctx)
 		sr.set_color_array(ctx, minmax_pointlist_color);
 		sr.set_render_style(srs);
 		sr.render(ctx, 0, minmax_pointlist.size());
-	}
-
-	// rendering the skybox 
-	// large enough to contain the whole scene
-	float max_scene_extent = 100;
-	switch (which_skybox) {
-	case 0:
-		glDepthMask(GL_FALSE);
-		glDisable(GL_CULL_FACE);
-		test_tex.enable(ctx, 1);
-		skyprog.enable(ctx);
-		skyprog.set_uniform(ctx, "img_tex", 1);
-		ctx.push_modelview_matrix();
-		ctx.mul_modelview_matrix(cgv::math::scale4<double>(
-			max_scene_extent, max_scene_extent, max_scene_extent));
-		ctx.tesselate_unit_cube();
-		ctx.pop_modelview_matrix();
-		skyprog.disable(ctx);
-		test_tex.disable(ctx);
-		glEnable(GL_CULL_FACE);
-		glDepthMask(GL_TRUE);
-		break;
-	case 1:
-		glDepthMask(GL_FALSE);
-		glDisable(GL_CULL_FACE);
-		img_tex.enable(ctx, 1);
-		skyprog.enable(ctx);
-		skyprog.set_uniform(ctx, "img_tex", 1);
-		ctx.push_modelview_matrix();
-		ctx.mul_modelview_matrix(cgv::math::scale4<double>(
-			max_scene_extent, max_scene_extent, max_scene_extent));
-		ctx.tesselate_unit_cube();
-		ctx.pop_modelview_matrix();
-		skyprog.disable(ctx);
-		img_tex.disable(ctx);
-		glEnable(GL_CULL_FACE);
-		glDepthMask(GL_TRUE);
-		break;
-	case 2:
-		glDepthMask(GL_FALSE);
-		glDisable(GL_CULL_FACE);
-		tmp_tex.enable(ctx, 1);
-		skyprog.enable(ctx);
-		skyprog.set_uniform(ctx, "img_tex", 1);
-		ctx.push_modelview_matrix();
-		ctx.mul_modelview_matrix(cgv::math::scale4<double>(
-			max_scene_extent, max_scene_extent, max_scene_extent));
-		ctx.tesselate_unit_cube();
-		ctx.pop_modelview_matrix();
-		skyprog.disable(ctx);
-		tmp_tex.disable(ctx);
-		glEnable(GL_CULL_FACE);
-		glDepthMask(GL_TRUE);
-		break;
 	}
 
 	// draw info label

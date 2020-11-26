@@ -115,9 +115,10 @@ public:
 	///
 	void push_to_render_vector() {
 		boxvector.clear();
-		colorvector.clear();
-		default_colorvector.clear();
 		float anim_range = 0.1;
+		bool update_colorarray = false;
+		if (colorvector.size() == 0)
+			update_colorarray = true;
 		for (int i = 0; i < elements.size(); i++) {
 			if (elements.at(i).do_transform) {
 				if (elements.at(i).has_intersec) {//
@@ -160,8 +161,11 @@ public:
 						elements.at(i).button.get_center() + vec3(-0.1f / 2.0f - 0.01f, 0, 0);
 				}
 			}
-			colorvector.push_back(elements.at(i).color);
-			default_colorvector.push_back(elements.at(i).color);
+
+			if (update_colorarray) {
+				colorvector.push_back(elements.at(i).color);
+				default_colorvector.push_back(elements.at(i).color);
+			}
 		}
 	}
 };
