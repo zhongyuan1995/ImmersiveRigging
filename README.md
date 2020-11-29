@@ -6,7 +6,8 @@
 <!-- try the executable: (build with master branch of cgv)
     One can run the program by simply clicking on the batch file called "run_exec.bat" 
         in the following folder: "exec\exec_vr_rigging". -->
-
+    link to final presentation video:
+        https://cloudstore.zih.tu-dresden.de/index.php/s/KrGKQmbfM6468F3
     build instructions: (in develop branch)
         Clone the develop branch of the cgv framework 
         Click on define_system_variables.bat to define the path to the framework.
