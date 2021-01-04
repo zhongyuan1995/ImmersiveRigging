@@ -237,6 +237,8 @@ void SkinningMesh::draw(cgv::render::context& ctx) // not called automatically, 
 		glEnableVertexAttribArray(1);
 		glEnableVertexAttribArray(2);
 
+		// todo: replace with set_uniform_array
+		// totest: prog.set_uniform_array(ctx, "bone_matrices", skinning_matrices, n_bones);
 		GLint program;
 		glGetIntegerv(GL_CURRENT_PROGRAM, &program);
 		GLint matrices_location = glGetUniformLocation(program, "bone_matrices");
