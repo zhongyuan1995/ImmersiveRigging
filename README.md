@@ -17,7 +17,7 @@
         * Generate makefiles with the help of the proj/vr_rigging.pj as normal.
         Compile it.
         contact me for any issues.
-    usage description: 
+    usage description:  
         //
             Typically, rigging and skinning of a given mesh should be straightforward and no other instructions necessary.
             Due to the fact that the repo. is under heavy development, it may be a little bit hard to use currently.
